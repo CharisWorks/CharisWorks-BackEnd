@@ -19,8 +19,12 @@ func (h *Handler) SetupRoutes(firebaseApp *validation.FirebaseApp) {
 	firebase := h.Router.Group("/firebase")
 	{
 		firebase.GET("/test", func(c *gin.Context) {
-			app := validation.NewFirebaseApp()
-			app.VerifyIDToken(c, "[idToken]")
+			idToken := "[idToken]"
+			app, err := validation.NewFirebaseApp()
+			if err != nil {
+				return
+			}
+			app.VerifyIDToken(c, idToken)
 		})
 	}
 }

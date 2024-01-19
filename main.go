@@ -12,7 +12,10 @@ func main() {
 
 	h := handler.NewHandler(r)
 
-	app := validation.NewFirebaseApp()
+	app, err := validation.NewFirebaseApp()
+	if err != nil {
+		return
+	}
 
 	h.SetupRoutes(app)
 
