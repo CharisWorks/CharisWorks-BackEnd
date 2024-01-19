@@ -1,13 +1,23 @@
 package main
 
 import (
-	// "net/http"
-
+	"github.com/charisworks/charisworks-backend/handler"
+	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+	r := gin.Default()
+	r.ContextWithFallback = true
 
-	router.Run("localhost:8080")
+	h := handler.NewHandler(r)
+
+	app, err := validation.NewFirebaseApp()
+	if err != nil {
+		return
+	}
+
+	h.SetupRoutes(app)
+
+	h.Router.Run("localhost:8080")
 }
