@@ -6,9 +6,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - type: bind
-        source: ./
-        target: /go/CharisWorks-BackEnd
+      - ./:/go/CharisWorks-BackEnd
   db:
     image: mariadb:latest
     container_name: db
