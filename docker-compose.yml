@@ -15,6 +15,10 @@ services:
       - 3306:3306
     environment:
       MARIADB_ROOT_PASSWORD: password
-      TZ: 'Asia/Tokyo'
+      TZ: "Asia/Tokyo"
     volumes:
       - ./sql_init:/docker-entrypoint-initdb.d
+      - data-volume:/var/lib/mysql
+
+volumes:
+  data-volume:
