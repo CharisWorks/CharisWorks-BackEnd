@@ -18,6 +18,7 @@ func main() {
 	}
 	h.SetupRoutesForItem()
 	h.SetupRoutes(app)
+	h.SetupRoutesForAuthStatus()
 
 	h.Router.Run("localhost:8080")
 }
