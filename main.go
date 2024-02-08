@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		return
 	}
-
+	h.SetupRoutesForItem()
 	h.SetupRoutes(app)
 
 	h.Router.Run("localhost:8080")
