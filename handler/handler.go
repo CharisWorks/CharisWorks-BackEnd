@@ -41,6 +41,7 @@ func (h *Handler) SetupRoutesForItem() {
 			PreviewList := items.GetPreviewList(items.ItemRequests{})
 			c.JSON(200, PreviewList)
 		})
+
 		itemGroup.GET("/:item_id", func(c *gin.Context) {
 
 			// item_id の取得
@@ -49,6 +50,7 @@ func (h *Handler) SetupRoutesForItem() {
 			// レスポンスの処理
 			c.JSON(200, Overview)
 		})
+
 		itemGroup.GET("/search", func(c *gin.Context) {
 			keywords := c.Query("keyword")
 			log.Println(keywords)
@@ -59,17 +61,27 @@ func (h *Handler) SetupRoutesForItem() {
 }
 
 func (h *Handler) SetupRoutesForAuthStatus() {
-	itemGroup := h.Router.Group("/api/userauthstatus")
-	{
-		itemGroup.POST("", func(c *gin.Context) {
-			// レスポンスの処理
-			i := new(struct{ email string })
-			if err := c.BindJSON(&i); err != nil {
-				log.Print(err)
-			}
-			PreviewList := authstatus.AuthStatusCheck(i.email, authstatus.AuthStatusRequests{})
-			c.JSON(200, PreviewList)
-		})
+	h.Router.POST("/api/userauthstatus", func(c *gin.Context) {
+		// レスポンスの処理
+		i := new(struct{ email string })
+		if err := c.BindJSON(&i); err != nil {
+			log.Print(err)
+		}
+		PreviewList := authstatus.AuthStatusCheck(i.email, authstatus.AuthStatusRequests{})
+		c.JSON(200, PreviewList)
+	})
 
+}
+func (h *Handler) SetupRoutesForUser(firebaseApp *validation.FirebaseApp) {
+	UserRouter := h.Router.Group("/api")
+	{
+		UserRouter.GET("/user", func(c *gin.Context) {
+			idToken := "[idToken]"
+			app, err := validation.NewFirebaseApp()
+			if err != nil {
+				return
+			}
+			app.VerifyIDToken(c, idToken)
+		})
 	}
 }
