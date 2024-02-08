@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/charisworks/charisworks-backend/authstatus"
 	"github.com/charisworks/charisworks-backend/items"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
@@ -52,6 +53,21 @@ func (h *Handler) SetupRoutesForItem() {
 			keywords := c.Query("keyword")
 			log.Println(keywords)
 			PreviewList := items.GetSearchPreviewList(c, items.ItemRequests{}, strings.Split(keywords, "+"))
+			c.JSON(200, PreviewList)
+		})
+	}
+}
+
+func (h *Handler) SetupRoutesForAuthStatus() {
+	itemGroup := h.Router.Group("/api/userauthstatus")
+	{
+		itemGroup.POST("", func(c *gin.Context) {
+			// レスポンスの処理
+			i := new(struct{ email string })
+			if err := c.BindJSON(&i); err != nil {
+				log.Print(err)
+			}
+			PreviewList := authstatus.AuthStatusCheck(i.email, authstatus.AuthStatusRequests{})
 			c.JSON(200, PreviewList)
 		})
 
