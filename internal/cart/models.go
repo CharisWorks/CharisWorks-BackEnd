@@ -4,6 +4,7 @@ import "github.com/charisworks/charisworks-backend/internal/items"
 
 type Cart struct {
 	ItemId                string                      `json:"item_id"`
+	Quantity              int                         `json:"quantity"`
 	ItemPreviewProperties items.ItemPreviewProperties `json:"properties"`
 }
 type CartRequestPayload struct {
