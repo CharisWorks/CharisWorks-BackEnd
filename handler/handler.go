@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +33,12 @@ func (h *Handler) SetupRoutes(firebaseApp *validation.FirebaseApp) {
 
 func FirebaseMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		app.VerifyIDToken(c, c.Request.Header.Get("Authorization"))
+		UID, err := app.VerifyIDToken(c, c.Request.Header.Get("Authorization"))
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, err)
+			c.Abort()
+		}
+		c.Set("UID", UID)
 		//内部の実行タイミング
 		c.Next()
 
