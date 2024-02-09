@@ -2,10 +2,7 @@ module github.com/charisworks/charisworks-backend
 
 go 1.21.5
 
-require (
-	github.com/gin-gonic/gin v1.9.1
-	github.com/shopspring/decimal v1.3.1
-)
+require github.com/gin-gonic/gin v1.9.1
 
 require (
 	github.com/MicahParks/keyfunc v1.9.0 // indirect

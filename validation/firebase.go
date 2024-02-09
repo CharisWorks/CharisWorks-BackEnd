@@ -5,7 +5,6 @@ import (
 	"log"
 
 	firebase "firebase.google.com/go/v4"
-	"firebase.google.com/go/v4/auth"
 	"google.golang.org/api/option"
 )
 
@@ -25,20 +24,20 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 	return &FirebaseApp{app}, nil
 }
 
-func (app *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
+func (app *FirebaseApp) VerifyIDToken(ctx context.Context, idToken string) (string, error) {
 	client, err := app.Auth(ctx)
 	if err != nil {
 		log.Printf("error getting Auth client: %v\n", err)
-		return nil, err
+		return "", err
 	}
 
 	token, err := client.VerifyIDToken(ctx, idToken)
 	if err != nil {
 		log.Printf("error verifying ID token: %v\n", err)
-		return nil, err
+		return "", err
 	}
 
 	log.Printf("Verified ID token: %v\n", token)
 
-	return token, nil
+	return token.UID, nil
 }
