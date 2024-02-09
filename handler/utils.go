@@ -38,7 +38,7 @@ func FirebaseMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, err)
 			c.Abort()
 		}
-		c.Set("UID", UID)
+		c.Set("UserId", UID)
 		//内部の実行タイミング
 		c.Next()
 

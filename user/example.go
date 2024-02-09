@@ -2,18 +2,18 @@ package user
 
 import "time"
 
-func ExampleUser(UID string) User {
+func ExampleUser(UserId string) User {
 	e := new(User)
-	e.UserId = UID
+	e.UserId = UserId
 
 	return *e
 
 }
 
-func ExampleUser2(UID string) User {
+func ExampleUser2(UserId string) User {
 	// ユーザー型の例を生成
 	user := User{
-		UserId: "12345",
+		UserId: UserId,
 		UserProfile: &UserProfile{
 			DisplayName: "John Doe",
 			Description: "Example user",
