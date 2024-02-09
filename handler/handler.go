@@ -1,11 +1,6 @@
 package handler
 
 import (
-	"log"
-	"strings"
-
-	"github.com/charisworks/charisworks-backend/authstatus"
-	"github.com/charisworks/charisworks-backend/items"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
@@ -33,55 +28,12 @@ func (h *Handler) SetupRoutes(firebaseApp *validation.FirebaseApp) {
 		})
 	}
 }
-func (h *Handler) SetupRoutesForItem() {
-	itemGroup := h.Router.Group("/api/item")
-	{
-		itemGroup.GET("", func(c *gin.Context) {
-			// レスポンスの処理
-			PreviewList := items.GetPreviewList(items.ItemRequests{})
-			c.JSON(200, PreviewList)
-		})
 
-		itemGroup.GET("/:item_id", func(c *gin.Context) {
+func FirebaseMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		app.VerifyIDToken(c, c.Request.Header.Get("Authorization"))
+		//内部の実行タイミング
+		c.Next()
 
-			// item_id の取得
-			itemId := c.Param("item_id")
-			Overview := items.GetOverview(items.ItemRequests{}, itemId)
-			// レスポンスの処理
-			c.JSON(200, Overview)
-		})
-
-		itemGroup.GET("/search", func(c *gin.Context) {
-			keywords := c.Query("keyword")
-			log.Println(keywords)
-			PreviewList := items.GetSearchPreviewList(items.ItemRequests{}, strings.Split(keywords, "+"))
-			c.JSON(200, PreviewList)
-		})
-	}
-}
-
-func (h *Handler) SetupRoutesForAuthStatus() {
-	h.Router.POST("/api/userauthstatus", func(c *gin.Context) {
-		// レスポンスの処理
-		i := new(struct{ email string })
-		if err := c.BindJSON(&i); err != nil {
-			log.Print(err)
-		}
-		PreviewList := authstatus.AuthStatusCheck(i.email, authstatus.AuthStatusRequests{})
-		c.JSON(200, PreviewList)
-	})
-
-}
-func (h *Handler) SetupRoutesForUser(firebaseApp *validation.FirebaseApp) {
-	UserRouter := h.Router.Group("/api")
-	{
-		UserRouter.GET("/user", func(c *gin.Context) {
-			idToken := "[idToken]"
-			app, err := validation.NewFirebaseApp()
-			if err != nil {
-				return
-			}
-			app.VerifyIDToken(c, idToken)
-		})
 	}
 }

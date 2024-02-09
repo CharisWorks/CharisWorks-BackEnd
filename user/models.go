@@ -2,15 +2,13 @@ package user
 
 import (
 	"time"
-
-	"github.com/charisworks/charisworks-backend/items"
 )
 
 type User struct {
-	UserId       string        `json:"user_id"`
-	UserProfile  *UserProfile  `json:"profile"`
-	UserAddress  *UserAddress  `json:"address"`
-	Manufacturer *Manufacturer `json:"manufacturer"`
+	UserId      string       `json:"user_id"`
+	UserProfile *UserProfile `json:"profile"`
+	UserAddress *UserAddress `json:"address"`
+	//Manufacturer *Manufacturer `json:"manufacturer"`
 }
 type UserProfile struct {
 	DisplayName string    `json:"display_name"`
@@ -24,9 +22,4 @@ type UserAddress struct {
 	Address2    string  `json:"address_2"`
 	Address3    *string `json:"address_3"`
 	PhoneNumber string  `json:"phone_number"`
-}
-
-type Manufacturer struct {
-	StripeAccountId string              `json:"stripe_account_id"`
-	Items           []items.ItemPreview `json:"items"`
 }
