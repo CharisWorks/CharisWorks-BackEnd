@@ -3,8 +3,9 @@ package user
 type UserRequests struct {
 }
 
-func (u UserRequests) UserGet(UserId string) User {
-	return ExampleUser(UserId)
+func (u UserRequests) UserGet(UserId string) *User {
+	user := ExampleUser(UserId)
+	return &user
 }
 func (u UserRequests) UserDelete(UserId string) (message string) {
 	return ""
@@ -21,6 +22,6 @@ func (u UserRequests) UserAddressRegister(UserAddress UserAddress) (message stri
 func (u UserRequests) UserAddressUpdate(UserAddress UserAddress) (message string) {
 	return ""
 }
-func UserGet(UserId string, i IUserRequests) User {
+func UserGet(UserId string, i IUserRequests) *User {
 	return i.UserGet(UserId)
 }

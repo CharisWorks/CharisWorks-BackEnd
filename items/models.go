@@ -35,7 +35,7 @@ type ItemOverviewDetails struct {
 	Tags        []string `json:"tags"`
 }
 type IItemRequests interface {
-	GetOverview(item string) ItemOverview
-	GetPreviewList() []ItemPreview
-	GetSearchPreviewList([]string) []ItemPreview
+	GetOverview(item string) *ItemOverview
+	GetPreviewList() *[]ItemPreview
+	GetSearchPreviewList([]string) *[]ItemPreview
 }

@@ -24,7 +24,7 @@ type UserAddress struct {
 	PhoneNumber string  `json:"phone_number"`
 }
 type IUserRequests interface {
-	UserGet(UserId string) User
+	UserGet(UserId string) *User
 	UserDelete(UserId string) (message string)
 	UserProfileRegister(UserProfile UserProfile) (message string)
 	UserProfileUpdate(UserProfile UserProfile) (message string)
