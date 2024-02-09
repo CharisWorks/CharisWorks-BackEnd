@@ -1,8 +1,6 @@
 package cart
 
-import (
-	"github.com/charisworks/charisworks-backend/items"
-)
+import "github.com/charisworks/charisworks-backend/internal/items"
 
 func ExampleCart() []Cart {
 	e := Cart{

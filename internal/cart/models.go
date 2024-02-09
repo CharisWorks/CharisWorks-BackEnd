@@ -1,6 +1,6 @@
 package cart
 
-import "github.com/charisworks/charisworks-backend/items"
+import "github.com/charisworks/charisworks-backend/internal/items"
 
 type Cart struct {
 	ItemId                string                      `json:"item_id"`

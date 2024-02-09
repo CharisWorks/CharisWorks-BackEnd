@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/charisworks/charisworks-backend/items"
+	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/gin-gonic/gin"
 )
 

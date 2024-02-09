@@ -3,7 +3,7 @@ package handler
 import (
 	"log"
 
-	"github.com/charisworks/charisworks-backend/authstatus"
+	"github.com/charisworks/charisworks-backend/internal/authstatus"
 	"github.com/gin-gonic/gin"
 )
 
