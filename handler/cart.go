@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/cart"
+	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
