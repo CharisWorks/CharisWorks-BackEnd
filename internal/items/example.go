@@ -19,18 +19,25 @@ func ExampleItemPreview() []ItemPreview {
 func ExampleItemOverview(itemId string) ItemOverview {
 	e := ItemOverview{
 		Item_id: itemId,
-		Properties: ItemOverviewProperties{
-			Name:  "クラウディ・エンチャント",
-			Price: 2480,
-			Details: ItemOverviewDetails{
-				Status:      "Available",
-				Stock:       1,
-				Size:        10,
-				Description: "foo",
-				Tags:        []string{"Golang", "Java"},
+		Properties: &ItemOverviewProperties{
+			Name:  getStringPointer("クラウディ・エンチャント"),
+			Price: getIntPointer(2480),
+			Details: &ItemOverviewDetails{
+				Status:      getStringPointer("Available"),
+				Stock:       getIntPointer(1),
+				Size:        getIntPointer(10),
+				Description: getStringPointer("foo"),
+				Tags:        &[]string{"Golang", "Java"},
 			},
 		},
 	}
 
 	return e
+}
+func getStringPointer(s string) *string {
+	return &s
+}
+
+func getIntPointer(i int) *int {
+	return &i
 }
