@@ -2,13 +2,19 @@ package user
 
 import (
 	"time"
+
+	"github.com/charisworks/charisworks-backend/internal/items"
 )
 
 type User struct {
-	UserId      string       `json:"user_id"`
-	UserProfile *UserProfile `json:"profile"`
-	UserAddress *UserAddress `json:"address"`
-	//Manufacturer *Manufacturer `json:"manufacturer"`
+	UserId       string        `json:"user_id"`
+	UserProfile  *UserProfile  `json:"profile"`
+	UserAddress  *UserAddress  `json:"address"`
+	Manufacturer *Manufacturer `json:"manufacturer"`
+}
+type Manufacturer struct {
+	StripeAccountId string              `json:"stripe_account_id"`
+	Items           []items.ItemPreview `json:"items"`
 }
 type UserProfile struct {
 	DisplayName string    `json:"display_name"`

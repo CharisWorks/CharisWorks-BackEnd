@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) SetupRoutesForUser(firebaseApp *validation.FirebaseApp) {
 	UserRouter := h.Router.Group("/api")
-	UserRouter.Use(FirebaseMiddleware(*firebaseApp))
+	UserRouter.Use(firebaseMiddleware(*firebaseApp))
 	{
 		UserRouter.GET("/user", func(c *gin.Context) {
 			User := user.UserGet(c.MustGet("UserId").(string), user.UserRequests{})
