@@ -17,7 +17,6 @@ func main() {
 		return
 	}
 	h.SetupRoutesForItem()
-	h.SetupRoutes(app)
 	h.SetupRoutesForAuthStatus()
 	h.SetupRoutesForUser(app)
 

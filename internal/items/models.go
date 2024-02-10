@@ -18,9 +18,9 @@ type ItemPreviewDetails struct {
 type ItemOverview struct {
 	Item_id      string                  `json:"item_id"`
 	Properties   *ItemOverviewProperties `json:"properties"`
-	Manufacturer *Manufacturer           `json:"manufacturer"`
+	Manufacturer *ManufacturerDetails    `json:"manufacturer"`
 }
-type Manufacturer struct {
+type ManufacturerDetails struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }

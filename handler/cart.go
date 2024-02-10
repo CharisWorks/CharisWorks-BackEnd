@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) SetupRoutesForCart(firebaseApp *validation.FirebaseApp) {
 	CartRouter := h.Router.Group("/api/cart")
-	CartRouter.Use(FirebaseMiddleware(*firebaseApp))
+	CartRouter.Use(firebaseMiddleware(*firebaseApp))
 	{
 		CartRouter.GET("", func(c *gin.Context) {
 			Cart := cart.GetCart(cart.CartRequest{})
