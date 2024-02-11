@@ -12,40 +12,40 @@ import (
 func (h *Handler) SetupRoutesForItem() {
 	itemGroup := h.Router.Group("/api/item")
 	{
-		itemGroup.GET("", func(c *gin.Context) {
+		itemGroup.GET("", func(ctx *gin.Context) {
 			// レスポンスの処理
-			PreviewList, err := items.GetPreviewList(c, items.ExampleItemRequests{})
+			PreviewList, err := items.GetPreviewList(items.ExampleItemRequests{}, ctx)
 			if err != nil {
 				//error logなど
 				return
 			}
-			c.JSON(200, PreviewList)
+			ctx.JSON(200, PreviewList)
 		})
 
-		itemGroup.GET("/:item_id", func(c *gin.Context) {
+		itemGroup.GET("/:item_id", func(ctx *gin.Context) {
 
 			// item_id の取得
-			itemId := c.Param("item_id")
+			itemId := ctx.Param("item_id")
 			if itemId == "" {
-				c.JSON(http.StatusBadRequest, "cannot get itemId")
+				ctx.JSON(http.StatusBadRequest, "cannot get itemId")
 				return
 			}
-			Overview, err := items.GetOverview(items.ExampleItemRequests{}, itemId)
+			Overview, err := items.GetOverview(items.ExampleItemRequests{}, itemId, ctx)
 			if err != nil {
-				c.JSON(http.StatusNotFound, err)
+				return
 			}
 			// レスポンスの処理
-			c.JSON(200, Overview)
+			ctx.JSON(200, Overview)
 		})
 
-		itemGroup.GET("/search", func(c *gin.Context) {
-			keywords := c.Query("keyword")
+		itemGroup.GET("/search", func(ctx *gin.Context) {
+			keywords := ctx.Query("keyword")
 			log.Println(keywords)
-			PreviewList, err := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"))
+			PreviewList, err := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"), ctx)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
+				return
 			}
-			c.JSON(200, PreviewList)
+			ctx.JSON(200, PreviewList)
 		})
 	}
 }

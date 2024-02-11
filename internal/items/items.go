@@ -7,21 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetOverview(i IItemRequests, itemId string) (ItemOverview, error) {
-	return i.GetOverview(itemId)
+func GetOverview(i IItemRequests, itemId string, ctx *gin.Context) (*ItemOverview, error) {
+	return i.GetOverview(itemId, ctx)
 }
 
-func GetPreviewList(c *gin.Context, i IItemRequests) (*[]ItemPreview, error) {
-	item, err := i.GetPreviewList()
+func GetPreviewList(i IItemRequests, ctx *gin.Context) (*[]ItemPreview, error) {
+	item, err := i.GetPreviewList(ctx)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		ctx.JSON(http.StatusInternalServerError, err)
 		return nil, err
 	}
 
-	return &item, nil
+	return item, nil
 }
 
-func GetSearchPreviewList(i IItemRequests, keywords []string) ([]ItemPreview, error) {
+func GetSearchPreviewList(i IItemRequests, keywords []string, ctx *gin.Context) (*[]ItemPreview, error) {
 	log.Println(keywords)
-	return i.GetPreviewList()
+	return i.GetPreviewList(ctx)
 }
