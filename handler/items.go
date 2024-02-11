@@ -14,7 +14,11 @@ func (h *Handler) SetupRoutesForItem() {
 	{
 		itemGroup.GET("", func(c *gin.Context) {
 			// レスポンスの処理
-			PreviewList := items.GetPreviewList(items.ExampleItemRequests{})
+			PreviewList, err := items.GetPreviewList(c, items.ExampleItemRequests{})
+			if err != nil {
+				//error logなど
+				return
+			}
 			c.JSON(200, PreviewList)
 		})
 
@@ -26,7 +30,10 @@ func (h *Handler) SetupRoutesForItem() {
 				c.JSON(http.StatusBadRequest, "cannot get itemId")
 				return
 			}
-			Overview := items.GetOverview(items.ExampleItemRequests{}, itemId)
+			Overview, err := items.GetOverview(items.ExampleItemRequests{}, itemId)
+			if err != nil {
+				c.JSON(http.StatusNotFound, err)
+			}
 			// レスポンスの処理
 			c.JSON(200, Overview)
 		})
@@ -34,7 +41,10 @@ func (h *Handler) SetupRoutesForItem() {
 		itemGroup.GET("/search", func(c *gin.Context) {
 			keywords := c.Query("keyword")
 			log.Println(keywords)
-			PreviewList := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"))
+			PreviewList, err := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"))
+			if err != nil {
+				c.JSON(http.StatusBadRequest, err)
+			}
 			c.JSON(200, PreviewList)
 		})
 	}

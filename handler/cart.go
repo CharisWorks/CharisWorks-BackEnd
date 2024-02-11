@@ -12,54 +12,50 @@ func (h *Handler) SetupRoutesForCart(firebaseApp *validation.FirebaseApp) {
 	CartRouter := h.Router.Group("/api/cart")
 	CartRouter.Use(firebaseMiddleware(*firebaseApp))
 	{
-		CartRouter.GET("", func(c *gin.Context) {
-			Cart, err := cart.GetCart(cart.CartRequest{})
+		CartRouter.GET("", func(ctx *gin.Context) {
+			Cart, err := cart.GetCart(cart.CartRequest{}, ctx)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
 				return
 			}
-			c.JSON(http.StatusOK, Cart)
+			ctx.JSON(http.StatusOK, Cart)
 		})
-		CartRouter.POST("", func(c *gin.Context) {
+		CartRouter.POST("", func(ctx *gin.Context) {
 			bindBody := new(cart.CartRequestPayload)
-			payload, err := getPayloadFromBody(c, &bindBody)
+			payload, err := getPayloadFromBody(ctx, &bindBody)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
 				return
 			}
-			err = cart.PostCart(**payload, cart.CartRequest{})
+			err = cart.PostCart(**payload, cart.CartRequest{}, ctx)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
 				return
 			}
-			c.JSON(http.StatusOK, "Item was successfully registered")
+			ctx.JSON(http.StatusOK, "Item was successfully registered")
 		})
-		CartRouter.PATCH("", func(c *gin.Context) {
+		CartRouter.PATCH("", func(ctx *gin.Context) {
 			bindBody := new(cart.CartRequestPayload)
-			payload, err := getPayloadFromBody(c, &bindBody)
+			payload, err := getPayloadFromBody(ctx, &bindBody)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
 				return
 			}
-			err = cart.UpdateCart(**payload, cart.CartRequest{})
+			err = cart.UpdateCart(**payload, cart.CartRequest{}, ctx)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
+				ctx.JSON(http.StatusBadRequest, err)
 				return
 			}
-			c.JSON(http.StatusOK, "Item was successfully updated")
+			ctx.JSON(http.StatusOK, "Item was successfully updated")
 		})
-		CartRouter.DELETE("", func(c *gin.Context) {
-			itemId := c.Query("item_id")
+		CartRouter.DELETE("", func(ctx *gin.Context) {
+			itemId := ctx.Query("item_id")
 			if itemId == "" {
-				c.JSON(http.StatusBadRequest, "cannot get itemId")
+				ctx.JSON(http.StatusBadRequest, "cannot get itemId")
 				return
 			}
-			err := cart.DeleteCart(itemId, cart.CartRequest{})
+			err := cart.DeleteCart(itemId, cart.CartRequest{}, ctx)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, err)
+				ctx.JSON(http.StatusBadRequest, err)
 				return
 			}
-			c.JSON(http.StatusOK, "Item was successfully deleted")
+			ctx.JSON(http.StatusOK, "Item was successfully deleted")
 		})
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/gin-gonic/gin"
 )
 
 func ExampleCart() []Cart {
@@ -26,19 +27,19 @@ func ExampleCart() []Cart {
 type CartRequest struct {
 }
 
-func (c CartRequest) Get() (*[]Cart, error) {
+func (p CartRequest) Get(ctx *gin.Context) (*[]Cart, error) {
 	Cart := ExampleCart()
 	return &Cart, nil
 }
-func (c CartRequest) Register(p CartRequestPayload) error {
+func (c CartRequest) Register(p CartRequestPayload, ctx *gin.Context) error {
 	log.Print(p)
 	return nil
 }
-func (c CartRequest) Update(p CartRequestPayload) error {
+func (c CartRequest) Update(p CartRequestPayload, ctx *gin.Context) error {
 	log.Print(p)
 	return nil
 }
-func (c CartRequest) Delete(itemId string) error {
+func (c CartRequest) Delete(itemId string, ctx *gin.Context) error {
 	log.Print(itemId)
 	return nil
 }

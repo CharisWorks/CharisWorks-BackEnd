@@ -8,20 +8,19 @@ import (
 )
 
 func (h *Handler) SetupRoutesForAuthStatus() {
-	h.Router.POST("/api/userauthstatus", func(c *gin.Context) {
+	h.Router.POST("/api/userauthstatus", func(ctx *gin.Context) {
 		// レスポンスの処理
 		bind := new(authstatus.Email)
-		payload, err := getPayloadFromBody(c, &bind)
+		payload, err := getPayloadFromBody(ctx, &bind)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
 			return
 		}
-		PreviewList, err := authstatus.AuthStatusCheck(**payload, authstatus.ExampleAuthStatusRequests{})
+		PreviewList, err := authstatus.AuthStatusCheck(**payload, authstatus.ExampleAuthStatusRequests{}, ctx)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			ctx.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		c.JSON(200, PreviewList)
+		ctx.JSON(200, PreviewList)
 	})
 
 }

@@ -1,6 +1,9 @@
 package cart
 
-import "github.com/charisworks/charisworks-backend/internal/items"
+import (
+	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/gin-gonic/gin"
+)
 
 type Cart struct {
 	ItemId                string                      `json:"item_id"`
@@ -12,8 +15,8 @@ type CartRequestPayload struct {
 	Quantity int    `json:"quantity" binding:"required"`
 }
 type ICartRequest interface {
-	Get() (*[]Cart, error)
-	Register(c CartRequestPayload) error
-	Update(c CartRequestPayload) error
-	Delete(ItemId string) error
+	Get(*gin.Context) (*[]Cart, error)
+	Register(CartRequestPayload, *gin.Context) error
+	Update(CartRequestPayload, *gin.Context) error
+	Delete(string, *gin.Context) error
 }

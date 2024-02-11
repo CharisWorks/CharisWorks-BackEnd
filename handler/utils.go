@@ -60,12 +60,13 @@ func (e *internalError) badRequestErrorForPayload(msg string) {
 	e.Message = msg
 }
 
-func getPayloadFromBody[T any](c *gin.Context, p *T) (*T, error) {
+func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	bind := new(T)
-	err := c.ShouldBindJSON(&bind)
+	err := ctx.ShouldBindJSON(&bind)
 	if err != nil {
 		err := new(internalError)
 		err.badRequestErrorForPayload("The request payload is malformed or contains invalid data.")
+		ctx.JSON(http.StatusBadRequest, err)
 		return nil, err
 	}
 	return bind, nil

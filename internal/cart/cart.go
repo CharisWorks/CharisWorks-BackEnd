@@ -1,18 +1,28 @@
 package cart
 
-func GetCart(i ICartRequest) ([]Cart, error) {
-	Cart, err := i.Get()
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func GetCart(i ICartRequest, ctx *gin.Context) ([]Cart, error) {
+	Cart, err := i.Get(ctx)
 	return *Cart, err
 }
-func PostCart(c CartRequestPayload, i ICartRequest) error {
-	err := i.Register(c)
+func PostCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
+	err := i.Register(p, ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return err
+	}
 	return err
 }
-func UpdateCart(c CartRequestPayload, i ICartRequest) error {
-	err := i.Update(c)
+func UpdateCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
+	err := i.Update(p, ctx)
 	return err
 }
-func DeleteCart(itemId string, i ICartRequest) error {
-	err := i.Delete(itemId)
+func DeleteCart(itemId string, i ICartRequest, c *gin.Context) error {
+	err := i.Delete(itemId, c)
 	return err
 }

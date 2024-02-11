@@ -45,15 +45,15 @@ func getIntPointer(i int) *int {
 type ExampleItemRequests struct {
 }
 
-func (i ExampleItemRequests) GetOverview(itemId string) *ItemOverview {
+func (i ExampleItemRequests) GetOverview(itemId string) (ItemOverview, error) {
 	ItemOverview := ExampleItemOverview(itemId)
-	return &ItemOverview
+	return ItemOverview, nil
 }
-func (i ExampleItemRequests) GetPreviewList() *[]ItemPreview {
+func (i ExampleItemRequests) GetPreviewList() ([]ItemPreview, error) {
 	ItemPreview := ExampleItemPreview()
-	return &ItemPreview
+	return ItemPreview, nil
 }
-func (i ExampleItemRequests) GetSearchPreviewList(tags []string) *[]ItemPreview {
+func (i ExampleItemRequests) GetSearchPreviewList(tags []string) ([]ItemPreview, error) {
 	ItemPreview := ExampleItemPreview()
-	return &ItemPreview
+	return ItemPreview, nil
 }
