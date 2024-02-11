@@ -14,8 +14,13 @@ func (h *Handler) SetupRoutesForAuthStatus() {
 		payload, err := getPayloadFromBody(c, &bind)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
+			return
 		}
-		PreviewList := authstatus.AuthStatusCheck(**payload, authstatus.ExampleAuthStatusRequests{})
+		PreviewList, err := authstatus.AuthStatusCheck(**payload, authstatus.ExampleAuthStatusRequests{})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
 		c.JSON(200, PreviewList)
 	})
 

@@ -12,8 +12,8 @@ type CartRequestPayload struct {
 	Quantity int    `json:"quantity" binding:"required"`
 }
 type ICartRequest interface {
-	Get() *[]Cart
-	Register(c CartRequestPayload) (message string)
-	Update(c CartRequestPayload) (message string)
-	Delete(ItemId string) (message string)
+	Get() (*[]Cart, error)
+	Register(c CartRequestPayload) error
+	Update(c CartRequestPayload) error
+	Delete(ItemId string) error
 }

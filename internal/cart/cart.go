@@ -1,18 +1,18 @@
 package cart
 
-func GetCart(i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
+func GetCart(i ICartRequest) ([]Cart, error) {
+	Cart, err := i.Get()
+	return *Cart, err
 }
-func PostCart(c CartRequestPayload, i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
+func PostCart(c CartRequestPayload, i ICartRequest) error {
+	err := i.Register(c)
+	return err
 }
-func UpdateCart(c CartRequestPayload, i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
+func UpdateCart(c CartRequestPayload, i ICartRequest) error {
+	err := i.Update(c)
+	return err
 }
-func DeleteCart(Item_id string, i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
+func DeleteCart(itemId string, i ICartRequest) error {
+	err := i.Delete(itemId)
+	return err
 }

@@ -1,6 +1,10 @@
 package cart
 
-import "github.com/charisworks/charisworks-backend/internal/items"
+import (
+	"log"
+
+	"github.com/charisworks/charisworks-backend/internal/items"
+)
 
 func ExampleCart() []Cart {
 	e := Cart{
@@ -22,16 +26,19 @@ func ExampleCart() []Cart {
 type CartRequest struct {
 }
 
-func (c CartRequest) Get() *[]Cart {
+func (c CartRequest) Get() (*[]Cart, error) {
 	Cart := ExampleCart()
-	return &Cart
+	return &Cart, nil
 }
-func (c CartRequest) Register(p CartRequestPayload) string {
-	return ""
+func (c CartRequest) Register(p CartRequestPayload) error {
+	log.Print(p)
+	return nil
 }
-func (c CartRequest) Update(p CartRequestPayload) string {
-	return ""
+func (c CartRequest) Update(p CartRequestPayload) error {
+	log.Print(p)
+	return nil
 }
-func (c CartRequest) Delete(ItemId string) string {
-	return ""
+func (c CartRequest) Delete(itemId string) error {
+	log.Print(itemId)
+	return nil
 }

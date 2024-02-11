@@ -41,13 +41,13 @@ func (u ExampleUserRequests) UserGet(UserId string) *User {
 func (u ExampleUserRequests) UserDelete(UserId string) error {
 	return nil
 }
-func (u ExampleUserRequests) UserProfileRegister(UserProfile UserProfile) error {
+func (u ExampleUserRequests) UserProfileRegister(p UserProfileRegisterPayload) error {
 	return nil
 }
 func (u ExampleUserRequests) UserProfileUpdate(UserProfile UserProfile) error {
 	return nil
 }
-func (u ExampleUserRequests) UserAddressRegister(UserAddress UserAddress) error {
+func (u ExampleUserRequests) UserAddressRegister(p UserAddressRegisterPayload) error {
 	return nil
 }
 func (u ExampleUserRequests) UserAddressUpdate(UserAddress UserAddress) error {

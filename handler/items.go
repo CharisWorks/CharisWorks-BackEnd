@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -21,6 +22,10 @@ func (h *Handler) SetupRoutesForItem() {
 
 			// item_id の取得
 			itemId := c.Param("item_id")
+			if itemId == "" {
+				c.JSON(http.StatusBadRequest, "cannot get itemId")
+				return
+			}
 			Overview := items.GetOverview(items.ExampleItemRequests{}, itemId)
 			// レスポンスの処理
 			c.JSON(200, Overview)

@@ -7,6 +7,6 @@ func ExampleAuthStatus(email string) bool {
 type ExampleAuthStatusRequests struct {
 }
 
-func (a ExampleAuthStatusRequests) Check(email string) bool {
-	return ExampleAuthStatus(email)
+func (a ExampleAuthStatusRequests) Check(email string) (bool, error) {
+	return ExampleAuthStatus(email), nil
 }

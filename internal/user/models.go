@@ -29,11 +29,23 @@ type UserAddress struct {
 	Address3    *string `json:"address_3"`
 	PhoneNumber string  `json:"phone_number"`
 }
+type UserProfileRegisterPayload struct {
+	DisplayName string `json:"display_name" binding:"required"`
+	Description string `json:"description" binding:"required"`
+}
+type UserAddressRegisterPayload struct {
+	RealName    string `json:"real_name" binding:"required"`
+	ZipCode     string `json:"zip_code" binding:"required"`
+	Address1    string `json:"address_1" binding:"required"`
+	Address2    string `json:"address_2" binding:"required"`
+	Address3    string `json:"address_3"`
+	PhoneNumber string `json:"phone_number" binding:"required"`
+}
 type IUserRequests interface {
 	UserGet(UserId string) *User
 	UserDelete(UserId string) error
-	UserProfileRegister(UserProfile UserProfile) error
-	UserProfileUpdate(UserProfile UserProfile) error
-	UserAddressRegister(UserAddress UserAddress) error
-	UserAddressUpdate(UserAddress UserAddress) error
+	UserProfileRegister(p UserProfileRegisterPayload) error
+	UserProfileUpdate(u UserProfile) error
+	UserAddressRegister(p UserAddressRegisterPayload) error
+	UserAddressUpdate(u UserAddress) error
 }
