@@ -19,5 +19,16 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
 			}
 			ctx.JSON(http.StatusOK, User)
 		})
+		UserRouter.DELETE("/user", func(ctx *gin.Context) {
+
+		})
+		UserRouter.POST("/profile", func(ctx *gin.Context) {
+
+		})
+		UserRouter.PATCH("/profile", func(ctx *gin.Context) {
+
+		})
+		UserRouter.POST("/address", func(ctx *gin.Context) {})
+		UserRouter.PATCH("/address", func(ctx *gin.Context) {})
 	}
 }
