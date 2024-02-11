@@ -1,6 +1,7 @@
 package user
 
 import (
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -39,21 +40,27 @@ type ExampleUserRequests struct {
 }
 
 func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context) *User {
+	log.Println("UserId: ", UserId)
 	user := ExampleUser(UserId)
 	return &user
 }
 func (u ExampleUserRequests) UserDelete(UserId string, ctx *gin.Context) error {
+	log.Println("UserId: ", UserId)
 	return nil
 }
 func (u ExampleUserRequests) UserProfileRegister(p UserProfileRegisterPayload, ctx *gin.Context) error {
+	log.Println("UserProfileRegisterPayload: ", p)
 	return nil
 }
-func (u ExampleUserRequests) UserProfileUpdate(UserProfile UserProfile, ctx *gin.Context) error {
+func (u ExampleUserRequests) UserProfileUpdate(p UserProfile, ctx *gin.Context) error {
+	log.Println("UserProfile: ", p)
 	return nil
 }
 func (u ExampleUserRequests) UserAddressRegister(p UserAddressRegisterPayload, ctx *gin.Context) error {
+	log.Println("UserAddressRegisterPayload: ", p)
 	return nil
 }
-func (u ExampleUserRequests) UserAddressUpdate(UserAddress UserAddress, ctx *gin.Context) error {
+func (u ExampleUserRequests) UserAddressUpdate(p UserAddress, ctx *gin.Context) error {
+	log.Println("UserAddress: ", p)
 	return nil
 }

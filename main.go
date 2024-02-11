@@ -9,7 +9,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.ContextWithFallback = true
-
+	handler.CORS(r)
 	h := handler.NewHandler(r)
 
 	app, err := validation.NewFirebaseApp()

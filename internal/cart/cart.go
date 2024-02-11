@@ -9,17 +9,11 @@ func GetCart(i ICartRequest, ctx *gin.Context) (*[]Cart, error) {
 	return Cart, err
 }
 func PostCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
-	err := i.Register(p, ctx)
-	if err != nil {
-		return err
-	}
-	return err
+	return i.Register(p, ctx)
 }
 func UpdateCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
-	err := i.Update(p, ctx)
-	return err
+	return i.Update(p, ctx)
 }
 func DeleteCart(itemId string, i ICartRequest, ctx *gin.Context) error {
-	err := i.Delete(itemId, ctx)
-	return err
+	return i.Delete(itemId, ctx)
 }

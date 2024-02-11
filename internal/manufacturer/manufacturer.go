@@ -3,14 +3,11 @@ package manufacturer
 import "github.com/gin-gonic/gin"
 
 func RegisterItem(p ItemRegisterPayload, i IManufacturerRequests, ctx *gin.Context) error {
-	err := i.RegisterItem(p, ctx)
-	return err
+	return i.RegisterItem(p, ctx)
 }
 func UpdateItem(p ItemUpdatePayload, i IManufacturerRequests, ctx *gin.Context) error {
-	err := i.UpdateItem(p, ctx)
-	return err
+	return i.UpdateItem(p, ctx)
 }
 func DeleteItem(itemId string, i IManufacturerRequests, ctx *gin.Context) error {
-	err := i.DeleteItem(itemId, ctx)
-	return err
+	return i.DeleteItem(itemId, ctx)
 }

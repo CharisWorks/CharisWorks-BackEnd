@@ -32,14 +32,14 @@ func (p CartRequest) Get(ctx *gin.Context) (*[]Cart, error) {
 	return &Cart, nil
 }
 func (c CartRequest) Register(p CartRequestPayload, ctx *gin.Context) error {
-	log.Print(p)
+	log.Print("CartRequestPayload: ", p)
 	return nil
 }
 func (c CartRequest) Update(p CartRequestPayload, ctx *gin.Context) error {
-	log.Print(p)
+	log.Print("CartRequestPayload: ", p)
 	return nil
 }
 func (c CartRequest) Delete(itemId string, ctx *gin.Context) error {
-	log.Print(itemId)
+	log.Print("itemId: ", itemId)
 	return nil
 }

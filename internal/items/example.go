@@ -1,6 +1,10 @@
 package items
 
-import "github.com/gin-gonic/gin"
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+)
 
 func ExampleItemPreview() []ItemPreview {
 	e := ItemPreview{
@@ -48,6 +52,7 @@ type ExampleItemRequests struct {
 }
 
 func (i ExampleItemRequests) GetOverview(itemId string, ctx *gin.Context) (*ItemOverview, error) {
+	log.Println("itemId: ", itemId)
 	ItemOverview := ExampleItemOverview(itemId)
 	return &ItemOverview, nil
 }
@@ -56,6 +61,7 @@ func (i ExampleItemRequests) GetPreviewList(ctx *gin.Context) (*[]ItemPreview, e
 	return &ItemPreview, nil
 }
 func (i ExampleItemRequests) GetSearchPreviewList(tags []string, ctx *gin.Context) (*[]ItemPreview, error) {
+	log.Println("tags: ", tags)
 	ItemPreview := ExampleItemPreview()
 	return &ItemPreview, nil
 }
