@@ -1,21 +1,23 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/charisworks/charisworks-backend/internal/authstatus"
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) SetupRoutesForAuthStatus() {
-	h.Router.POST("/api/userauthstatus", func(c *gin.Context) {
+	h.Router.POST("/api/userauthstatus", func(ctx *gin.Context) {
 		// レスポンスの処理
-		i := new(struct{ email string })
-		if err := c.BindJSON(&i); err != nil {
-			log.Print(err)
+		bind := new(authstatus.Email)
+		payload, err := getPayloadFromBody(ctx, &bind)
+		if err != nil {
+			return
 		}
-		PreviewList := authstatus.AuthStatusCheck(i.email, authstatus.AuthStatusRequests{})
-		c.JSON(200, PreviewList)
+		PreviewList, err := authstatus.AuthStatusCheck(**payload, authstatus.ExampleAuthStatusRequests{}, ctx)
+		if err != nil {
+			return
+		}
+		ctx.JSON(200, PreviewList)
 	})
 
 }

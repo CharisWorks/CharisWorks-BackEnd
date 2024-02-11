@@ -1,27 +1,27 @@
 package user
 
-type UserRequests struct {
+import "github.com/gin-gonic/gin"
+
+func UserGet(UserId string, i IUserRequests, ctx *gin.Context) (*User, error) {
+	return i.UserGet(UserId, ctx), nil
 }
 
-func (u UserRequests) UserGet(UserId string) *User {
-	user := ExampleUser(UserId)
-	return &user
+func UserDelete(UserId string, i IUserRequests, ctx *gin.Context) error {
+	return i.UserDelete(UserId, ctx)
 }
-func (u UserRequests) UserDelete(UserId string) (message string) {
-	return ""
+
+func UserProfileRegister(p UserProfileRegisterPayload, i IUserRequests, ctx *gin.Context) error {
+	return i.UserProfileRegister(p, ctx)
 }
-func (u UserRequests) UserProfileRegister(UserProfile UserProfile) (message string) {
-	return ""
+
+func UserProfileUpdate(p UserProfile, i IUserRequests, ctx *gin.Context) error {
+	return i.UserProfileUpdate(p, ctx)
 }
-func (u UserRequests) UserProfileUpdate(UserProfile UserProfile) (message string) {
-	return ""
+
+func UserAddressRegister(p UserAddressRegisterPayload, i IUserRequests, ctx *gin.Context) error {
+	return i.UserAddressRegister(p, ctx)
 }
-func (u UserRequests) UserAddressRegister(UserAddress UserAddress) (message string) {
-	return ""
-}
-func (u UserRequests) UserAddressUpdate(UserAddress UserAddress) (message string) {
-	return ""
-}
-func UserGet(UserId string, i IUserRequests) *User {
-	return i.UserGet(UserId)
+
+func UserAddressUpdate(p UserAddress, i IUserRequests, ctx *gin.Context) error {
+	return i.UserAddressUpdate(p, ctx)
 }

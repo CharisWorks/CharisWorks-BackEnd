@@ -9,7 +9,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.ContextWithFallback = true
-
+	handler.CORS(r)
 	h := handler.NewHandler(r)
 
 	app, err := validation.NewFirebaseApp()
@@ -19,6 +19,7 @@ func main() {
 	h.SetupRoutesForItem()
 	h.SetupRoutesForAuthStatus()
 	h.SetupRoutesForUser(app)
-
+	h.SetupRoutesForCart(app)
+	h.SetupRoutesForManufacturer(app)
 	h.Router.Run("localhost:8080")
 }

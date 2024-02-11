@@ -1,5 +1,11 @@
 package items
 
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+)
+
 func ExampleItemPreview() []ItemPreview {
 	e := ItemPreview{
 		Item_id: "f6d655da-6fff-11ee-b3bc-e86a6465f38b",
@@ -40,4 +46,22 @@ func getStringPointer(s string) *string {
 
 func getIntPointer(i int) *int {
 	return &i
+}
+
+type ExampleItemRequests struct {
+}
+
+func (i ExampleItemRequests) GetOverview(itemId string, ctx *gin.Context) (*ItemOverview, error) {
+	log.Println("itemId: ", itemId)
+	ItemOverview := ExampleItemOverview(itemId)
+	return &ItemOverview, nil
+}
+func (i ExampleItemRequests) GetPreviewList(ctx *gin.Context) (*[]ItemPreview, error) {
+	ItemPreview := ExampleItemPreview()
+	return &ItemPreview, nil
+}
+func (i ExampleItemRequests) GetSearchPreviewList(tags []string, ctx *gin.Context) (*[]ItemPreview, error) {
+	log.Println("tags: ", tags)
+	ItemPreview := ExampleItemPreview()
+	return &ItemPreview, nil
 }

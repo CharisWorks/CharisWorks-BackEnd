@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -11,26 +12,40 @@ import (
 func (h *Handler) SetupRoutesForItem() {
 	itemGroup := h.Router.Group("/api/item")
 	{
-		itemGroup.GET("", func(c *gin.Context) {
+		itemGroup.GET("", func(ctx *gin.Context) {
 			// レスポンスの処理
-			PreviewList := items.GetPreviewList(items.ItemRequests{})
-			c.JSON(200, PreviewList)
+			PreviewList, err := items.GetPreviewList(items.ExampleItemRequests{}, ctx)
+			if err != nil {
+				//error logなど
+				return
+			}
+			ctx.JSON(200, PreviewList)
 		})
 
-		itemGroup.GET("/:item_id", func(c *gin.Context) {
+		itemGroup.GET("/:item_id", func(ctx *gin.Context) {
 
 			// item_id の取得
-			itemId := c.Param("item_id")
-			Overview := items.GetOverview(items.ItemRequests{}, itemId)
+			itemId := ctx.Param("item_id")
+			if itemId == "" {
+				ctx.JSON(http.StatusBadRequest, "cannot get itemId")
+				return
+			}
+			Overview, err := items.GetOverview(items.ExampleItemRequests{}, itemId, ctx)
+			if err != nil {
+				return
+			}
 			// レスポンスの処理
-			c.JSON(200, Overview)
+			ctx.JSON(200, Overview)
 		})
 
-		itemGroup.GET("/search", func(c *gin.Context) {
-			keywords := c.Query("keyword")
+		itemGroup.GET("/search", func(ctx *gin.Context) {
+			keywords := ctx.Query("keyword")
 			log.Println(keywords)
-			PreviewList := items.GetSearchPreviewList(items.ItemRequests{}, strings.Split(keywords, "+"))
-			c.JSON(200, PreviewList)
+			PreviewList, err := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"), ctx)
+			if err != nil {
+				return
+			}
+			ctx.JSON(200, PreviewList)
 		})
 	}
 }

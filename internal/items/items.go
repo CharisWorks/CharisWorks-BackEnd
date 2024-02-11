@@ -1,34 +1,18 @@
 package items
 
 import (
-	"log"
+	"github.com/gin-gonic/gin"
 )
 
-type ItemRequests struct {
+func GetOverview(i IItemRequests, itemId string, ctx *gin.Context) (*ItemOverview, error) {
+	return i.GetOverview(itemId, ctx)
 }
 
-func (i ItemRequests) GetOverview(itemId string) *ItemOverview {
-	ItemOverview := ExampleItemOverview(itemId)
-	return &ItemOverview
-}
-func (i ItemRequests) GetPreviewList() *[]ItemPreview {
-	ItemPreview := ExampleItemPreview()
-	return &ItemPreview
-}
-func (i ItemRequests) GetSearchPreviewList(tags []string) *[]ItemPreview {
-	ItemPreview := ExampleItemPreview()
-	return &ItemPreview
+func GetPreviewList(i IItemRequests, ctx *gin.Context) (*[]ItemPreview, error) {
+
+	return i.GetPreviewList(ctx)
 }
 
-func GetOverview(i IItemRequests, itemId string) ItemOverview {
-	return *i.GetOverview(itemId)
-}
-
-func GetPreviewList(i IItemRequests) []ItemPreview {
-	return *i.GetPreviewList()
-}
-
-func GetSearchPreviewList(i IItemRequests, keywords []string) []ItemPreview {
-	log.Println(keywords)
-	return *i.GetPreviewList()
+func GetSearchPreviewList(i IItemRequests, keywords []string, ctx *gin.Context) (*[]ItemPreview, error) {
+	return i.GetSearchPreviewList(keywords, ctx)
 }

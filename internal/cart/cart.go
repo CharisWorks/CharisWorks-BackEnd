@@ -1,35 +1,19 @@
 package cart
 
-type CartRequest struct {
-}
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func (c CartRequest) Get() *[]Cart {
-	Cart := ExampleCart()
-	return &Cart
+func GetCart(i ICartRequest, ctx *gin.Context) (*[]Cart, error) {
+	Cart, err := i.Get(ctx)
+	return Cart, err
 }
-func (c CartRequest) Register(p CartRequestPayload) string {
-	return ""
+func PostCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
+	return i.Register(p, ctx)
 }
-func (c CartRequest) Update(p CartRequestPayload) string {
-	return ""
+func UpdateCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
+	return i.Update(p, ctx)
 }
-func (c CartRequest) Delete(ItemId string) string {
-	return ""
-}
-
-func GetCart(i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
-}
-func PostCart(c CartRequestPayload, i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
-}
-func UpdateCart(c CartRequestPayload, i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
-}
-func DeleteCart(Item_id string, i ICartRequest) []Cart {
-	Cart := i.Get()
-	return *Cart
+func DeleteCart(itemId string, i ICartRequest, ctx *gin.Context) error {
+	return i.Delete(itemId, ctx)
 }

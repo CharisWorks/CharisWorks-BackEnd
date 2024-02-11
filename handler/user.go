@@ -8,13 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp *validation.FirebaseApp) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
 	UserRouter := h.Router.Group("/api")
-	UserRouter.Use(firebaseMiddleware(*firebaseApp))
+	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		UserRouter.GET("/user", func(c *gin.Context) {
-			User := user.UserGet(c.MustGet("UserId").(string), user.UserRequests{})
-			c.JSON(http.StatusOK, User)
+		UserRouter.GET("/user", func(ctx *gin.Context) {
+			User, err := user.UserGet(ctx.MustGet("UserId").(string), user.ExampleUserRequests{}, ctx)
+			if err != nil {
+				return
+			}
+			ctx.JSON(http.StatusOK, User)
 		})
 	}
 }

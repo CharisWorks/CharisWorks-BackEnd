@@ -1,16 +1,13 @@
 package manufacturer
 
-import "github.com/charisworks/charisworks-backend/internal/items"
+import "github.com/gin-gonic/gin"
 
-func RegisterItem(p items.ItemOverviewProperties, i IManufacturerRequests) error {
-	err := i.RegisterItem(p)
-	return err
+func RegisterItem(p ItemRegisterPayload, i IManufacturerRequests, ctx *gin.Context) error {
+	return i.RegisterItem(p, ctx)
 }
-func UpdateItem(p items.ItemOverviewProperties, i IManufacturerRequests) error {
-	err := i.UpdateItem(p)
-	return err
+func UpdateItem(p ItemUpdatePayload, i IManufacturerRequests, ctx *gin.Context) error {
+	return i.UpdateItem(p, ctx)
 }
-func DeleteItem(itemId string, i IManufacturerRequests) error {
-	err := i.DeleteItem(itemId)
-	return err
+func DeleteItem(itemId string, i IManufacturerRequests, ctx *gin.Context) error {
+	return i.DeleteItem(itemId, ctx)
 }

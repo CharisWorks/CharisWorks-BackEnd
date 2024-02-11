@@ -1,5 +1,7 @@
 package items
 
+import "github.com/gin-gonic/gin"
+
 type ItemPreview struct {
 	Item_id    string                `json:"item_id"`
 	Properties ItemPreviewProperties `json:"properties"`
@@ -20,6 +22,7 @@ type ItemOverview struct {
 	Properties   *ItemOverviewProperties `json:"properties"`
 	Manufacturer *ManufacturerDetails    `json:"manufacturer"`
 }
+
 type ManufacturerDetails struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -39,7 +42,7 @@ type ItemOverviewDetails struct {
 	Tags        *[]string `json:"tags"`
 }
 type IItemRequests interface {
-	GetOverview(itemId string) *ItemOverview
-	GetPreviewList() *[]ItemPreview
-	GetSearchPreviewList([]string) *[]ItemPreview
+	GetOverview(string, *gin.Context) (*ItemOverview, error)
+	GetPreviewList(*gin.Context) (*[]ItemPreview, error)
+	GetSearchPreviewList([]string, *gin.Context) (*[]ItemPreview, error)
 }
