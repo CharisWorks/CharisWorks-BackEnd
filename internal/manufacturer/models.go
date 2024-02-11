@@ -1,9 +1,11 @@
 package manufacturer
 
+import "github.com/gin-gonic/gin"
+
 type IManufacturerRequests interface {
-	RegisterItem(i ItemRegisterPayload) error
-	UpdateItem(i ItemUpdatePayload) error
-	DeleteItem(itemId string) error
+	RegisterItem(ItemRegisterPayload, *gin.Context) error
+	UpdateItem(ItemUpdatePayload, *gin.Context) error
+	DeleteItem(string, *gin.Context) error
 }
 
 type ItemRegisterPayload struct {
