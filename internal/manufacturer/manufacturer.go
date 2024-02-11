@@ -1,12 +1,10 @@
 package manufacturer
 
-import "github.com/charisworks/charisworks-backend/internal/items"
-
-func RegisterItem(p items.ItemOverviewProperties, i IManufacturerRequests) error {
+func RegisterItem(p ItemRegisterPayload, i IManufacturerRequests) error {
 	err := i.RegisterItem(p)
 	return err
 }
-func UpdateItem(p items.ItemOverviewProperties, i IManufacturerRequests) error {
+func UpdateItem(p ItemUpdatePayload, i IManufacturerRequests) error {
 	err := i.UpdateItem(p)
 	return err
 }

@@ -18,3 +18,20 @@ func ExampleCart() []Cart {
 	return append(*re, e)
 
 }
+
+type CartRequest struct {
+}
+
+func (c CartRequest) Get() *[]Cart {
+	Cart := ExampleCart()
+	return &Cart
+}
+func (c CartRequest) Register(p CartRequestPayload) string {
+	return ""
+}
+func (c CartRequest) Update(p CartRequestPayload) string {
+	return ""
+}
+func (c CartRequest) Delete(ItemId string) string {
+	return ""
+}

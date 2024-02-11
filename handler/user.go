@@ -13,7 +13,11 @@ func (h *Handler) SetupRoutesForUser(firebaseApp *validation.FirebaseApp) {
 	UserRouter.Use(firebaseMiddleware(*firebaseApp))
 	{
 		UserRouter.GET("/user", func(c *gin.Context) {
-			User := user.UserGet(c.MustGet("UserId").(string), user.UserRequests{})
+			User, err := user.UserGet(c.MustGet("UserId").(string), user.ExampleUserRequests{})
+			if err != nil {
+				c.JSON(http.StatusNotFound, err)
+				c.Abort()
+			}
 			c.JSON(http.StatusOK, User)
 		})
 	}

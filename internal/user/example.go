@@ -30,3 +30,26 @@ func ExampleUser2(UserId string) User {
 	}
 	return user
 }
+
+type ExampleUserRequests struct {
+}
+
+func (u ExampleUserRequests) UserGet(UserId string) *User {
+	user := ExampleUser(UserId)
+	return &user
+}
+func (u ExampleUserRequests) UserDelete(UserId string) error {
+	return nil
+}
+func (u ExampleUserRequests) UserProfileRegister(UserProfile UserProfile) error {
+	return nil
+}
+func (u ExampleUserRequests) UserProfileUpdate(UserProfile UserProfile) error {
+	return nil
+}
+func (u ExampleUserRequests) UserAddressRegister(UserAddress UserAddress) error {
+	return nil
+}
+func (u ExampleUserRequests) UserAddressUpdate(UserAddress UserAddress) error {
+	return nil
+}

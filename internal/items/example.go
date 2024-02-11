@@ -41,3 +41,19 @@ func getStringPointer(s string) *string {
 func getIntPointer(i int) *int {
 	return &i
 }
+
+type ExampleItemRequests struct {
+}
+
+func (i ExampleItemRequests) GetOverview(itemId string) *ItemOverview {
+	ItemOverview := ExampleItemOverview(itemId)
+	return &ItemOverview
+}
+func (i ExampleItemRequests) GetPreviewList() *[]ItemPreview {
+	ItemPreview := ExampleItemPreview()
+	return &ItemPreview
+}
+func (i ExampleItemRequests) GetSearchPreviewList(tags []string) *[]ItemPreview {
+	ItemPreview := ExampleItemPreview()
+	return &ItemPreview
+}

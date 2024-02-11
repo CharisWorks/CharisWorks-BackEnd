@@ -8,8 +8,8 @@ type Cart struct {
 	ItemPreviewProperties items.ItemPreviewProperties `json:"properties"`
 }
 type CartRequestPayload struct {
-	ItemId   string `json:"item_id"`
-	Quantity int    `json:"quantity"`
+	ItemId   string `json:"item_id" binding:"required" `
+	Quantity int    `json:"quantity" binding:"required"`
 }
 type ICartRequest interface {
 	Get() *[]Cart

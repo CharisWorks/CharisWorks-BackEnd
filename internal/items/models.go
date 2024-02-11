@@ -20,6 +20,7 @@ type ItemOverview struct {
 	Properties   *ItemOverviewProperties `json:"properties"`
 	Manufacturer *ManufacturerDetails    `json:"manufacturer"`
 }
+
 type ManufacturerDetails struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`

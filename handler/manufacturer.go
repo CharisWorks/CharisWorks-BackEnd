@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
@@ -16,27 +15,27 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp *validation.FirebaseApp
 		UserRouter.Use(manufacturerMiddleware(*firebaseApp))
 		{
 			UserRouter.POST("", func(c *gin.Context) {
-				ReqPayload := new(items.ItemOverviewProperties)
-				err := c.BindJSON(&ReqPayload)
-				if err != nil {
-					c.JSON(http.StatusBadRequest, "Invalid Data")
-					c.Abort()
-				}
-				err = manufacturer.RegisterItem(*ReqPayload, manufacturer.ExampleManufacturerRequests{})
+				bindBody := new(manufacturer.ItemRegisterPayload)
+				payload, err := getPayloadFromBody(c, &bindBody)
 				if err != nil {
 					c.JSON(http.StatusBadRequest, err)
-					c.Abort()
+					return
+				}
+				err = manufacturer.RegisterItem(**payload, manufacturer.ExampleManufacturerRequests{})
+				if err != nil {
+					c.JSON(http.StatusBadRequest, err)
+					return
 				}
 				c.JSON(http.StatusOK, "Item was successfuly registered")
 			})
 			UserRouter.PATCH("", func(c *gin.Context) {
-				ReqPayload := new(items.ItemOverviewProperties)
-				err := c.BindJSON(&ReqPayload)
+				bindBody := new(manufacturer.ItemUpdatePayload)
+				payload, err := getPayloadFromBody(c, &bindBody)
 				if err != nil {
-					c.JSON(http.StatusBadRequest, "Invalid Data")
-					c.Abort()
+					c.JSON(http.StatusBadRequest, err)
+					return
 				}
-				err = manufacturer.UpdateItem(*ReqPayload, manufacturer.ExampleManufacturerRequests{})
+				err = manufacturer.UpdateItem(**payload, manufacturer.ExampleManufacturerRequests{})
 				if err != nil {
 					c.JSON(http.StatusBadRequest, err)
 					c.Abort()

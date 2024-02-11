@@ -33,9 +33,9 @@ func firebaseMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
 }
 func manufacturerMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		User := user.UserGet(c.MustGet("UserId").(string), user.UserRequests{})
-		if User == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "Firebase Account exists but this account was not found in Backend Server"})
+		User, err := user.UserGet(c.MustGet("UserId").(string), user.ExampleUserRequests{})
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, err)
 			c.Abort()
 		}
 		if User == nil || User.Manufacturer == nil {
@@ -47,4 +47,26 @@ func manufacturerMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
 		c.Next()
 
 	}
+}
+
+type internalError struct {
+	Message string
+}
+
+func (e *internalError) Error() string {
+	return e.Message
+}
+func (e *internalError) badRequestErrorForPayload(msg string) {
+	e.Message = msg
+}
+
+func getPayloadFromBody[T any](c *gin.Context, p *T) (*T, error) {
+	bind := new(T)
+	err := c.ShouldBindJSON(&bind)
+	if err != nil {
+		err := new(internalError)
+		err.badRequestErrorForPayload("The request payload is malformed or contains invalid data.")
+		return nil, err
+	}
+	return bind, nil
 }

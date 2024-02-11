@@ -13,7 +13,7 @@ func (h *Handler) SetupRoutesForItem() {
 	{
 		itemGroup.GET("", func(c *gin.Context) {
 			// レスポンスの処理
-			PreviewList := items.GetPreviewList(items.ItemRequests{})
+			PreviewList := items.GetPreviewList(items.ExampleItemRequests{})
 			c.JSON(200, PreviewList)
 		})
 
@@ -21,7 +21,7 @@ func (h *Handler) SetupRoutesForItem() {
 
 			// item_id の取得
 			itemId := c.Param("item_id")
-			Overview := items.GetOverview(items.ItemRequests{}, itemId)
+			Overview := items.GetOverview(items.ExampleItemRequests{}, itemId)
 			// レスポンスの処理
 			c.JSON(200, Overview)
 		})
@@ -29,7 +29,7 @@ func (h *Handler) SetupRoutesForItem() {
 		itemGroup.GET("/search", func(c *gin.Context) {
 			keywords := c.Query("keyword")
 			log.Println(keywords)
-			PreviewList := items.GetSearchPreviewList(items.ItemRequests{}, strings.Split(keywords, "+"))
+			PreviewList := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"))
 			c.JSON(200, PreviewList)
 		})
 	}

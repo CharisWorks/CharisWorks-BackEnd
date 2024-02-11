@@ -31,9 +31,9 @@ type UserAddress struct {
 }
 type IUserRequests interface {
 	UserGet(UserId string) *User
-	UserDelete(UserId string) (message string)
-	UserProfileRegister(UserProfile UserProfile) (message string)
-	UserProfileUpdate(UserProfile UserProfile) (message string)
-	UserAddressRegister(UserAddress UserAddress) (message string)
-	UserAddressUpdate(UserAddress UserAddress) (message string)
+	UserDelete(UserId string) error
+	UserProfileRegister(UserProfile UserProfile) error
+	UserProfileUpdate(UserProfile UserProfile) error
+	UserAddressRegister(UserAddress UserAddress) error
+	UserAddressUpdate(UserAddress UserAddress) error
 }
