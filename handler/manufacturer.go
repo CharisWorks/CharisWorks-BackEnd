@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForManufacturer(firebaseSettings *validation.IFirebaseApp) {
+func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp) {
 	UserRouter := h.Router.Group("/api/products")
 	UserRouter.Use(firebaseMiddleware(&validation.FirebaseApp{}))
 	{

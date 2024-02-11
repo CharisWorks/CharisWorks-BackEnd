@@ -20,5 +20,6 @@ func main() {
 	h.SetupRoutesForAuthStatus()
 	h.SetupRoutesForUser(app)
 	h.SetupRoutesForCart(app)
+	h.SetupRoutesForManufacturer(app)
 	h.Router.Run("localhost:8080")
 }

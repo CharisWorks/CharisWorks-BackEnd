@@ -26,10 +26,11 @@ type ItemUpdatePayload struct {
 	ItemUpdatePropertiesPayload ItemUpdatePropertiesPayload `json:"properties" binding:"required"`
 }
 type ItemUpdatePropertiesPayload struct {
-	Name    *string                     `json:"name"`
-	Price   *int                        `json:"price"`
-	Details *ItemRegisterDetailsPayload `json:"details"`
+	Name    *string                   `json:"name"`
+	Price   *int                      `json:"price"`
+	Details *ItemUpdateDetailsPayload `json:"details"`
 }
+
 type ItemUpdateDetailsPayload struct {
 	Status      *string   `json:"status"`
 	Stock       *int      `json:"stock"`
