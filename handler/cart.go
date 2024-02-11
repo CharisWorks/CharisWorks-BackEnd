@@ -8,9 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForCart(firebaseApp *validation.FirebaseApp) {
+func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 	CartRouter := h.Router.Group("/api/cart")
-	CartRouter.Use(firebaseMiddleware(*firebaseApp))
+	CartRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		CartRouter.GET("", func(ctx *gin.Context) {
 			Cart, err := cart.GetCart(cart.CartRequest{}, ctx)

@@ -8,11 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForManufacturer(firebaseApp *validation.FirebaseApp) {
+func (h *Handler) SetupRoutesForManufacturer(firebaseSettings *validation.IFirebaseApp) {
 	UserRouter := h.Router.Group("/api/products")
-	UserRouter.Use(firebaseMiddleware(*firebaseApp))
+	UserRouter.Use(firebaseMiddleware(&validation.FirebaseApp{}))
 	{
-		UserRouter.Use(manufacturerMiddleware(*firebaseApp))
+		UserRouter.Use(manufacturerMiddleware())
 		{
 			UserRouter.POST("", func(ctx *gin.Context) {
 				bindBody := new(manufacturer.ItemRegisterPayload)

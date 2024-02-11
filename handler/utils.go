@@ -18,33 +18,35 @@ func NewHandler(router *gin.Engine) *Handler {
 	}
 }
 
-func firebaseMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		UID, err := app.VerifyIDToken(c, c.Request.Header.Get("Authorization"))
+func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		UID, err := app.VerifyIDToken(ctx)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, err)
-			c.Abort()
+			ctx.JSON(http.StatusUnauthorized, err)
+			ctx.Abort()
 		}
-		c.Set("UserId", UID)
+		ctx.Set("UserId", UID)
 		//内部の実行タイミング
-		c.Next()
+		ctx.Next()
 
 	}
 }
-func manufacturerMiddleware(app validation.FirebaseApp) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		User, err := user.UserGet(c.MustGet("UserId").(string), user.ExampleUserRequests{})
+func manufacturerMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		User, err := user.UserGet(ctx.MustGet("UserId").(string), user.ExampleUserRequests{}, ctx)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, err)
-			c.Abort()
+			ctx.JSON(http.StatusUnauthorized, err)
+			ctx.Abort()
+			return
 		}
 		if User == nil || User.Manufacturer == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
-			c.Abort()
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
+			ctx.Abort()
+			return
 		}
 
 		//内部の実行タイミング
-		c.Next()
+		ctx.Next()
 
 	}
 }

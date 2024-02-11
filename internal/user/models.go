@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/gin-gonic/gin"
 )
 
 type User struct {
@@ -42,10 +43,10 @@ type UserAddressRegisterPayload struct {
 	PhoneNumber string `json:"phone_number" binding:"required"`
 }
 type IUserRequests interface {
-	UserGet(UserId string) *User
-	UserDelete(UserId string) error
-	UserProfileRegister(p UserProfileRegisterPayload) error
-	UserProfileUpdate(u UserProfile) error
-	UserAddressRegister(p UserAddressRegisterPayload) error
-	UserAddressUpdate(u UserAddress) error
+	UserGet(string, *gin.Context) *User
+	UserDelete(string, *gin.Context) error
+	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
+	UserProfileUpdate(UserProfile, *gin.Context) error
+	UserAddressRegister(UserAddressRegisterPayload, *gin.Context) error
+	UserAddressUpdate(UserAddress, *gin.Context) error
 }
