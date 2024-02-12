@@ -39,18 +39,16 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 			}
 			err = cart.UpdateCart(**payload, cart.CartRequest{}, ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, err)
 				return
 			}
 			ctx.JSON(http.StatusOK, "Item was successfully updated")
 		})
 		CartRouter.DELETE("", func(ctx *gin.Context) {
-			itemId := ctx.Query("item_id")
-			if itemId == "" {
-				ctx.JSON(http.StatusBadRequest, "cannot get itemId")
+			itemId, err := getQuery("item_id", ctx)
+			if err != nil {
 				return
 			}
-			err := cart.DeleteCart(itemId, cart.CartRequest{}, ctx)
+			err = cart.DeleteCart(*itemId, cart.CartRequest{}, ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, err)
 				return

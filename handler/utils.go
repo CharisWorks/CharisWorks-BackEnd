@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -23,12 +22,12 @@ func NewHandler(router *gin.Engine) *Handler {
 
 func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		UID, err := app.VerifyIDToken(ctx)
+		UserID, err := app.VerifyIDToken(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, err)
 			ctx.Abort()
 		}
-		ctx.Set("UserId", UID)
+		ctx.Set("UserId", UserID)
 		//内部の実行タイミング
 		ctx.Next()
 
@@ -61,7 +60,7 @@ type internalError struct {
 func (e *internalError) Error() string {
 	return e.Message
 }
-func (e *internalError) badRequestErrorForPayload(msg string) {
+func (e *internalError) setError(msg string) {
 	e.Message = msg
 }
 
@@ -70,13 +69,34 @@ func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	err := ctx.BindJSON(&bind)
 	if err != nil {
 		err := new(internalError)
-		err.badRequestErrorForPayload("The request payload is malformed or contains invalid data.")
-		ctx.JSON(http.StatusBadRequest, err)
+		err.setError("The request payload is malformed or contains invalid data.")
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return nil, err
 	}
 	return bind, nil
 }
 
+func getQuery(params string, ctx *gin.Context) (*string, error) {
+	itemId := ctx.Query(params)
+	if itemId == "" {
+		err := new(internalError)
+		err.setError("cannot get" + params)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return nil, err
+	}
+	return &itemId, nil
+}
+
+func getParams(params string, ctx *gin.Context) (*string, error) {
+	itemId := ctx.Param(params)
+	if itemId == "" {
+		err := new(internalError)
+		err.setError("cannot get" + params)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return nil, err
+	}
+	return &itemId, nil
+}
 func CORS(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
 		// アクセス許可するオリジン
@@ -105,5 +125,5 @@ func CORS(r *gin.Engine) {
 		// preflightリクエストの結果をキャッシュする時間
 		MaxAge: 24 * time.Hour,
 	}))
-	log.Print(r)
+
 }
