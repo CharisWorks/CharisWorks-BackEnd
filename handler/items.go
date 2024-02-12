@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"log"
-	"net/http"
 	"strings"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -25,12 +23,11 @@ func (h *Handler) SetupRoutesForItem() {
 		itemGroup.GET("/:item_id", func(ctx *gin.Context) {
 
 			// item_id の取得
-			itemId := ctx.Param("item_id")
-			if itemId == "" {
-				ctx.JSON(http.StatusBadRequest, "cannot get itemId")
+			itemId, err := getParams("item_id", ctx)
+			if err != nil {
 				return
 			}
-			Overview, err := items.GetOverview(items.ExampleItemRequests{}, itemId, ctx)
+			Overview, err := items.GetOverview(*itemId, items.ExampleItemRequests{}, ctx)
 			if err != nil {
 				return
 			}
@@ -39,9 +36,11 @@ func (h *Handler) SetupRoutesForItem() {
 		})
 
 		itemGroup.GET("/search", func(ctx *gin.Context) {
-			keywords := ctx.Query("keyword")
-			log.Println(keywords)
-			PreviewList, err := items.GetSearchPreviewList(items.ExampleItemRequests{}, strings.Split(keywords, "+"), ctx)
+			keywords, err := getQuery("keyword", ctx)
+			if err != nil {
+				return
+			}
+			PreviewList, err := items.GetSearchPreviewList(strings.Split(*keywords, "+"), items.ExampleItemRequests{}, ctx)
 			if err != nil {
 				return
 			}

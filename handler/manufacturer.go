@@ -39,8 +39,11 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
 			UserRouter.DELETE("", func(ctx *gin.Context) {
-				itemId := ctx.Query("item_id")
-				err := manufacturer.DeleteItem(itemId, manufacturer.ExampleManufacturerRequests{}, ctx)
+				itemId, err := getQuery("item_id", ctx)
+				if err != nil {
+					return
+				}
+				err = manufacturer.DeleteItem(*itemId, manufacturer.ExampleManufacturerRequests{}, ctx)
 				if err != nil {
 					return
 				}
