@@ -17,7 +17,7 @@ func (h *Handler) SetupRoutesForAuthStatus() {
 		if err != nil {
 			return
 		}
-		ctx.JSON(200, PreviewList)
+		ctx.JSON(200, gin.H{"isExist": PreviewList})
 	})
 
 }

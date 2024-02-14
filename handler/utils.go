@@ -101,7 +101,7 @@ func CORS(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
 		// アクセス許可するオリジン
 		AllowOrigins: []string{
-			"*",
+			"http://localhost:3000",
 		},
 		// アクセス許可するHTTPメソッド
 		AllowMethods: []string{
