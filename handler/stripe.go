@@ -24,11 +24,12 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 	{
 		StripeManufacturerRouter.Use(manufacturerMiddleware())
 		{
+
 			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
 				cash.CreateStripeAccount(ctx)
 			})
 			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-				ctx.Set("Stripe_Account_Id", "acct_1OkZRtPMQkfESzTI")
+
 				//cash.GetMypage(ctx)
 				cash.GetAcount(ctx)
 			})

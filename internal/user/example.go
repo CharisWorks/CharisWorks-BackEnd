@@ -20,9 +20,10 @@ func ExampleUser2(UserId string) User {
 	user := User{
 		UserId: UserId,
 		UserProfile: &UserProfile{
-			DisplayName: "John Doe",
-			Description: "Example user",
-			CreatedAt:   time.Now(),
+			DisplayName:    "John Doe",
+			Description:    "Example user",
+			CreatedAt:      time.Now(),
+			IsManufacturer: true,
 		},
 		UserAddress: &UserAddress{
 			LastName:      "適当",
@@ -36,7 +37,7 @@ func ExampleUser2(UserId string) User {
 			PhoneNumber:   "+81 80 12345678",
 		},
 		Manufacturer: &Manufacturer{
-			StripeAccountId: "acct_1OkjHjPKEl3posmB",
+			StripeAccountId: "acct_1Okj9YPFjznovTf3",
 		},
 	}
 	return user

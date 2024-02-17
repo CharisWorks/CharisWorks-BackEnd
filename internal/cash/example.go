@@ -42,7 +42,17 @@ func CreateStripeAccount(ctx *gin.Context) {
 	email := ctx.MustGet("UserEmail").(string)
 	User := ctx.MustGet("User").(*user.User)
 
-	params := &stripe.AccountParams{
+	params := &stripe.AccountParams{}
+	result, err := account.GetByID(ctx.MustGet("Stripe_Account_Id").(string), params)
+	if err != nil {
+		return
+	}
+	log.Print(result.PayoutsEnabled)
+	if result.PayoutsEnabled {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "アカウントが存在しています。"})
+		return
+	}
+	params = &stripe.AccountParams{
 
 		Capabilities: &stripe.AccountCapabilitiesParams{
 			Transfers: &stripe.AccountCapabilitiesTransfersParams{
@@ -72,8 +82,6 @@ func CreateStripeAccount(ctx *gin.Context) {
 	}
 
 	a, _ := account.New(params)
-	log.Print("CreatedStripeAccount. ID : ", a.ID)
-	log.Print(&params.Individual.Address)
 	ctx.Set("Stripe_Account_Id", a.ID)
 	URL := CreateAccountLink(ctx)
 	ctx.JSON(http.StatusOK, gin.H{"url": URL})
@@ -95,6 +103,7 @@ func CreateAccountLink(ctx *gin.Context) string {
 	return result.URL
 }
 func GetMypage(ctx *gin.Context) {
+
 	params := &stripe.LoginLinkParams{Account: stripe.String(ctx.MustGet("Stripe_Account_Id").(string))}
 	result, err := loginlink.New(params)
 	if err != nil {
@@ -119,9 +128,13 @@ func CreateAccountSession(ctx *gin.Context) {
 }
 func GetAcount(ctx *gin.Context) {
 	params := &stripe.AccountParams{}
+	log.Print(ctx.MustGet("Stripe_Account_Id").(string))
 	result, err := account.GetByID(ctx.MustGet("Stripe_Account_Id").(string), params)
 	if err != nil {
 		return
+	}
+	if !result.PayoutsEnabled {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "アカウントに口座が登録されていません。"})
 	}
 	ctx.JSON(http.StatusOK, gin.H{"result": result})
 }

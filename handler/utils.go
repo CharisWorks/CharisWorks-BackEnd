@@ -36,17 +36,21 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 }
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		//ctx.Set("Stripe_Account_Id", "acct_1OkZRtPMQkfESzTI")
+		ctx.Set("Stripe_Account_Id", "acct_1Okj9YPFjznovTf3")
+
 		User, err := user.UserGet(ctx.MustGet("UserId").(string), user.ExampleUserRequests{}, ctx)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, err)
 			ctx.Abort()
 			return
 		}
-		if User == nil || User.Manufacturer == nil {
+		if !User.UserProfile.IsManufacturer {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
 		}
+
 		log.Print(User.UserAddress)
 		ctx.Set("User", User)
 		//内部の実行タイミング

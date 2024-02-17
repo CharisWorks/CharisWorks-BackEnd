@@ -18,9 +18,10 @@ type Manufacturer struct {
 	Items           []items.ItemPreview `json:"items"`
 }
 type UserProfile struct {
-	DisplayName string    `json:"display_name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"crated_at"`
+	DisplayName    string `json:"display_name"`
+	Description    string `json:"description"`
+	IsManufacturer bool
+	CreatedAt      time.Time `json:"crated_at"`
 }
 type UserAddress struct {
 	FirstName     string  `json:"first_name"`
