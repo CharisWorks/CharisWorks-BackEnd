@@ -50,6 +50,14 @@ func manufacturerMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+		if User.Manufacturer.StripeAccountId != "" {
+			if !User.UserProfile.IsManufacturer {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "cannot get stripe account id"})
+				ctx.Abort()
+				return
+			}
+		}
+		ctx.Set("Stripe_Account_Id", User.Manufacturer.StripeAccountId)
 		Account, err := cash.GetAcount(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "stripeのアカウントが取得できませんでした。"})
