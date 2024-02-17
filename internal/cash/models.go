@@ -29,7 +29,7 @@ type TransactionDetails struct {
 }
 type ITransactionRequests interface {
 	GetTransactionList(*gin.Context) ([]TransactionPreview, error)
-	GetTransactionDetails(*gin.Context) (TransactionDetails, error)
+	GetTransactionDetails(ctx *gin.Context, TransactionId string) (TransactionDetails, error)
 }
 type ITransactionUtils interface {
 	GetTotalAmount([]cart.Cart) int64

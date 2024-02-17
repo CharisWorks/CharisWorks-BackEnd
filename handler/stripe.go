@@ -16,8 +16,27 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
-			cash.CreatePaymentIntent(ctx, cash.ExampleTransactionUtils{}, cart.ExapleCartRequest{})
+			err := cash.CreatePaymentIntent(ctx, cash.ExampleTransactionUtils{}, cart.ExapleCartRequest{})
+			if err != nil {
+				return
+			}
 
+		})
+		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
+			err := cash.GetTransactionList(ctx, cash.ExampleTransactionRequests{})
+			if err != nil {
+				return
+			}
+		})
+		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
+			TransactionId, err := getQuery("transactionId", ctx)
+			if err != nil {
+				return
+			}
+			err = cash.GetTransactionDetails(*TransactionId, ctx, cash.ExampleTransactionRequests{})
+			if err != nil {
+				return
+			}
 		})
 	}
 	StripeManufacturerRouter := h.Router.Group("/api/stripe")
@@ -30,9 +49,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 				cash.CreateStripeAccount(ctx)
 			})
 			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-
-				//cash.GetMypage(ctx)
-				cash.GetAcount(ctx)
+				cash.GetMypage(ctx)
 			})
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-contrib/cors"
@@ -49,7 +50,17 @@ func manufacturerMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
+		Account, err := cash.GetAcount(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "stripeのアカウントが取得できませんでした。"})
+			ctx.Abort()
+			return
+		}
+		if !Account.PayoutsEnabled {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "口座が登録されていません。"})
+			ctx.Abort()
+			return
+		}
 		ctx.Set("User", User)
 		//内部の実行タイミング
 		ctx.Next()

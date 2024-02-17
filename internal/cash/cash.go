@@ -39,3 +39,21 @@ func CreatePaymentIntent(ctx *gin.Context, u ITransactionUtils, c cart.ICartRequ
 	ctx.JSON(http.StatusOK, gin.H{"clientSecret": pi.ClientSecret})
 	return nil
 }
+func GetTransactionList(ctx *gin.Context, i ITransactionRequests) error {
+	TransactionList, err := i.GetTransactionList(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return err
+	}
+	ctx.JSON(http.StatusOK, TransactionList)
+	return nil
+}
+func GetTransactionDetails(TransactionId string, ctx *gin.Context, i ITransactionRequests) error {
+	TransactionList, err := i.GetTransactionDetails(ctx, TransactionId)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return err
+	}
+	ctx.JSON(http.StatusOK, TransactionList)
+	return nil
+}
