@@ -1,7 +1,6 @@
 package cash
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/user"
@@ -15,14 +14,14 @@ import (
 func CreateStripeAccount(ctx *gin.Context) error {
 
 	email := ctx.MustGet("UserEmail").(string)
-	User := ctx.MustGet("User").(*user.User)
+	User := ctx.MustGet("User").(user.User)
 
 	Account, err := GetAcount(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return err
 	}
-	log.Print(Account.PayoutsEnabled)
+
 	if Account.PayoutsEnabled {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "アカウントが存在しています。"})
 		return nil
@@ -61,8 +60,8 @@ func CreateStripeAccount(ctx *gin.Context) error {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return err
 	}
-	ctx.Set("Stripe_Account_Id", a.ID)
-	URL, err := CreateAccountLink(ctx)
+
+	URL, err := CreateAccountLink(ctx, a.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return err
@@ -71,9 +70,9 @@ func CreateStripeAccount(ctx *gin.Context) error {
 	return nil
 }
 
-func CreateAccountLink(ctx *gin.Context) (*string, error) {
+func CreateAccountLink(ctx *gin.Context, StripeAccountId string) (*string, error) {
 	params := &stripe.AccountLinkParams{
-		Account:    stripe.String(ctx.MustGet("Stripe_Account_Id").(string)),
+		Account:    stripe.String(StripeAccountId),
 		RefreshURL: stripe.String("http://localhost:3000"),
 		ReturnURL:  stripe.String("http://localhost:3000"),
 		Type:       stripe.String("account_onboarding"),
@@ -95,7 +94,7 @@ func GetMypage(ctx *gin.Context) error {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "口座が登録されていません。"})
 		return err
 	}
-	params := &stripe.LoginLinkParams{Account: stripe.String(ctx.MustGet("Stripe_Account_Id").(string))}
+	params := &stripe.LoginLinkParams{Account: &Account.ID}
 	result, err := loginlink.New(params)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -107,8 +106,13 @@ func GetMypage(ctx *gin.Context) error {
 
 func GetAcount(ctx *gin.Context) (*stripe.Account, error) {
 	params := &stripe.AccountParams{}
-	log.Print(ctx.MustGet("Stripe_Account_Id").(string))
-	result, err := account.GetByID(ctx.MustGet("Stripe_Account_Id").(string), params)
+	StripeAccountId := ctx.MustGet("User").(user.User).Manufacturer.StripeAccountId
+	if StripeAccountId == "" {
+		result := new(stripe.Account)
+		result.PayoutsEnabled = false
+		return result, nil
+	}
+	result, err := account.GetByID(StripeAccountId, params)
 	if err != nil {
 		return nil, err
 	}

@@ -42,15 +42,13 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 	StripeManufacturerRouter := h.Router.Group("/api/stripe")
 	StripeManufacturerRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		StripeManufacturerRouter.Use(manufacturerMiddleware())
-		{
 
-			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
-				cash.CreateStripeAccount(ctx)
-			})
-			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-				cash.GetMypage(ctx)
-			})
-		}
+		StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
+			cash.CreateStripeAccount(ctx)
+		})
+		StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
+			cash.GetMypage(ctx)
+		})
 	}
+
 }

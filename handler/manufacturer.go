@@ -10,11 +10,11 @@ import (
 
 func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp) {
 	UserRouter := h.Router.Group("/api/products")
-	UserRouter.Use(firebaseMiddleware(&validation.FirebaseApp{}))
+	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		UserRouter.Use(manufacturerMiddleware())
 		{
-			UserRouter.POST("", func(ctx *gin.Context) {
+			UserRouter.POST("/", func(ctx *gin.Context) {
 				bindBody := new(manufacturer.ItemRegisterPayload)
 				payload, err := getPayloadFromBody(ctx, &bindBody)
 				if err != nil {
@@ -26,7 +26,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				}
 				ctx.JSON(http.StatusOK, "Item was successfuly registered")
 			})
-			UserRouter.PATCH("", func(ctx *gin.Context) {
+			UserRouter.PATCH("/", func(ctx *gin.Context) {
 				bindBody := new(manufacturer.ItemUpdatePayload)
 				payload, err := getPayloadFromBody(ctx, &bindBody)
 				if err != nil {
@@ -38,7 +38,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				}
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
-			UserRouter.DELETE("", func(ctx *gin.Context) {
+			UserRouter.DELETE("/", func(ctx *gin.Context) {
 				itemId, err := getQuery("item_id", ctx)
 				if err != nil {
 					return
