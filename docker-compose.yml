@@ -5,6 +5,7 @@ services:
     tty: true
     ports:
       - 8080:8080
+    command: go run main.go
     volumes:
       - ./:/go/CharisWorks-BackEnd
   db:
@@ -19,6 +20,12 @@ services:
     volumes:
       - ./sql_init:/docker-entrypoint-initdb.d
       - data-volume:/var/lib/mysql
-
+  cli:
+    image: stripe/stripe-cli:latest
+    container_name: stripe_worker
+    environment:
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_DEVICE_NAME: ${STRIPE_DEVICE_NAME}
+    command: stripe listen --forward-to localhost:8080/stripe_webhooks
 volumes:
   data-volume:

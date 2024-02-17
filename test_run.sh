@@ -1,0 +1,3 @@
+export STRIPE_API_KEY=sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl
+export STRIPE_DEVICE_NAME=dev
+docker compose up

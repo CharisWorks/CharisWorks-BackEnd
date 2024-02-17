@@ -21,5 +21,6 @@ func main() {
 	h.SetupRoutesForUser(app)
 	h.SetupRoutesForCart(app)
 	h.SetupRoutesForManufacturer(app)
+	h.SetupRoutesForStripe(app)
 	h.Router.Run("localhost:8080")
 }

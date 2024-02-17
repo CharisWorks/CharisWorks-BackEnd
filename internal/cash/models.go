@@ -1,9 +1,9 @@
-package stripe
+package cash
 
 import "github.com/shopspring/decimal"
 
 type IStripeRequests interface {
-	GetPurchaseLink(amount decimal.Decimal, email string) (url string, err error)
+	GetClientSecret(amount decimal.Decimal, email string) (url string, err error)
 	GetRegisterLink(email string) (url string, err error)
 	GetStripeMypageLink(email string) (url string, err error)
 }

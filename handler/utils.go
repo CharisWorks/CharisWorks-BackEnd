@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -46,7 +47,8 @@ func manufacturerMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
+		log.Print(User.UserAddress)
+		ctx.Set("User", User)
 		//内部の実行タイミング
 		ctx.Next()
 
