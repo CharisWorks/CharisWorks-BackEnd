@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
-			cash.HandleCreatePaymentIntent(ctx)
+			cash.CreatePaymentIntent(ctx, cash.ExampleTransactionUtils{}, cart.ExapleCartRequest{})
 
 		})
 	}

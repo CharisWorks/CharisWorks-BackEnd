@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/gin-gonic/gin"
 
@@ -12,30 +13,7 @@ import (
 	"github.com/stripe/stripe-go/v76/accountlink"
 	"github.com/stripe/stripe-go/v76/accountsession"
 	"github.com/stripe/stripe-go/v76/loginlink"
-	"github.com/stripe/stripe-go/v76/paymentintent"
 )
-
-func HandleCreatePaymentIntent(ctx *gin.Context) {
-
-	// Create a PaymentIntent with amount and currency
-	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(1000), //合計金額を算出する関数をインジェクト
-		Currency: stripe.String(string(stripe.CurrencyJPY)),
-		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-		PaymentMethodTypes: []*string{stripe.String("card"), stripe.String("konbini")},
-	}
-
-	pi, err := paymentintent.New(params)
-	log.Printf("pi.New: %v", pi.ClientSecret)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		log.Printf("pi.New: %v", err)
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"clientSecret": pi.ClientSecret})
-
-}
 
 func CreateStripeAccount(ctx *gin.Context) {
 
@@ -137,4 +115,15 @@ func GetAcount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "アカウントに口座が登録されていません。"})
 	}
 	ctx.JSON(http.StatusOK, gin.H{"result": result})
+}
+
+type ExampleTransactionUtils struct {
+}
+
+func (u ExampleTransactionUtils) GetTotalAmount([]cart.Cart) int64 {
+	return 1000
+}
+
+func (u ExampleTransactionUtils) InspectCart([]cart.Cart) error {
+	return nil
 }

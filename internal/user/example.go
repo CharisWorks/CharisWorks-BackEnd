@@ -46,10 +46,10 @@ func ExampleUser2(UserId string) User {
 type ExampleUserRequests struct {
 }
 
-func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context) *User {
+func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context) (*User, error) {
 	log.Println("UserId: ", UserId)
 	user := ExampleUser2(UserId)
-	return &user
+	return &user, nil
 }
 func (u ExampleUserRequests) UserDelete(UserId string, ctx *gin.Context) error {
 	log.Println("UserId: ", UserId)

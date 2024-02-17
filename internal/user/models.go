@@ -50,7 +50,7 @@ type UserAddressRegisterPayload struct {
 	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
 type IUserRequests interface {
-	UserGet(UserID string, c *gin.Context) *User
+	UserGet(UserID string, c *gin.Context) (*User, error)
 	UserDelete(UserId string, c *gin.Context) error
 	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
 	UserProfileUpdate(UserProfile, *gin.Context) error

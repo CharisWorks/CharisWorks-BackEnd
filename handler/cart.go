@@ -13,7 +13,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 	CartRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		CartRouter.GET("", func(ctx *gin.Context) {
-			Cart, err := cart.GetCart(cart.CartRequest{}, ctx)
+			Cart, err := cart.GetCart(cart.ExapleCartRequest{}, ctx)
 			if err != nil {
 				return
 			}
@@ -25,7 +25,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = cart.PostCart(**payload, cart.CartRequest{}, ctx)
+			err = cart.PostCart(**payload, cart.ExapleCartRequest{}, ctx)
 			if err != nil {
 				return
 			}
@@ -37,7 +37,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = cart.UpdateCart(**payload, cart.CartRequest{}, ctx)
+			err = cart.UpdateCart(**payload, cart.ExapleCartRequest{}, ctx)
 			if err != nil {
 				return
 			}
@@ -48,7 +48,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = cart.DeleteCart(*itemId, cart.CartRequest{}, ctx)
+			err = cart.DeleteCart(*itemId, cart.ExapleCartRequest{}, ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, err)
 				return
