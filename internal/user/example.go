@@ -37,7 +37,7 @@ func ExampleUser2(UserId string) User {
 			PhoneNumber:   "+81 80 12345678",
 		},
 		Manufacturer: &Manufacturer{
-			StripeAccountId: "acct_1Okj9YPFjznovTf3",
+			StripeAccountId: "acct_1OkjHjPKEl3posmB",
 		},
 	}
 	return user
