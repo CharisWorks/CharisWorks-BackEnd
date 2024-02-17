@@ -20,17 +20,24 @@ func ExampleUser2(UserId string) User {
 	user := User{
 		UserId: UserId,
 		UserProfile: &UserProfile{
-			DisplayName: "John Doe",
-			Description: "Example user",
-			CreatedAt:   time.Now(),
+			DisplayName:    "John Doe",
+			Description:    "Example user",
+			CreatedAt:      time.Now(),
+			IsManufacturer: true,
 		},
 		UserAddress: &UserAddress{
-			RealName:    "John Doe",
-			ZipCode:     "12345",
-			Address1:    "123 Main St",
-			Address2:    "Apt 4B",
-			Address3:    nil,
-			PhoneNumber: "555-1234",
+			LastName:      "適当",
+			LastNameKana:  "テキトウ",
+			FirstName:     "太郎",
+			FirstNameKana: "タロウ",
+			ZipCode:       "3050821",
+			Address1:      "茨城県つくば市春日",
+			Address2:      "天王台1-1-1",
+			Address3:      nil,
+			PhoneNumber:   "+81 80 12345678",
+		},
+		Manufacturer: &Manufacturer{
+			StripeAccountId: "acct_1Okj9YPFjznovTf3",
 		},
 	}
 	return user
@@ -39,10 +46,10 @@ func ExampleUser2(UserId string) User {
 type ExampleUserRequests struct {
 }
 
-func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context) *User {
+func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context) (*User, error) {
 	log.Println("UserId: ", UserId)
-	user := ExampleUser(UserId)
-	return &user
+	user := ExampleUser2(UserId)
+	return &user, nil
 }
 func (u ExampleUserRequests) UserDelete(UserId string, ctx *gin.Context) error {
 	log.Println("UserId: ", UserId)

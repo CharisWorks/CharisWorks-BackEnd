@@ -18,33 +18,40 @@ type Manufacturer struct {
 	Items           []items.ItemPreview `json:"items"`
 }
 type UserProfile struct {
-	DisplayName string    `json:"display_name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"crated_at"`
+	DisplayName    string `json:"display_name"`
+	Description    string `json:"description"`
+	IsManufacturer bool
+	CreatedAt      time.Time `json:"crated_at"`
 }
 type UserAddress struct {
-	RealName    string  `json:"real_name"`
-	ZipCode     string  `json:"zip_code"`
-	Address1    string  `json:"address_1"`
-	Address2    string  `json:"address_2"`
-	Address3    *string `json:"address_3"`
-	PhoneNumber string  `json:"phone_number"`
+	FirstName     string  `json:"first_name"`
+	FirstNameKana string  `json:"first_name_kana"`
+	LastName      string  `json:"last_name"`
+	LastNameKana  string  `json:"last_name_kana"`
+	ZipCode       string  `json:"zip_code"`
+	Address1      string  `json:"address_1"`
+	Address2      string  `json:"address_2"`
+	Address3      *string `json:"address_3"`
+	PhoneNumber   string  `json:"phone_number"`
 }
 type UserProfileRegisterPayload struct {
 	DisplayName string `json:"display_name" binding:"required"`
 	Description string `json:"description" binding:"required"`
 }
 type UserAddressRegisterPayload struct {
-	RealName    string `json:"real_name" binding:"required"`
-	ZipCode     string `json:"zip_code" binding:"required"`
-	Address1    string `json:"address_1" binding:"required"`
-	Address2    string `json:"address_2" binding:"required"`
-	Address3    string `json:"address_3"`
-	PhoneNumber string `json:"phone_number" binding:"required"`
+	FirstName     string `json:"first_name" binding:"required"`
+	FirstNameKana string `json:"first_name_kana" binding:"required"`
+	LastName      string `json:"last_name" binding:"required"`
+	LastNameKana  string `json:"last_name_kana" binding:"required"`
+	ZipCode       string `json:"zip_code" binding:"required"`
+	Address1      string `json:"address_1" binding:"required"`
+	Address2      string `json:"address_2" binding:"required"`
+	Address3      string `json:"address_3"`
+	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
 type IUserRequests interface {
-	UserGet(string, *gin.Context) *User
-	UserDelete(string, *gin.Context) error
+	UserGet(UserID string, c *gin.Context) (*User, error)
+	UserDelete(UserId string, c *gin.Context) error
 	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
 	UserProfileUpdate(UserProfile, *gin.Context) error
 	UserAddressRegister(UserAddressRegisterPayload, *gin.Context) error

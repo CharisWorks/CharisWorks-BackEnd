@@ -24,22 +24,22 @@ func ExampleCart() []Cart {
 
 }
 
-type CartRequest struct {
+type ExapleCartRequest struct {
 }
 
-func (p CartRequest) Get(ctx *gin.Context) (*[]Cart, error) {
+func (p ExapleCartRequest) Get(ctx *gin.Context) (*[]Cart, error) {
 	Cart := ExampleCart()
 	return &Cart, nil
 }
-func (c CartRequest) Register(p CartRequestPayload, ctx *gin.Context) error {
+func (c ExapleCartRequest) Register(p CartRequestPayload, ctx *gin.Context) error {
 	log.Print("CartRequestPayload: ", p)
 	return nil
 }
-func (c CartRequest) Update(p CartRequestPayload, ctx *gin.Context) error {
+func (c ExapleCartRequest) Update(p CartRequestPayload, ctx *gin.Context) error {
 	log.Print("CartRequestPayload: ", p)
 	return nil
 }
-func (c CartRequest) Delete(itemId string, ctx *gin.Context) error {
+func (c ExapleCartRequest) Delete(itemId string, ctx *gin.Context) error {
 	log.Print("itemId: ", itemId)
 	return nil
 }

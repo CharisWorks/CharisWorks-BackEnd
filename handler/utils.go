@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-contrib/cors"
@@ -35,18 +36,32 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 }
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		//ctx.Set("Stripe_Account_Id", "acct_1OkZRtPMQkfESzTI")
+		//ctx.Set("Stripe_Account_Id", "acct_1Okj9YPFjznovTf3")
+
 		User, err := user.UserGet(ctx.MustGet("UserId").(string), user.ExampleUserRequests{}, ctx)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, err)
 			ctx.Abort()
 			return
 		}
-		if User == nil || User.Manufacturer == nil {
+		if !User.UserProfile.IsManufacturer {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
 		}
-
+		Account, err := cash.GetAcount(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "stripeのアカウントが取得できませんでした。"})
+			ctx.Abort()
+			return
+		}
+		if !Account.PayoutsEnabled {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "口座が登録されていません。"})
+			ctx.Abort()
+			return
+		}
+		ctx.Set("User", User)
 		//内部の実行タイミング
 		ctx.Next()
 
@@ -101,7 +116,7 @@ func CORS(r *gin.Engine) {
 	r.Use(cors.New(cors.Config{
 		// アクセス許可するオリジン
 		AllowOrigins: []string{
-			"*",
+			"http://localhost:3000",
 		},
 		// アクセス許可するHTTPメソッド
 		AllowMethods: []string{
