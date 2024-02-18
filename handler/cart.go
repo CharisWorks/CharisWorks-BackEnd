@@ -31,18 +31,6 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp) {
 			}
 			ctx.JSON(http.StatusOK, "Item was successfully registered")
 		})
-		CartRouter.PATCH("", func(ctx *gin.Context) {
-			bindBody := new(cart.CartRequestPayload)
-			payload, err := getPayloadFromBody(ctx, &bindBody)
-			if err != nil {
-				return
-			}
-			err = cart.UpdateCart(**payload, cart.ExapleCartRequest{}, ctx)
-			if err != nil {
-				return
-			}
-			ctx.JSON(http.StatusOK, "Item was successfully updated")
-		})
 		CartRouter.DELETE("", func(ctx *gin.Context) {
 			itemId, err := getQuery("item_id", ctx)
 			if err != nil {

@@ -17,6 +17,5 @@ type CartRequestPayload struct {
 type ICartRequest interface {
 	Get(*gin.Context) (*[]Cart, error)
 	Register(CartRequestPayload, *gin.Context) error
-	Update(CartRequestPayload, *gin.Context) error
 	Delete(string, *gin.Context) error
 }

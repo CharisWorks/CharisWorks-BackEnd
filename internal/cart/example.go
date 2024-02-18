@@ -35,10 +35,6 @@ func (c ExapleCartRequest) Register(p CartRequestPayload, ctx *gin.Context) erro
 	log.Print("CartRequestPayload: ", p)
 	return nil
 }
-func (c ExapleCartRequest) Update(p CartRequestPayload, ctx *gin.Context) error {
-	log.Print("CartRequestPayload: ", p)
-	return nil
-}
 func (c ExapleCartRequest) Delete(itemId string, ctx *gin.Context) error {
 	log.Print("itemId: ", itemId)
 	return nil

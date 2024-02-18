@@ -11,9 +11,7 @@ func GetCart(i ICartRequest, ctx *gin.Context) (*[]Cart, error) {
 func PostCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
 	return i.Register(p, ctx)
 }
-func UpdateCart(p CartRequestPayload, i ICartRequest, ctx *gin.Context) error {
-	return i.Update(p, ctx)
-}
+
 func DeleteCart(itemId string, i ICartRequest, ctx *gin.Context) error {
 	return i.Delete(itemId, ctx)
 }
