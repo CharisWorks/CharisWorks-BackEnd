@@ -10,15 +10,15 @@ import (
 	"github.com/stripe/stripe-go/v76/paymentintent"
 )
 
-func CreatePaymentIntent(ctx *gin.Context, u ITransactionUtils, c cart.ICartRequest) error {
+func CreatePaymentIntent(ctx *gin.Context, u ITransactionUtils, c cart.ICartRequest) (*string, error) {
 	Carts, err := c.Get(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = u.InspectCart(*Carts)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return err
+		return nil, err
 	}
 	// Create a PaymentIntent with amount and currency
 	params := &stripe.PaymentIntentParams{
@@ -34,10 +34,10 @@ func CreatePaymentIntent(ctx *gin.Context, u ITransactionUtils, c cart.ICartRequ
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		log.Printf("pi.New: %v", err)
-		return err
+		return nil, err
 	}
 	ctx.JSON(http.StatusOK, gin.H{"clientSecret": pi.ClientSecret})
-	return nil
+	return &pi.ClientSecret, nil
 }
 func GetTransactionList(ctx *gin.Context, i ITransactionRequests) error {
 	TransactionList, err := i.GetTransactionList(ctx)
