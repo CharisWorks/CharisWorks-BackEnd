@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -18,23 +19,12 @@ func NewHandler(router *gin.Engine) *Handler {
 	}
 }
 
-type internalError struct {
-	Message string
-}
-
-func (e *internalError) Error() string {
-	return e.Message
-}
-func (e *internalError) setError(msg string) {
-	e.Message = msg
-}
-
 func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	bind := new(T)
 	err := ctx.BindJSON(&bind)
 	if err != nil {
-		err := new(internalError)
-		err.setError("The request payload is malformed or contains invalid data.")
+		err := new(utils.InternalError)
+		err.SetError("The request payload is malformed or contains invalid data.")
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return nil, err
 	}
@@ -44,8 +34,8 @@ func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 func getQuery(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Query(params)
 	if itemId == "" {
-		err := new(internalError)
-		err.setError("cannot get" + params)
+		err := new(utils.InternalError)
+		err.SetError("cannot get" + params)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return nil, err
 	}
@@ -55,8 +45,8 @@ func getQuery(params string, ctx *gin.Context) (*string, error) {
 func getParams(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Param(params)
 	if itemId == "" {
-		err := new(internalError)
-		err.setError("cannot get" + params)
+		err := new(utils.InternalError)
+		err.SetError("cannot get" + params)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return nil, err
 	}
