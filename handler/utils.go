@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -48,7 +47,6 @@ func userMiddleware(i user.IUserRequests) gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, err)
 			ctx.Abort()
 		}
-		log.Print(User)
 		if User == nil {
 			err := i.UserCreate(UserId, ctx)
 			if err != nil {
@@ -91,7 +89,7 @@ func manufacturerMiddleware() gin.HandlerFunc {
 			return
 		}
 		ctx.Set("Stripe_Account_Id", User.Manufacturer.StripeAccountId)
-		Account, err := cash.GetAcount(ctx)
+		Account, err := cash.GetAccount(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "stripeのアカウントが取得できませんでした。"})
 			ctx.Abort()

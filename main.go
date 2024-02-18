@@ -2,6 +2,10 @@ package main
 
 import (
 	"github.com/charisworks/charisworks-backend/handler"
+	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/cash"
+	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
@@ -17,10 +21,10 @@ func main() {
 	if err != nil {
 		return
 	}
-	h.SetupRoutesForItem()
+	h.SetupRoutesForItem(items.ExampleItemRequests{})
 	h.SetupRoutesForUser(app, user.ExampleUserRequests{})
-	h.SetupRoutesForCart(app)
-	h.SetupRoutesForManufacturer(app)
-	h.SetupRoutesForStripe(app)
+	h.SetupRoutesForCart(app, cart.ExapleCartRequest{}, user.ExampleUserRequests{})
+	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{})
 	h.Router.Run("localhost:8080")
 }

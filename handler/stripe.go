@@ -51,12 +51,19 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 		StripeManufacturerRouter.Use(stripeMiddleware())
 		{
 			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
-				cash.CreateStripeAccount(ctx)
+				URL, err := cash.CreateStripeAccount(ctx)
+				if err != nil {
+					return
+				}
+				ctx.JSON(http.StatusOK, gin.H{"url": URL})
 
 			})
 			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-				cash.GetMypage(ctx)
-
+				URL, err := cash.GetMypage(ctx)
+				if err != nil {
+					return
+				}
+				ctx.JSON(http.StatusOK, gin.H{"url": URL})
 			})
 		}
 	}
