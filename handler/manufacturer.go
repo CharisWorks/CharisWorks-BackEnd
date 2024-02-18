@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp) {
+func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp, manufacturerImpl manufacturer.IManufacturerRequests) {
 	UserRouter := h.Router.Group("/api/products")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
@@ -20,7 +20,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				if err != nil {
 					return
 				}
-				err = manufacturer.RegisterItem(**payload, manufacturer.ExampleManufacturerRequests{}, ctx)
+				err = manufacturerImpl.RegisterItem(**payload, ctx)
 				if err != nil {
 					return
 				}
@@ -32,7 +32,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				if err != nil {
 					return
 				}
-				err = manufacturer.UpdateItem(**payload, manufacturer.ExampleManufacturerRequests{}, ctx)
+				err = manufacturerImpl.UpdateItem(**payload, ctx)
 				if err != nil {
 					return
 				}
@@ -43,7 +43,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				if err != nil {
 					return
 				}
-				err = manufacturer.DeleteItem(*itemId, manufacturer.ExampleManufacturerRequests{}, ctx)
+				err = manufacturerImpl.DeleteItem(*itemId, ctx)
 				if err != nil {
 					return
 				}

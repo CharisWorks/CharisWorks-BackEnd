@@ -14,7 +14,7 @@ type User struct {
 	Manufacturer *Manufacturer `json:"manufacturer"`
 }
 type Manufacturer struct {
-	StripeAccountId string              `json:"stripe_account_id"`
+	StripeAccountId *string             `json:"stripe_account_id"`
 	Items           []items.ItemPreview `json:"items"`
 }
 type UserProfile struct {
@@ -50,6 +50,7 @@ type UserAddressRegisterPayload struct {
 	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
 type IUserRequests interface {
+	UserCreate(UserId string, c *gin.Context) error
 	UserGet(UserID string, c *gin.Context) (*User, error)
 	UserDelete(UserId string, c *gin.Context) error
 	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
