@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/charisworks/charisworks-backend/handler"
+	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
@@ -17,8 +18,7 @@ func main() {
 		return
 	}
 	h.SetupRoutesForItem()
-	h.SetupRoutesForAuthStatus()
-	h.SetupRoutesForUser(app)
+	h.SetupRoutesForUser(app, user.ExampleUserRequests{})
 	h.SetupRoutesForCart(app)
 	h.SetupRoutesForManufacturer(app)
 	h.SetupRoutesForStripe(app)

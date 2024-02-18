@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
+	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
@@ -12,7 +13,6 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
-
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
@@ -42,13 +42,18 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp) {
 	StripeManufacturerRouter := h.Router.Group("/api/stripe")
 	StripeManufacturerRouter.Use(firebaseMiddleware(firebaseApp))
 	{
+		StripeManufacturerRouter.Use(userMiddleware(user.ExampleUserRequests{}))
+		StripeManufacturerRouter.Use(stripeMiddleware())
+		{
+			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
+				cash.CreateStripeAccount(ctx)
 
-		StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
-			cash.CreateStripeAccount(ctx)
-		})
-		StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-			cash.GetMypage(ctx)
-		})
+			})
+			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
+				cash.GetMypage(ctx)
+
+			})
+		}
 	}
 
 }

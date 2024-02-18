@@ -8,19 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, i user.IUserRequests) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
-			User, err := user.UserGet(ctx.MustGet("UserId").(string), user.ExampleUserRequests{}, ctx)
+			User, err := i.UserGet(ctx.MustGet("UserId").(string), ctx)
 			if err != nil {
 				return
 			}
 			ctx.JSON(http.StatusOK, User)
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
-			err := user.UserDelete(ctx.MustGet("UserId").(string), user.ExampleUserRequests{}, ctx)
+			err := i.UserDelete(ctx.MustGet("UserId").(string), ctx)
 			if err != nil {
 				return
 			}
@@ -31,7 +31,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = user.UserProfileRegister(**payload, user.ExampleUserRequests{}, ctx)
+			err = i.UserProfileRegister(**payload, ctx)
 			if err != nil {
 				return
 			}
@@ -42,7 +42,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = user.UserProfileUpdate(**payload, user.ExampleUserRequests{}, ctx)
+			err = i.UserProfileUpdate(**payload, ctx)
 			if err != nil {
 				return
 			}
@@ -53,7 +53,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = user.UserAddressRegister(**payload, user.ExampleUserRequests{}, ctx)
+			err = i.UserAddressRegister(**payload, ctx)
 			if err != nil {
 				return
 			}
@@ -64,7 +64,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp) {
 			if err != nil {
 				return
 			}
-			err = user.UserAddressUpdate(**payload, user.ExampleUserRequests{}, ctx)
+			err = i.UserAddressUpdate(**payload, ctx)
 			if err != nil {
 				return
 			}

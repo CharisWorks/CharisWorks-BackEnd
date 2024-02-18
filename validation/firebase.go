@@ -42,6 +42,8 @@ func (app *FirebaseApp) VerifyIDToken(ctx *gin.Context) (string, error) {
 		return "", err
 	}
 	ctx.Set("UserEmail", token.Claims["email"].(string))
+	ctx.Set("UserId", token.Claims["user_id"].(string))
+	ctx.Set("EmailVerified", token.Claims["email_verified"].(bool))
 	log.Printf("Verified ID token: %v\n", token)
 
 	return token.UID, nil

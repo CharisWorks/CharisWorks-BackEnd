@@ -107,12 +107,12 @@ func GetMypage(ctx *gin.Context) error {
 func GetAcount(ctx *gin.Context) (*stripe.Account, error) {
 	params := &stripe.AccountParams{}
 	StripeAccountId := ctx.MustGet("User").(user.User).Manufacturer.StripeAccountId
-	if StripeAccountId == "" {
+	if *StripeAccountId == "" {
 		result := new(stripe.Account)
 		result.PayoutsEnabled = false
 		return result, nil
 	}
-	result, err := account.GetByID(StripeAccountId, params)
+	result, err := account.GetByID(*StripeAccountId, params)
 	if err != nil {
 		return nil, err
 	}
