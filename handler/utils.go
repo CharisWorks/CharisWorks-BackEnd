@@ -40,21 +40,25 @@ func userMiddleware(i user.IUserRequests) gin.HandlerFunc {
 		if !EmailVerified {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "email is not verified"})
 			ctx.Abort()
+			return
 		}
 		UserId := ctx.MustGet("UserId").(string)
 		User, err := i.UserGet(UserId, ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			ctx.Abort()
+			return
 		}
 		if User == nil {
 			err := i.UserCreate(UserId, ctx)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, err)
 				ctx.Abort()
+				return
 			}
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "create user for DB"})
 			ctx.Abort()
+			return
 		}
 		ctx.Set("User", User)
 		//内部の実行タイミング
