@@ -124,8 +124,8 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	return result, nil
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, u ITransactionUtils, CartRequests cart.ICartRequests, d cart.ICartDB) (*string, error) {
-	Carts, err := CartRequests.Get(ctx, d, ctx.MustGet("UserId").(string))
+func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, u ITransactionUtils, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+	Carts, err := CartRequests.Get(ctx, CartDB, CartUtils, ctx.MustGet("UserId").(string))
 	if err != nil {
 		return nil, err
 	}
