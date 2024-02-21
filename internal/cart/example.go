@@ -3,7 +3,6 @@ package cart
 import (
 	"log"
 
-	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -12,11 +11,11 @@ func ExampleCart() *[]Cart {
 	e := Cart{
 		ItemId:   "f6d655da-6fff-11ee-b3bc-e86a6465f38b",
 		Quantity: 1,
-		ItemProperties: items.ItemPreviewProperties{
+		ItemProperties: CartItemPreviewProperties{
 			Name:  "クラウディ・エンチャント",
-			Price: 2480,
-			Details: items.ItemPreviewDetails{
-				Status: "Available",
+			Price: 2000,
+			Details: CartItemPreviewDetails{
+				Status: CartItemStatusAvailable,
 			},
 		},
 	}
@@ -36,9 +35,7 @@ func (p ExapleCartRequest) Get(ctx *gin.Context, i ICartDB, userId string) (*[]C
 func (c ExapleCartRequest) Register(p CartRequestPayload, i ICartDB, ctx *gin.Context) error {
 	log.Print("CartRequestPayload: ", p)
 	if p.Quantity <= 0 {
-		err := new(utils.InternalError)
-		err.SetError("Quantity is invalid")
-		return err
+		return &utils.InternalError{Message: utils.InternalErrorInvalidQuantity}
 	}
 	return nil
 }

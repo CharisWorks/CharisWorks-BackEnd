@@ -1,12 +1,22 @@
 package utils
 
 type InternalError struct {
-	Message string
+	Message InternalErrorMessage
 }
 
 func (e *InternalError) Error() string {
-	return e.Message
+	return string(e.Message)
 }
-func (e *InternalError) SetError(msg string) {
-	e.Message = msg
-}
+
+type InternalErrorMessage string
+
+const (
+	InternalErrorInvalidItem     InternalErrorMessage = "invalid item"
+	InternalErrorStockOver       InternalErrorMessage = "stock over"
+	InternalErrorInvalidQuantity InternalErrorMessage = "invalid quantity"
+	InternalErrorNoStock         InternalErrorMessage = "no stock"
+	InternalErrorInvalidPayload  InternalErrorMessage = "invaild payload"
+	InternalErrorInvalidQuery    InternalErrorMessage = "invalid Query"
+	InternalErrorInvalidParams   InternalErrorMessage = "invalid Params"
+	InternalErrorInvalidCart     InternalErrorMessage = "invalid cart"
+)

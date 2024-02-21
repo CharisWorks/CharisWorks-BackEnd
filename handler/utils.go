@@ -23,10 +23,8 @@ func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	bind := new(T)
 	err := ctx.BindJSON(&bind)
 	if err != nil {
-		err := new(utils.InternalError)
-		err.SetError("The request payload is malformed or contains invalid data.")
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The request payload is malformed or contains invalid data."})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
 	return bind, nil
 }
@@ -34,10 +32,8 @@ func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 func getQuery(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Query(params)
 	if itemId == "" {
-		err := new(utils.InternalError)
-		err.SetError("cannot get" + params)
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidQuery}
 	}
 	return &itemId, nil
 }
@@ -45,10 +41,8 @@ func getQuery(params string, ctx *gin.Context) (*string, error) {
 func getParams(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Param(params)
 	if itemId == "" {
-		err := new(utils.InternalError)
-		err.SetError("cannot get" + params)
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidParams}
 	}
 	return &itemId, nil
 }

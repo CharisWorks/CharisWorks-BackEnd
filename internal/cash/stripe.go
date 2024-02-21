@@ -6,6 +6,7 @@ import (
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/account"
@@ -129,10 +130,10 @@ func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartReque
 	if err != nil {
 		return nil, err
 	}
-	InspectedCart, err := CartUtils.InspectCart(*Carts)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+	InspectedCart, errList := CartUtils.InspectCart(*Carts)
+	if errList != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": errList})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
 	}
 	totalAmount := int64(CartUtils.GetTotalAmount(InspectedCart))
 

@@ -3,14 +3,16 @@ package cart
 import (
 	"net/http"
 
+	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
 type CartRequest struct {
 }
 
-func (c CartRequest) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils, userId string) (*[]Cart, error) {
+func (c CartRequest) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils, userId string) (cart *[]Cart, err error) {
 	resultCart := new([]Cart)
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
@@ -84,35 +86,26 @@ type CartUtils struct {
 }
 
 func (CartUtils CartUtils) InspectCart(internalCarts []internalCart) (result map[string]internalCart, err error) {
-	errorList := new([]string)
+
 	cartMap := map[string]Cart{}
 	for _, internalCart := range internalCarts {
 		if internalCart.itemStock < internalCart.Cart.Quantity {
-			internalCart.Cart.ItemProperties.Details.Status = "stock over"
-			err = &utils.InternalError{Message: "stock over"}
+			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusStockOver
+			err = &utils.InternalError{Message: utils.InternalErrorStockOver}
 		}
 		if internalCart.itemStock == 0 {
-			internalCart.Cart.ItemProperties.Details.Status = "no stock"
-			err = &utils.InternalError{Message: "no stock"}
+			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusNoStock
+			err = &utils.InternalError{Message: utils.InternalErrorNoStock}
 		}
-		if internalCart.status != "Available" {
-			internalCart.Cart.ItemProperties.Details.Status = internalCart.status
-			err = &utils.InternalError{Message: "invalid item"}
-		}
-		if err != nil {
-			*errorList = append(*errorList, internalCart.Cart.ItemId+": "+err.Error())
+		if internalCart.status != items.ItemStatusAvailable {
+			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusInvalidItem
+			err = &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 		}
 		err = nil
 		cartMap[internalCart.Cart.ItemId] = internalCart.Cart
 	}
-	if len(*errorList) != 0 {
-		mes := new(string)
-		for _, e := range *errorList {
-			*mes += e + "\n"
-		}
-		return result, &utils.InternalError{
-			Message: *mes,
-		}
+	if err != nil {
+		return result, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
 	}
 	return result, nil
 }
@@ -133,14 +126,14 @@ func (CartUtils CartUtils) GetTotalAmount(internalCarts map[string]internalCart)
 	return totalAmount
 }
 func (CartUtils CartUtils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus itemStatus) (result *CartRequestPayload, err error) {
-	if itemStatus.status != "Available" {
-		return nil, &utils.InternalError{Message: "invalid item"}
+	if itemStatus.status != items.ItemStatusAvailable {
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 	}
 	if CartRequestPayload.Quantity > itemStatus.itemStock {
-		return nil, &utils.InternalError{Message: "stock over"}
+		return nil, &utils.InternalError{Message: utils.InternalErrorStockOver}
 	}
 	if CartRequestPayload.Quantity == 0 {
-		return nil, &utils.InternalError{Message: "invalid quantity"}
+		return nil, &utils.InternalError{Message: utils.InternalErrorNoStock}
 	}
 	return &CartRequestPayload, nil
 }

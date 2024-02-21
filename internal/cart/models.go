@@ -6,10 +6,28 @@ import (
 )
 
 type Cart struct {
-	ItemId         string                      `json:"item_id"`
-	Quantity       int                         `json:"quantity"`
-	ItemProperties items.ItemPreviewProperties `json:"properties"`
+	ItemId         string                    `json:"item_id"`
+	Quantity       int                       `json:"quantity"`
+	ItemProperties CartItemPreviewProperties `json:"properties"`
 }
+type CartItemPreviewProperties struct {
+	Name    string                 `json:"name"`
+	Price   int                    `json:"price"`
+	Details CartItemPreviewDetails `json:"details"`
+}
+
+type CartItemPreviewDetails struct {
+	Status CartItemStatus `json:"status"`
+}
+type CartItemStatus string
+
+const (
+	CartItemStatusAvailable   CartItemStatus = "Available"
+	CartItemStatusStockOver   CartItemStatus = "Stock over"
+	CartItemStatusNoStock     CartItemStatus = "No stock"
+	CartItemStatusInvalidItem CartItemStatus = "Invalid item"
+)
+
 type CartRequestPayload struct {
 	ItemId   string `json:"item_id" binding:"required" `
 	Quantity int    `json:"quantity" binding:"required"`
@@ -17,11 +35,11 @@ type CartRequestPayload struct {
 type internalCart struct {
 	Cart      Cart
 	itemStock int
-	status    string
+	status    items.ItemStatus
 }
 type itemStatus struct {
 	itemStock int
-	status    string
+	status    items.ItemStatus
 }
 type ICartRequests interface {
 	Get(*gin.Context, ICartDB, ICartUtils, string) (*[]Cart, error)
