@@ -14,7 +14,10 @@ import (
 	"github.com/stripe/stripe-go/v76/paymentintent"
 )
 
-func CreateStripeAccount(ctx *gin.Context) (*string, error) {
+type StripeRequests struct {
+}
+
+func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string, error) {
 
 	email := ctx.MustGet("UserEmail").(string)
 	User := ctx.MustGet("User").(user.User)
@@ -87,7 +90,7 @@ func CreateAccountLink(ctx *gin.Context, StripeAccountId string) (*string, error
 	}
 	return &result.URL, nil
 }
-func GetMypage(ctx *gin.Context) (*string, error) {
+func (StripeRequests StripeRequests) GetStripeMypageLink(ctx *gin.Context) (*string, error) {
 	Account, err := GetAccount(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -121,8 +124,8 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	return result, nil
 }
 
-func CreatePaymentIntent(ctx *gin.Context, u ITransactionUtils, c cart.ICartRequest) (*string, error) {
-	Carts, err := c.Get(ctx)
+func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, u ITransactionUtils, CartRequests cart.ICartRequests, d cart.ICartDB) (*string, error) {
+	Carts, err := CartRequests.Get(ctx, d, ctx.MustGet("UserId").(string))
 	if err != nil {
 		return nil, err
 	}

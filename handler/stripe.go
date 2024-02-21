@@ -11,14 +11,14 @@ import (
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionImpl cash.ITransactionRequests) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
-			ClientSecret, err := cash.CreatePaymentIntent(ctx, cash.ExampleTransactionUtils{}, cart.ExapleCartRequest{})
+			ClientSecret, err := StripeRequests.GetClientSecret(ctx, cash.ExampleTransactionUtils{}, cart.ExapleCartRequest{}, cart.ExampleCartDB{})
 			if err != nil {
 				return
 			}
@@ -26,7 +26,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 
 		})
 		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
-			TransactionList, err := transactionImpl.GetTransactionList(ctx)
+			TransactionList, err := transactionRequests.GetTransactionList(ctx)
 			if err != nil {
 				return
 			}
@@ -37,7 +37,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 			if err != nil {
 				return
 			}
-			TransactionDetails, err := transactionImpl.GetTransactionDetails(ctx, *TransactionId)
+			TransactionDetails, err := transactionRequests.GetTransactionDetails(ctx, *TransactionId)
 			if err != nil {
 				return
 			}
@@ -51,7 +51,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 		StripeManufacturerRouter.Use(stripeMiddleware())
 		{
 			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
-				URL, err := cash.CreateStripeAccount(ctx)
+				URL, err := StripeRequests.GetRegisterLink(ctx)
 				if err != nil {
 					return
 				}
@@ -59,7 +59,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 
 			})
 			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-				URL, err := cash.GetMypage(ctx)
+				URL, err := StripeRequests.GetStripeMypageLink(ctx)
 				if err != nil {
 					return
 				}

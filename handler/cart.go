@@ -9,14 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, cartImpl cart.ICartRequest, userImpl user.IUserRequests) {
+func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRequests cart.ICartRequests, CartDB cart.ICartDB, UserRequests user.IUserRequests) {
 	CartRouter := h.Router.Group("/api/cart")
 	CartRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		CartRouter.Use(userMiddleware(userImpl))
+		CartRouter.Use(userMiddleware(UserRequests))
 		{
 			CartRouter.GET("", func(ctx *gin.Context) {
-				Cart, err := cartImpl.Get(ctx)
+				Cart, err := CartRequests.Get(ctx, CartDB, ctx.MustGet("UserId").(string))
 				if err != nil {
 					return
 				}
@@ -28,7 +28,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, cartIm
 				if err != nil {
 					return
 				}
-				err = cartImpl.Register(**payload, ctx)
+				err = CartRequests.Register(**payload, cart.ExampleCartDB{}, ctx)
 				if err != nil {
 					return
 				}
@@ -39,7 +39,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, cartIm
 				if err != nil {
 					return
 				}
-				err = cartImpl.Delete(*itemId, ctx)
+				err = CartRequests.Delete(*itemId, ctx)
 				if err != nil {
 					ctx.JSON(http.StatusBadRequest, err)
 					return

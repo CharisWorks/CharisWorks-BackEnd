@@ -9,7 +9,7 @@ import (
 func TestGET(t *testing.T) {
 	e := new(ExapleCartRequest)
 	ctx := new(gin.Context)
-	_, err := e.Get(ctx)
+	_, err := e.Get(ctx, ExampleCartDB{}, "")
 	if err != nil {
 		t.Errorf("error")
 	}
@@ -29,7 +29,7 @@ func TestCartRegister(t *testing.T) {
 	for _, tt := range goodCases {
 		t.Run(tt.name, func(t *testing.T) {
 			p := CartRequestPayload{tt.name, tt.Quantity}
-			err := e.Register(p, ctx)
+			err := e.Register(p, ExampleCartDB{}, ctx)
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -50,7 +50,7 @@ func TestCartRegister(t *testing.T) {
 	for _, tt := range badCases {
 		t.Run(tt.name, func(t *testing.T) {
 			p := CartRequestPayload{tt.name, tt.Quantity}
-			err := e.Register(p, ctx)
+			err := e.Register(p, ExampleCartDB{}, ctx)
 			if err == nil {
 				t.Errorf("error")
 			}
