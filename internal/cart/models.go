@@ -19,6 +19,10 @@ type internalCart struct {
 	itemStock int
 	status    string
 }
+type itemStatus struct {
+	itemStock int
+	status    string
+}
 type ICartRequests interface {
 	Get(*gin.Context, ICartDB, ICartUtils, string) (*[]Cart, error)
 	Register(CartRequestPayload, ICartDB, ICartUtils, *gin.Context, string) error
@@ -29,8 +33,11 @@ type ICartDB interface {
 	RegisterCart(userId string, c CartRequestPayload) error
 	UpdateCart(userId string, c CartRequestPayload) error
 	DeleteCart(userId string, itemId string) error
+	GetItem(itemId string) (*itemStatus, error)
 }
 type ICartUtils interface {
 	InspectCart([]internalCart) (map[string]internalCart, error)
 	ConvertCart(map[string]internalCart) *[]Cart
+	GetTotalAmount(map[string]internalCart) int
+	InspectPayload(c CartRequestPayload, itemStatus itemStatus) (*CartRequestPayload, error)
 }

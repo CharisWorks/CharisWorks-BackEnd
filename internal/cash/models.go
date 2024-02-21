@@ -7,7 +7,7 @@ import (
 )
 
 type IStripeRequests interface {
-	GetClientSecret(*gin.Context, ITransactionUtils, cart.ICartRequests, cart.ICartDB, cart.ICartUtils) (url *string, err error)
+	GetClientSecret(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils) (url *string, err error)
 	GetRegisterLink(*gin.Context) (url *string, err error)
 	GetStripeMypageLink(*gin.Context) (url *string, err error)
 }
@@ -29,8 +29,4 @@ type TransactionDetails struct {
 type ITransactionRequests interface {
 	GetTransactionList(*gin.Context) ([]TransactionPreview, error)
 	GetTransactionDetails(ctx *gin.Context, TransactionId string) (TransactionDetails, error)
-}
-type ITransactionUtils interface {
-	GetTotalAmount([]cart.Cart) int64
-	InspectCart([]cart.Cart) error
 }

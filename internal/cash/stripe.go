@@ -124,19 +124,21 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	return result, nil
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, u ITransactionUtils, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
-	Carts, err := CartRequests.Get(ctx, CartDB, CartUtils, ctx.MustGet("UserId").(string))
+func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+	Carts, err := CartDB.GetCart(ctx.MustGet("UserId").(string))
 	if err != nil {
 		return nil, err
 	}
-	err = u.InspectCart(*Carts)
+	InspectedCart, err := CartUtils.InspectCart(*Carts)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return nil, err
 	}
+	totalAmount := int64(CartUtils.GetTotalAmount(InspectedCart))
+
 	// Create a PaymentIntent with amount and currency
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(u.GetTotalAmount(*Carts)), //合計金額を算出する関数をインジェクト
+		Amount:   stripe.Int64(totalAmount), //合計金額を算出する関数をインジェクト
 		Currency: stripe.String(string(stripe.CurrencyJPY)),
 		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
 		PaymentMethodTypes: []*string{stripe.String("card"), stripe.String("konbini")},

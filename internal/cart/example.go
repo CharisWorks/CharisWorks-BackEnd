@@ -46,12 +46,15 @@ func (c ExapleCartRequest) Delete(itemId string, ctx *gin.Context) error {
 	log.Print("itemId: ", itemId)
 	return nil
 }
+func (c ExapleCartRequest) GetItem(itemid string) (*itemStatus, error) {
+	return nil, nil
+}
 
 type ExampleCartDB struct {
 }
 
-func (c ExampleCartDB) GetItem(itemId string) (*int, *string, error) {
-	return nil, nil, nil
+func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
+	return nil, nil
 }
 func (c ExampleCartDB) GetCart(userId string) (*[]internalCart, error) {
 	return nil, nil

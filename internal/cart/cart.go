@@ -34,14 +34,24 @@ func (c CartRequest) Register(CartRequestPayload CartRequestPayload, CartDB ICar
 	}
 	inspectedCart, _ := CartUtils.InspectCart(*internalCart)
 	_, exist := inspectedCart[CartRequestPayload.ItemId]
+	itemStatus, err := CartDB.GetItem(CartRequestPayload.ItemId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return err
+	}
+	InspectedCartRequestPayload, err := CartUtils.InspectPayload(CartRequestPayload, *itemStatus)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return err
+	}
 	if exist {
-		err = CartDB.UpdateCart(userId, CartRequestPayload)
+		err = CartDB.UpdateCart(userId, *InspectedCartRequestPayload)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return err
 		}
 	} else {
-		err = CartDB.RegisterCart(userId, CartRequestPayload)
+		err = CartDB.RegisterCart(userId, *InspectedCartRequestPayload)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return err
@@ -85,12 +95,12 @@ func (CartUtils CartUtils) InspectCart(internalCarts []internalCart) (result map
 			internalCart.Cart.ItemProperties.Details.Status = "no stock"
 			err = &utils.InternalError{Message: "no stock"}
 		}
-		if internalCart.status == "Available" {
+		if internalCart.status != "Available" {
 			internalCart.Cart.ItemProperties.Details.Status = internalCart.status
 			err = &utils.InternalError{Message: "invalid item"}
 		}
 		if err != nil {
-			*errorList = append(*errorList, err.Error()+": "+internalCart.Cart.ItemId)
+			*errorList = append(*errorList, internalCart.Cart.ItemId+": "+err.Error())
 		}
 		err = nil
 		cartMap[internalCart.Cart.ItemId] = internalCart.Cart
@@ -114,4 +124,23 @@ func (CartUtils CartUtils) ConvertCart(internalCarts map[string]internalCart) (r
 		*result = append(*result, *Cart)
 	}
 	return result
+}
+func (CartUtils CartUtils) GetTotalAmount(internalCarts map[string]internalCart) int {
+	totalAmount := 0
+	for _, internalCart := range internalCarts {
+		totalAmount += internalCart.Cart.ItemProperties.Price
+	}
+	return totalAmount
+}
+func (CartUtils CartUtils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus itemStatus) (result *CartRequestPayload, err error) {
+	if itemStatus.status != "Available" {
+		return nil, &utils.InternalError{Message: "invalid item"}
+	}
+	if CartRequestPayload.Quantity > itemStatus.itemStock {
+		return nil, &utils.InternalError{Message: "stock over"}
+	}
+	if CartRequestPayload.Quantity == 0 {
+		return nil, &utils.InternalError{Message: "invalid quantity"}
+	}
+	return &CartRequestPayload, nil
 }

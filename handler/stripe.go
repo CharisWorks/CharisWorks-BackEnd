@@ -18,7 +18,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
-			ClientSecret, err := StripeRequests.GetClientSecret(ctx, cash.ExampleTransactionUtils{}, cart.CartRequest{}, cart.ExampleCartDB{}, cart.CartUtils{})
+			ClientSecret, err := StripeRequests.GetClientSecret(ctx, cart.CartRequest{}, cart.ExampleCartDB{}, cart.CartUtils{})
 			if err != nil {
 				return
 			}
