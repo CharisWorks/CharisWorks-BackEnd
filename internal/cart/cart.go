@@ -3,16 +3,13 @@ package cart
 import (
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/items"
-	"github.com/charisworks/charisworks-backend/internal/utils"
-
 	"github.com/gin-gonic/gin"
 )
 
-type CartRequest struct {
+type CartRequests struct {
 }
 
-func (c CartRequest) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils, userId string) (cart *[]Cart, err error) {
+func (c CartRequests) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils, userId string) (cart *[]Cart, err error) {
 	resultCart := new([]Cart)
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
@@ -28,7 +25,7 @@ func (c CartRequest) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils,
 	return resultCart, nil
 }
 
-func (c CartRequest) Register(CartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
+func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
@@ -62,7 +59,7 @@ func (c CartRequest) Register(CartRequestPayload CartRequestPayload, CartDB ICar
 	return nil
 }
 
-func (c CartRequest) Delete(itemId string, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
+func (c CartRequests) Delete(itemId string, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
@@ -80,60 +77,4 @@ func (c CartRequest) Delete(itemId string, CartDB ICartDB, CartUtils ICartUtils,
 		return err
 	}
 	return nil
-}
-
-type CartUtils struct {
-}
-
-func (CartUtils CartUtils) InspectCart(internalCarts []internalCart) (result map[string]internalCart, err error) {
-
-	cartMap := map[string]Cart{}
-	for _, internalCart := range internalCarts {
-		if internalCart.itemStock < internalCart.Cart.Quantity {
-			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusStockOver
-			err = &utils.InternalError{Message: utils.InternalErrorStockOver}
-		}
-		if internalCart.itemStock == 0 {
-			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusNoStock
-			err = &utils.InternalError{Message: utils.InternalErrorNoStock}
-		}
-		if internalCart.status != items.ItemStatusAvailable {
-			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusInvalidItem
-			err = &utils.InternalError{Message: utils.InternalErrorInvalidItem}
-		}
-		err = nil
-		cartMap[internalCart.Cart.ItemId] = internalCart.Cart
-	}
-	if err != nil {
-		return result, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
-	}
-	return result, nil
-}
-
-func (CartUtils CartUtils) ConvertCart(internalCarts map[string]internalCart) (result *[]Cart) {
-	for _, inteinternalCart := range internalCarts {
-		Cart := new(Cart)
-		Cart = &inteinternalCart.Cart
-		*result = append(*result, *Cart)
-	}
-	return result
-}
-func (CartUtils CartUtils) GetTotalAmount(internalCarts map[string]internalCart) int {
-	totalAmount := 0
-	for _, internalCart := range internalCarts {
-		totalAmount += internalCart.Cart.ItemProperties.Price
-	}
-	return totalAmount
-}
-func (CartUtils CartUtils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus itemStatus) (result *CartRequestPayload, err error) {
-	if itemStatus.status != items.ItemStatusAvailable {
-		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
-	}
-	if CartRequestPayload.Quantity > itemStatus.itemStock {
-		return nil, &utils.InternalError{Message: utils.InternalErrorStockOver}
-	}
-	if CartRequestPayload.Quantity == 0 {
-		return nil, &utils.InternalError{Message: utils.InternalErrorNoStock}
-	}
-	return &CartRequestPayload, nil
 }

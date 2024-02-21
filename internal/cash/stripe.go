@@ -130,9 +130,9 @@ func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartReque
 	if err != nil {
 		return nil, err
 	}
-	InspectedCart, errList := CartUtils.InspectCart(*Carts)
-	if errList != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": errList})
+	InspectedCart, err := CartUtils.InspectCart(*Carts)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err})
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
 	}
 	totalAmount := int64(CartUtils.GetTotalAmount(InspectedCart))
