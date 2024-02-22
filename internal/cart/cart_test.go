@@ -1,70 +1,21 @@
 package cart
 
 import (
+	"log"
+	"reflect"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
-	"github.com/gin-gonic/gin"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
-func TestGET(t *testing.T) {
-	e := new(ExapleCartRequest)
-	ctx := new(gin.Context)
-	_, err := e.Get(ctx, ExampleCartDB{}, "")
-	if err != nil {
-		t.Errorf("error")
-	}
-}
-func TestCartRegister(t *testing.T) {
-	e := new(ExapleCartRequest)
-	ctx := new(gin.Context)
-	goodCases := []struct {
-		name     string
-		ItemId   string
-		Quantity int
-	}{
-		{
-			"正常なパターン", "a", 1,
-		},
-	}
-	for _, tt := range goodCases {
-		t.Run(tt.name, func(t *testing.T) {
-			p := CartRequestPayload{tt.name, tt.Quantity}
-			err := e.Register(p, ExampleCartDB{}, ctx)
-			if err != nil {
-				t.Errorf("error")
-			}
-		})
-	}
-	badCases := []struct {
-		name     string
-		ItemId   string
-		Quantity int
-	}{
-		{
-			"0はエラー", "b", 0,
-		},
-		{
-			"負数なのでエラー", "c", -1,
-		},
-	}
-	for _, tt := range badCases {
-		t.Run(tt.name, func(t *testing.T) {
-			p := CartRequestPayload{tt.name, tt.Quantity}
-			err := e.Register(p, ExampleCartDB{}, ctx)
-			if err == nil {
-				t.Errorf("error")
-			}
-		})
-	}
-}
-
 func TestCartUtils_InspectCart(t *testing.T) {
-	utils := new(CartUtils)
-	goodCases := []struct {
+	CartUtils := new(CartUtils)
+	Cases := []struct {
 		name string
 		cart []internalCart
 		want map[string]internalCart
+		err  utils.InternalErrorMessage
 	}{
 		{
 			name: "正常",
@@ -133,6 +84,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 					itemStock: 1,
 					status:    items.ItemStatusAvailable,
 				}},
+			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "在庫なし",
@@ -167,6 +119,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 					itemStock: 0,
 					status:    items.ItemStatusAvailable,
 				}},
+			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "無効な商品",
@@ -201,6 +154,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 					itemStock: 4,
 					status:    items.ItemStatusExpired,
 				}},
+			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "無効な商品で在庫なしの場合は無効な商品がエラーとして優先される",
@@ -235,6 +189,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 					itemStock: 0,
 					status:    items.ItemStatusExpired,
 				}},
+			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "同じ商品が2つ登録されている場合に一つとして表示されるか",
@@ -285,16 +240,269 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				}},
 		},
 	}
-	for _, tt := range goodCases {
+	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			internalCart := tt.cart
-			inspectedCart, _ := utils.InspectCart(internalCart)
-
+			inspectedCart, err := CartUtils.InspectCart(internalCart)
+			log.Print(err)
+			log.Print(tt.err)
 			for internalCart := range tt.want {
 				if inspectedCart[internalCart] != tt.want[internalCart] {
-					t.Errorf("error")
+					t.Errorf("%v,got,%v,want%v", tt.name, inspectedCart[internalCart], tt.want[internalCart])
 
 				}
+			}
+			if err != nil {
+				if utils.InternalErrorMessage(err.Error()) != tt.err {
+					t.Errorf("%v,got,%v,want%v", tt.name, err.Error(), tt.err)
+				}
+			}
+
+		})
+	}
+
+}
+
+func TestCartUtils_InspectPayload(t *testing.T) {
+	e := new(CartUtils)
+	Cases := []struct {
+		name    string
+		Payload CartRequestPayload
+		Status  itemStatus
+		want    *CartRequestPayload
+		err     utils.InternalErrorMessage
+	}{
+		{
+			name: "正常なパターン",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			Status: itemStatus{
+				itemStock: 3,
+				status:    items.ItemStatusAvailable,
+			},
+			want: &CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+		}, {
+			name: "在庫足りない",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			Status: itemStatus{
+				itemStock: 1,
+				status:    items.ItemStatusAvailable,
+			},
+			want: nil,
+			err:  utils.InternalErrorStockOver,
+		}, {
+			name: "在庫ない",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			Status: itemStatus{
+				itemStock: 0,
+				status:    items.ItemStatusAvailable,
+			},
+			want: nil,
+			err:  utils.InternalErrorNoStock,
+		}, {
+			name: "無効な商品",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			Status: itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusExpired,
+			},
+			want: nil,
+			err:  utils.InternalErrorInvalidItem,
+		}, {
+			name: "在庫切れだけど無効な商品だと無効な商品のエラーを出す",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			Status: itemStatus{
+				itemStock: 0,
+				status:    items.ItemStatusExpired,
+			},
+			want: nil,
+			err:  utils.InternalErrorInvalidItem,
+		}, {
+			name: "無効なペイロード(0)",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 0,
+			},
+			Status: itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusExpired,
+			},
+			want: nil,
+			err:  utils.InternalErrorInvalidPayload,
+		}, {
+			name: "無効なペイロード(負数)",
+			Payload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: -3,
+			},
+			Status: itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusExpired,
+			},
+			want: nil,
+			err:  utils.InternalErrorInvalidPayload,
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+			InspectedPayload, err := e.InspectPayload(tt.Payload, tt.Status)
+			if !reflect.DeepEqual(InspectedPayload, tt.want) {
+				t.Errorf("want %v, got %v", tt.want, InspectedPayload)
+			}
+			if err != nil {
+				if utils.InternalErrorMessage(err.Error()) != tt.err {
+					t.Errorf("want %v, got %v", tt.err, err.Error())
+				}
+			}
+		})
+	}
+}
+
+func TestCartUtils_ConvertCart(t *testing.T) {
+	CartUtils := new(CartUtils)
+	Cases := []struct {
+		name          string
+		inspectedCart map[string]internalCart
+		want          []Cart
+	}{
+		{
+			name: "正常",
+			inspectedCart: map[string]internalCart{
+				"1": {
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			want: []Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+			log.Print(tt.inspectedCart)
+			Cart := CartUtils.ConvertCart(tt.inspectedCart)
+			log.Print(Cart)
+			log.Print(tt.want)
+			if !reflect.DeepEqual(Cart, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.want)
+
+			}
+
+		})
+	}
+
+}
+func TestCartUtils_GetTotalAmount(t *testing.T) {
+	CartUtils := new(CartUtils)
+	Cases := []struct {
+		name          string
+		inspectedCart map[string]internalCart
+		want          int
+	}{
+		{
+			name: "1つパターン",
+			inspectedCart: map[string]internalCart{
+				"1": {
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			want: 4000,
+		},
+		{
+			name: "2つパターン",
+			inspectedCart: map[string]internalCart{
+				"1": {
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+				"2": {
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 1,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 5000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			want: 9000,
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+			log.Print(tt.inspectedCart)
+			totalAmount := CartUtils.GetTotalAmount(tt.inspectedCart)
+			if totalAmount != tt.want {
+				t.Errorf("%v,got,%v,want%v", tt.name, totalAmount, tt.want)
+
 			}
 
 		})

@@ -48,13 +48,15 @@ func (c ExapleCartRequest) GetItem(itemid string) (*itemStatus, error) {
 }
 
 type ExampleCartDB struct {
+	itemStatus    *itemStatus
+	internalCarts *[]internalCart
 }
 
 func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
-	return nil, nil
+	return c.itemStatus, nil
 }
 func (c ExampleCartDB) GetCart(userId string) (*[]internalCart, error) {
-	return nil, nil
+	return c.internalCarts, nil
 }
 func (c ExampleCartDB) RegisterCart(userId string, CartRequestPayload CartRequestPayload) error {
 	return nil

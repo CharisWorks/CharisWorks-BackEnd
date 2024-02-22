@@ -55,7 +55,7 @@ type ICartDB interface {
 }
 type ICartUtils interface {
 	InspectCart([]internalCart) (map[string]internalCart, error)
-	ConvertCart(map[string]internalCart) *[]Cart
+	ConvertCart(map[string]internalCart) []Cart
 	GetTotalAmount(map[string]internalCart) int
 	InspectPayload(c CartRequestPayload, itemStatus itemStatus) (*CartRequestPayload, error)
 }

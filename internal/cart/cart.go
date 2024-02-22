@@ -10,19 +10,18 @@ type CartRequests struct {
 }
 
 func (c CartRequests) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils, userId string) (cart *[]Cart, err error) {
-	resultCart := new([]Cart)
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
 		return nil, err
 	}
 	inspectedCart, err := CartUtils.InspectCart(*internalCart)
-	resultCart = CartUtils.ConvertCart(inspectedCart)
+	resultCart := CartUtils.ConvertCart(inspectedCart)
 	if err != nil {
 		ctx.JSON(http.StatusOK, resultCart)
 		return nil, err
 	}
-	return resultCart, nil
+	return &resultCart, nil
 }
 
 func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
@@ -35,7 +34,7 @@ func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICa
 	_, exist := inspectedCart[CartRequestPayload.ItemId]
 	itemStatus, err := CartDB.GetItem(CartRequestPayload.ItemId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.JSON(http.StatusNotFound, err)
 		return err
 	}
 	InspectedCartRequestPayload, err := CartUtils.InspectPayload(CartRequestPayload, *itemStatus)
