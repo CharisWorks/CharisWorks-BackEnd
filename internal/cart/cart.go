@@ -25,11 +25,13 @@ func (c CartRequests) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils
 }
 
 func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
+
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
 		return err
 	}
+
 	inspectedCart, _ := CartUtils.InspectCart(*internalCart)
 	_, exist := inspectedCart[CartRequestPayload.ItemId]
 	itemStatus, err := CartDB.GetItem(CartRequestPayload.ItemId)

@@ -596,6 +596,28 @@ func TestCartRequests_Get(t *testing.T) {
 			want:          nil,
 			err:           &utils.InternalError{Message: utils.InternalErrorNotFound},
 		},
+		{
+			name: "無効なカート",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 0,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 0,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			want: nil,
+			err:  &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -606,6 +628,353 @@ func TestCartRequests_Get(t *testing.T) {
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
+			if err != nil {
+				if err.Error() != tt.err.Error() {
+					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
+				}
+			}
+		})
+	}
+
+}
+
+func TestCartRequests_Register(t *testing.T) {
+	CartRequests := new(CartRequests)
+	CartUtils := new(CartUtils)
+	CartDB := new(ExampleCartDB)
+
+	Cases := []struct {
+		name               string
+		internalCarts      *[]internalCart
+		CartRequestPayload CartRequestPayload
+		itemStatus         *itemStatus
+		DBerr              error
+		UpdateDBerr        error
+		registerDBerr      error
+		err                error
+	}{
+		{
+			name: "正常 存在する場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			DBerr: nil,
+			err:   nil,
+		},
+		{
+			name: "正常 存在しない場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			DBerr: nil,
+			err:   nil,
+		},
+		{
+			name:          "エラー カート取得失敗",
+			internalCarts: nil,
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			DBerr: &utils.InternalError{Message: utils.InternalErrorNotFound},
+			err:   &utils.InternalError{Message: utils.InternalErrorNotFound},
+		},
+		{
+			name: "エラー 商品が存在しない場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: nil,
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			DBerr: &utils.InternalError{Message: utils.InternalErrorNotFound},
+			err:   &utils.InternalError{Message: utils.InternalErrorNotFound},
+		},
+		{
+			name: "エラー カートエラー 存在する場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusInvalidItem,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			DBerr: nil,
+			err:   &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+		},
+		{
+			name: "エラー カートエラー 存在しない場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusInvalidItem,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			DBerr: nil,
+			err:   &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+		},
+		{
+			name: "ペイロードエラー 存在する場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: -1,
+			},
+			DBerr: nil,
+			err:   &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+		},
+		{
+			name: "ペイロードエラー 存在しない場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 0,
+			},
+			DBerr: nil,
+			err:   &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+		},
+		{
+			name: "ペイロードエラー 在庫オーバーの場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 8,
+			},
+			DBerr: nil,
+			err:   &utils.InternalError{Message: utils.InternalErrorStockOver},
+		},
+		{
+			name: "update  error",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "2",
+				Quantity: 2,
+			},
+			UpdateDBerr: &utils.InternalError{Message: utils.InternalErrorDB},
+			err:         &utils.InternalError{Message: utils.InternalErrorDB},
+		},
+		{
+			name: "register  error",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			registerDBerr: &utils.InternalError{Message: utils.InternalErrorDB},
+			err:           &utils.InternalError{Message: utils.InternalErrorDB},
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			CartDB.internalCarts = tt.internalCarts
+			CartDB.err = tt.DBerr
+			CartDB.updateerr = tt.UpdateDBerr
+			CartDB.registererror = tt.registerDBerr
+			CartDB.itemStatus = tt.itemStatus
+			err := CartRequests.Register(tt.CartRequestPayload, CartDB, CartUtils, ctx, "test")
+
 			if err != nil {
 				if err.Error() != tt.err.Error() {
 					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)

@@ -20,4 +20,5 @@ const (
 	InternalErrorInvalidParams   InternalErrorMessage = "invalid Params"
 	InternalErrorInvalidCart     InternalErrorMessage = "invalid cart"
 	InternalErrorNotFound        InternalErrorMessage = "not found"
+	InternalErrorDB              InternalErrorMessage = "DB error"
 )

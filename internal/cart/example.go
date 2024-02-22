@@ -50,9 +50,16 @@ func (c ExapleCartRequest) GetItem(itemid string) (*itemStatus, error) {
 type ExampleCartDB struct {
 	itemStatus    *itemStatus
 	internalCarts *[]internalCart
+	err           error
+	updateerr     error
+	registererror error
+	deleteerror   error
 }
 
 func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
+	if c.err != nil {
+		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
+	}
 	return c.itemStatus, nil
 }
 func (c ExampleCartDB) GetCart(userId string) (*[]internalCart, error) {
@@ -62,11 +69,20 @@ func (c ExampleCartDB) GetCart(userId string) (*[]internalCart, error) {
 	return c.internalCarts, nil
 }
 func (c ExampleCartDB) RegisterCart(userId string, CartRequestPayload CartRequestPayload) error {
+	if c.registererror != nil {
+		return c.registererror
+	}
 	return nil
 }
 func (c ExampleCartDB) UpdateCart(userId string, CartRequestPayload CartRequestPayload) error {
+	if c.updateerr != nil {
+		return &utils.InternalError{Message: utils.InternalErrorDB}
+	}
 	return nil
 }
 func (c ExampleCartDB) DeleteCart(userId string, itemId string) error {
+	if c.deleteerror != nil {
+		return &utils.InternalError{Message: utils.InternalErrorDB}
+	}
 	return nil
 }
