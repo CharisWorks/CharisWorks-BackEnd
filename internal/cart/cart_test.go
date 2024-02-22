@@ -2,11 +2,13 @@ package cart
 
 import (
 	"log"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func TestCartUtils_InspectCart(t *testing.T) {
@@ -505,6 +507,110 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 
 			}
 
+		})
+	}
+
+}
+
+func TestCartRequests_Get(t *testing.T) {
+	CartRequests := new(CartRequests)
+	CartUtils := new(CartUtils)
+	CartDB := new(ExampleCartDB)
+
+	Cases := []struct {
+		name          string
+		internalCarts *[]internalCart
+		want          *[]Cart
+		err           error
+	}{
+		{
+			name: "正常",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "無効な商品",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusInvalidItem,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusInvalidItem,
+						},
+					},
+				},
+			},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+		},
+		{
+			name:          "カートが存在しない",
+			internalCarts: nil,
+			want:          nil,
+			err:           &utils.InternalError{Message: utils.InternalErrorNotFound},
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			CartDB.internalCarts = tt.internalCarts
+			result, err := CartRequests.Get(ctx, CartDB, CartUtils, "test")
+			if !reflect.DeepEqual(result, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
+			}
+			if err != nil {
+				if err.Error() != tt.err.Error() {
+					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
+				}
+			}
 		})
 	}
 

@@ -56,6 +56,9 @@ func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
 	return c.itemStatus, nil
 }
 func (c ExampleCartDB) GetCart(userId string) (*[]internalCart, error) {
+	if c.internalCarts == nil {
+		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
+	}
 	return c.internalCarts, nil
 }
 func (c ExampleCartDB) RegisterCart(userId string, CartRequestPayload CartRequestPayload) error {
