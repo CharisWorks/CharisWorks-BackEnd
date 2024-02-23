@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
 func TestGetClientSecret(t *testing.T) {
 	StripeRequests := new(StripeRequests)
 	CartRequests := new(cart.CartRequests)

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/charisworks/charisworks-backend/handler"
 	"github.com/charisworks/charisworks-backend/internal/cart"
-	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/user"
@@ -25,6 +24,6 @@ func main() {
 	h.SetupRoutesForUser(app, user.ExampleUserRequests{})
 	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.ExampleCartDB{}, user.ExampleUserRequests{}, cart.CartUtils{})
 	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{})
+	/* h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}) */
 	h.Router.Run("localhost:8080")
 }

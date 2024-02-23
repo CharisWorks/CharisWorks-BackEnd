@@ -49,6 +49,15 @@ type UserAddressRegisterPayload struct {
 	Address3      string `json:"address_3"`
 	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
+
+type HistoryUser struct {
+	HistoryUserId string    `json:"history_user_id"`
+	UserId        string    `json:"user_id"`
+	DisplayName   string    `json:"display_name"`
+	Description   string    `json:"description"`
+	CreatedAt     time.Time `json:"crated_at"`
+}
+
 type IUserRequests interface {
 	UserCreate(UserId string, ctx *gin.Context) error
 	UserGet(UserID string, ctx *gin.Context) (*User, error)
@@ -72,4 +81,8 @@ type IUserDB interface {
 	UpdateProfile(UserProfile) error
 	RegisterAddress(UserAddressRegisterPayload) error
 	UpdateAddress(UserAddress) error
+}
+type IUserDBHistory interface {
+	GetUser(UserId string) (*User, error)
+	CreateUser(User) error
 }

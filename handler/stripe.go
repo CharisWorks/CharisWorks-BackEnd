@@ -25,13 +25,13 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 			ctx.JSON(http.StatusOK, gin.H{"clientSecret": ClientSecret})
 
 		})
-		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
+		/* StripeRouter.GET("/transaction", func(ctx *gin.Context) {
 			TransactionList, err := transactionRequests.GetTransactionList(ctx)
 			if err != nil {
 				return
 			}
 			ctx.JSON(http.StatusOK, TransactionList)
-		})
+		}) */
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
 			TransactionId, err := getQuery("transactionId", true, ctx)
 			if err != nil {
