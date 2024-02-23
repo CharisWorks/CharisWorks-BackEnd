@@ -1,0 +1,17 @@
+services:
+  db:
+    image: mariadb:latest
+    container_name: mock_db
+    tty: true
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      # この行がないと起動しない
+      MYSQL_DATABASE: CharisWorks
+      TZ: "Asia/Tokyo"
+    volumes:
+      - ./sql_init:/docker-entrypoint-initdb.d
+
+volumes:
+  data-volume:
