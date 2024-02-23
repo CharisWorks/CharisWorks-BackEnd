@@ -29,20 +29,26 @@ func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	return bind, nil
 }
 
-func getQuery(params string, ctx *gin.Context) (*string, error) {
+func getQuery(params string, isRequired bool, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Query(params)
 	if itemId == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+		if isRequired {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidQuery}
+		}
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidQuery}
 	}
 	return &itemId, nil
 }
 
-func getParams(params string, ctx *gin.Context) (*string, error) {
+func getParams(params string, isRequired bool, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Param(params)
 	if itemId == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
-		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidParams}
+		if isRequired {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidParams}
+		}
+		return nil, nil
 	}
 	return &itemId, nil
 }

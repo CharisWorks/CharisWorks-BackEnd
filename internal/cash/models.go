@@ -7,7 +7,7 @@ import (
 )
 
 type IStripeRequests interface {
-	GetClientSecret(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils) (url *string, err error)
+	GetClientSecret(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils, string) (url *string, err error)
 	GetRegisterLink(*gin.Context) (url *string, err error)
 	GetStripeMypageLink(*gin.Context) (url *string, err error)
 }

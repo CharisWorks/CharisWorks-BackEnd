@@ -49,40 +49,41 @@ type ExapleCartRequest struct {
 	}
 */
 type ExampleCartDB struct {
-	itemStatus    *itemStatus
-	internalCarts *[]internalCart
-	err           error
-	updateerr     error
-	registererror error
-	deleteerror   error
+	ItemStatus      *itemStatus
+	InternalCarts   *[]InternalCart
+	ItemSelectError error
+	SelectError     error
+	UpdateError     error
+	RegisterError   error
+	DeleteError     error
 }
 
 func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
-	if c.err != nil {
+	if c.ItemSelectError != nil {
 		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
 	}
-	return c.itemStatus, nil
+	return c.ItemStatus, nil
 }
-func (c ExampleCartDB) GetCart(userId string) (*[]internalCart, error) {
-	if c.internalCarts == nil {
-		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
+func (c ExampleCartDB) GetCart(userId string) (*[]InternalCart, error) {
+	if c.SelectError != nil {
+		return nil, &utils.InternalError{Message: utils.InternalErrorMessage(c.SelectError.Error())}
 	}
-	return c.internalCarts, nil
+	return c.InternalCarts, nil
 }
 func (c ExampleCartDB) RegisterCart(userId string, CartRequestPayload CartRequestPayload) error {
-	if c.registererror != nil {
-		return c.registererror
+	if c.RegisterError != nil {
+		return c.RegisterError
 	}
 	return nil
 }
 func (c ExampleCartDB) UpdateCart(userId string, CartRequestPayload CartRequestPayload) error {
-	if c.updateerr != nil {
+	if c.UpdateError != nil {
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
 func (c ExampleCartDB) DeleteCart(userId string, itemId string) error {
-	if c.deleteerror != nil {
+	if c.DeleteError != nil {
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
