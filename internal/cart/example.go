@@ -1,52 +1,53 @@
 package cart
 
 import (
-	"log"
-
 	"github.com/charisworks/charisworks-backend/internal/utils"
-	"github.com/gin-gonic/gin"
 )
 
-func ExampleCart() *[]Cart {
-	e := Cart{
-		ItemId:   "f6d655da-6fff-11ee-b3bc-e86a6465f38b",
-		Quantity: 1,
-		ItemProperties: CartItemPreviewProperties{
-			Name:  "クラウディ・エンチャント",
-			Price: 2000,
-			Details: CartItemPreviewDetails{
-				Status: CartItemStatusAvailable,
+/*
+	func ExampleCart() *[]Cart {
+		e := Cart{
+			ItemId:   "f6d655da-6fff-11ee-b3bc-e86a6465f38b",
+			Quantity: 1,
+			ItemProperties: CartItemPreviewProperties{
+				Name:  "クラウディ・エンチャント",
+				Price: 2000,
+				Details: CartItemPreviewDetails{
+					Status: CartItemStatusAvailable,
+				},
 			},
-		},
-	}
-	re := new([]Cart)
-	cart := append(*re, e)
-	return &cart
+		}
+		re := new([]Cart)
+		cart := append(*re, e)
+		return &cart
 
 }
 
 type ExapleCartRequest struct {
 }
 
-func (p ExapleCartRequest) Get(ctx *gin.Context, i ICartDB, userId string) (*[]Cart, error) {
-	Cart := ExampleCart()
-	return Cart, nil
-}
-func (c ExapleCartRequest) Register(p CartRequestPayload, i ICartDB, ctx *gin.Context) error {
-	log.Print("CartRequestPayload: ", p)
-	if p.Quantity <= 0 {
-		return &utils.InternalError{Message: utils.InternalErrorInvalidQuantity}
+	func (p ExapleCartRequest) Get(ctx *gin.Context, i ICartDB, userId string) (*[]Cart, error) {
+		Cart := ExampleCart()
+		return Cart, nil
 	}
-	return nil
-}
-func (c ExapleCartRequest) Delete(itemId string, ctx *gin.Context) error {
-	log.Print("itemId: ", itemId)
-	return nil
-}
-func (c ExapleCartRequest) GetItem(itemid string) (*itemStatus, error) {
-	return nil, nil
-}
 
+	func (c ExapleCartRequest) Register(p CartRequestPayload, i ICartDB, ctx *gin.Context) error {
+		log.Print("CartRequestPayload: ", p)
+		if p.Quantity <= 0 {
+			return &utils.InternalError{Message: utils.InternalErrorInvalidQuantity}
+		}
+		return nil
+	}
+
+	func (c ExapleCartRequest) Delete(itemId string, ctx *gin.Context) error {
+		log.Print("itemId: ", itemId)
+		return nil
+	}
+
+	func (c ExapleCartRequest) GetItem(itemid string) (*itemStatus, error) {
+		return nil, nil
+	}
+*/
 type ExampleCartDB struct {
 	itemStatus    *itemStatus
 	internalCarts *[]internalCart

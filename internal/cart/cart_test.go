@@ -984,3 +984,113 @@ func TestCartRequests_Register(t *testing.T) {
 	}
 
 }
+
+func TestCartRequests_Delete(t *testing.T) {
+	CartRequests := new(CartRequests)
+	CartUtils := new(CartUtils)
+	CartDB := new(ExampleCartDB)
+
+	Cases := []struct {
+		name          string
+		internalCarts *[]internalCart
+		itemId        string
+		DBerr         error
+		UpdateDBerr   error
+		RegisterDBerr error
+		DeleteDBerr   error
+		err           error
+	}{
+		{
+			name: "正常 存在する場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemId: "1",
+			DBerr:  nil,
+			err:    nil,
+		},
+		{
+			name: "エラー 対象が存在しない場合",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemId: "1",
+			DBerr:  nil,
+			err:    nil,
+		},
+		{
+			name:          "エラー カート取得失敗",
+			internalCarts: nil,
+			itemId:        "1",
+			DBerr:         &utils.InternalError{Message: utils.InternalErrorNotFound},
+			err:           &utils.InternalError{Message: utils.InternalErrorNotFound},
+		},
+		{
+			name: "delete  error",
+			internalCarts: &[]internalCart{
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					itemStock: 4,
+					status:    items.ItemStatusAvailable,
+				},
+			},
+			itemId:      "2",
+			DeleteDBerr: &utils.InternalError{Message: utils.InternalErrorDB},
+			err:         &utils.InternalError{Message: utils.InternalErrorDB},
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			CartDB.internalCarts = tt.internalCarts
+			CartDB.err = tt.DBerr
+			CartDB.deleteerror = tt.DeleteDBerr
+			err := CartRequests.Delete(tt.itemId, CartDB, CartUtils, ctx, "test")
+
+			if err != nil {
+				if err.Error() != tt.err.Error() {
+					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
+				}
+			}
+		})
+	}
+
+}
