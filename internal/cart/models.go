@@ -32,10 +32,10 @@ type CartRequestPayload struct {
 	ItemId   string `json:"item_id" binding:"required" `
 	Quantity int    `json:"quantity" binding:"required"`
 }
-type internalCart struct {
+type InternalCart struct {
 	Cart      Cart
-	itemStock int
-	status    items.ItemStatus
+	ItemStock int
+	Status    items.ItemStatus
 }
 type itemStatus struct {
 	itemStock int
@@ -47,15 +47,15 @@ type ICartRequests interface {
 	Delete(string, ICartDB, ICartUtils, *gin.Context, string) error
 }
 type ICartDB interface {
-	GetCart(userId string) (*[]internalCart, error)
+	GetCart(userId string) (*[]InternalCart, error)
 	RegisterCart(userId string, c CartRequestPayload) error
 	UpdateCart(userId string, c CartRequestPayload) error
 	DeleteCart(userId string, itemId string) error
 	GetItem(itemId string) (*itemStatus, error)
 }
 type ICartUtils interface {
-	InspectCart([]internalCart) (map[string]internalCart, error)
-	ConvertCart(map[string]internalCart) []Cart
-	GetTotalAmount(map[string]internalCart) int
+	InspectCart([]InternalCart) (map[string]InternalCart, error)
+	ConvertCart(map[string]InternalCart) []Cart
+	GetTotalAmount(map[string]InternalCart) int
 	InspectPayload(c CartRequestPayload, itemStatus itemStatus) (*CartRequestPayload, error)
 }

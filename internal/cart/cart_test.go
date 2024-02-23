@@ -1,7 +1,6 @@
 package cart
 
 import (
-	"log"
 	"net/http/httptest"
 	"reflect"
 	"testing"
@@ -15,13 +14,13 @@ func TestCartUtils_InspectCart(t *testing.T) {
 	CartUtils := new(CartUtils)
 	Cases := []struct {
 		name string
-		cart []internalCart
-		want map[string]internalCart
+		cart []InternalCart
+		want map[string]InternalCart
 		err  utils.InternalErrorMessage
 	}{
 		{
 			name: "正常",
-			cart: []internalCart{{
+			cart: []InternalCart{{
 				Cart: Cart{
 					ItemId:   "1",
 					Quantity: 2,
@@ -33,10 +32,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 4,
-				status:    items.ItemStatusAvailable,
+				ItemStock: 4,
+				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[string]internalCart{
+			want: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -49,13 +48,13 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				}},
 		},
 		{
 			name: "在庫足りない",
-			cart: []internalCart{{
+			cart: []InternalCart{{
 				Cart: Cart{
 					ItemId:   "1",
 					Quantity: 2,
@@ -67,10 +66,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 1,
-				status:    items.ItemStatusAvailable,
+				ItemStock: 1,
+				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[string]internalCart{
+			want: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -83,14 +82,14 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 1,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 1,
+					Status:    items.ItemStatusAvailable,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "在庫なし",
-			cart: []internalCart{{
+			cart: []InternalCart{{
 				Cart: Cart{
 					ItemId:   "1",
 					Quantity: 2,
@@ -102,10 +101,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 0,
-				status:    items.ItemStatusAvailable,
+				ItemStock: 0,
+				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[string]internalCart{
+			want: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -118,14 +117,14 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 0,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 0,
+					Status:    items.ItemStatusAvailable,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "無効な商品",
-			cart: []internalCart{{
+			cart: []InternalCart{{
 				Cart: Cart{
 					ItemId:   "1",
 					Quantity: 2,
@@ -137,10 +136,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 4,
-				status:    items.ItemStatusExpired,
+				ItemStock: 4,
+				Status:    items.ItemStatusExpired,
 			}},
-			want: map[string]internalCart{
+			want: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -153,14 +152,14 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusExpired,
+					ItemStock: 4,
+					Status:    items.ItemStatusExpired,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "無効な商品で在庫なしの場合は無効な商品がエラーとして優先される",
-			cart: []internalCart{{
+			cart: []InternalCart{{
 				Cart: Cart{
 					ItemId:   "1",
 					Quantity: 2,
@@ -172,10 +171,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 0,
-				status:    items.ItemStatusExpired,
+				ItemStock: 0,
+				Status:    items.ItemStatusExpired,
 			}},
-			want: map[string]internalCart{
+			want: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -188,14 +187,14 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 0,
-					status:    items.ItemStatusExpired,
+					ItemStock: 0,
+					Status:    items.ItemStatusExpired,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
 		{
 			name: "同じ商品が2つ登録されている場合に一つとして表示されるか",
-			cart: []internalCart{{
+			cart: []InternalCart{{
 				Cart: Cart{
 					ItemId:   "1",
 					Quantity: 2,
@@ -207,8 +206,8 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 7, //上書きされる
-				status:    items.ItemStatusAvailable,
+				ItemStock: 7, //上書きされる
+				Status:    items.ItemStatusAvailable,
 			}, {
 				Cart: Cart{
 					ItemId:   "1",
@@ -221,10 +220,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						},
 					},
 				},
-				itemStock: 4,
-				status:    items.ItemStatusAvailable,
+				ItemStock: 4,
+				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[string]internalCart{
+			want: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -237,8 +236,8 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				}},
 		},
 	}
@@ -246,8 +245,6 @@ func TestCartUtils_InspectCart(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			internalCart := tt.cart
 			inspectedCart, err := CartUtils.InspectCart(internalCart)
-			log.Print(err)
-			log.Print(tt.err)
 			for internalCart := range tt.want {
 				if inspectedCart[internalCart] != tt.want[internalCart] {
 					t.Errorf("%v,got,%v,want%v", tt.name, inspectedCart[internalCart], tt.want[internalCart])
@@ -381,12 +378,12 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 	CartUtils := new(CartUtils)
 	Cases := []struct {
 		name          string
-		inspectedCart map[string]internalCart
+		inspectedCart map[string]InternalCart
 		want          []Cart
 	}{
 		{
 			name: "正常",
-			inspectedCart: map[string]internalCart{
+			inspectedCart: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -399,8 +396,8 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			want: []Cart{
@@ -420,10 +417,7 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			log.Print(tt.inspectedCart)
 			Cart := CartUtils.ConvertCart(tt.inspectedCart)
-			log.Print(Cart)
-			log.Print(tt.want)
 			if !reflect.DeepEqual(Cart, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.want)
 
@@ -437,12 +431,12 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 	CartUtils := new(CartUtils)
 	Cases := []struct {
 		name          string
-		inspectedCart map[string]internalCart
+		inspectedCart map[string]InternalCart
 		want          int
 	}{
 		{
 			name: "1つパターン",
-			inspectedCart: map[string]internalCart{
+			inspectedCart: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -455,15 +449,15 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			want: 4000,
 		},
 		{
 			name: "2つパターン",
-			inspectedCart: map[string]internalCart{
+			inspectedCart: map[string]InternalCart{
 				"1": {
 					Cart: Cart{
 						ItemId:   "1",
@@ -476,8 +470,8 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 				"2": {
 					Cart: Cart{
@@ -491,8 +485,8 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			want: 9000,
@@ -500,7 +494,6 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			log.Print(tt.inspectedCart)
 			totalAmount := CartUtils.GetTotalAmount(tt.inspectedCart)
 			if totalAmount != tt.want {
 				t.Errorf("%v,got,%v,want%v", tt.name, totalAmount, tt.want)
@@ -519,13 +512,13 @@ func TestCartRequests_Get(t *testing.T) {
 
 	Cases := []struct {
 		name          string
-		internalCarts *[]internalCart
+		internalCarts *[]InternalCart
 		want          *[]Cart
 		err           error
 	}{
 		{
 			name: "正常",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -538,8 +531,8 @@ func TestCartRequests_Get(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			want: &[]Cart{
@@ -558,7 +551,7 @@ func TestCartRequests_Get(t *testing.T) {
 		},
 		{
 			name: "無効な商品",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -571,8 +564,8 @@ func TestCartRequests_Get(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			want: &[]Cart{
@@ -598,7 +591,7 @@ func TestCartRequests_Get(t *testing.T) {
 		},
 		{
 			name: "無効なカート",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -611,8 +604,8 @@ func TestCartRequests_Get(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 0,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 0,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			want: nil,
@@ -623,7 +616,7 @@ func TestCartRequests_Get(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			CartDB.internalCarts = tt.internalCarts
+			CartDB.InternalCarts = tt.internalCarts
 			result, err := CartRequests.Get(ctx, CartDB, CartUtils, "test")
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
@@ -645,7 +638,7 @@ func TestCartRequests_Register(t *testing.T) {
 
 	Cases := []struct {
 		name               string
-		internalCarts      *[]internalCart
+		internalCarts      *[]InternalCart
 		CartRequestPayload CartRequestPayload
 		itemStatus         *itemStatus
 		DBerr              error
@@ -655,7 +648,7 @@ func TestCartRequests_Register(t *testing.T) {
 	}{
 		{
 			name: "正常 存在する場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -668,8 +661,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -685,7 +678,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "正常 存在しない場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -698,8 +691,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -729,7 +722,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "エラー 商品が存在しない場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -742,8 +735,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: nil,
@@ -756,7 +749,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "エラー カートエラー 存在する場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -769,8 +762,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -786,7 +779,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "エラー カートエラー 存在しない場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -799,8 +792,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -816,7 +809,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "ペイロードエラー 存在する場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -829,8 +822,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -846,7 +839,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "ペイロードエラー 存在しない場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -859,8 +852,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -876,7 +869,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "ペイロードエラー 在庫オーバーの場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -889,8 +882,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -906,7 +899,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "update  error",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -919,8 +912,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -936,7 +929,7 @@ func TestCartRequests_Register(t *testing.T) {
 		},
 		{
 			name: "register  error",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -949,8 +942,8 @@ func TestCartRequests_Register(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemStatus: &itemStatus{
@@ -968,13 +961,12 @@ func TestCartRequests_Register(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			CartDB.internalCarts = tt.internalCarts
-			CartDB.err = tt.DBerr
-			CartDB.updateerr = tt.UpdateDBerr
-			CartDB.registererror = tt.registerDBerr
-			CartDB.itemStatus = tt.itemStatus
+			CartDB.InternalCarts = tt.internalCarts
+			CartDB.Err = tt.DBerr
+			CartDB.UpdateErr = tt.UpdateDBerr
+			CartDB.RegisterError = tt.registerDBerr
+			CartDB.ItemStatus = tt.itemStatus
 			err := CartRequests.Register(tt.CartRequestPayload, CartDB, CartUtils, ctx, "test")
-
 			if err != nil {
 				if err.Error() != tt.err.Error() {
 					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
@@ -992,7 +984,7 @@ func TestCartRequests_Delete(t *testing.T) {
 
 	Cases := []struct {
 		name          string
-		internalCarts *[]internalCart
+		internalCarts *[]InternalCart
 		itemId        string
 		DBerr         error
 		UpdateDBerr   error
@@ -1002,7 +994,7 @@ func TestCartRequests_Delete(t *testing.T) {
 	}{
 		{
 			name: "正常 存在する場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "1",
@@ -1015,8 +1007,8 @@ func TestCartRequests_Delete(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemId: "1",
@@ -1025,7 +1017,7 @@ func TestCartRequests_Delete(t *testing.T) {
 		},
 		{
 			name: "エラー 対象が存在しない場合",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -1038,8 +1030,8 @@ func TestCartRequests_Delete(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemId: "1",
@@ -1055,7 +1047,7 @@ func TestCartRequests_Delete(t *testing.T) {
 		},
 		{
 			name: "delete  error",
-			internalCarts: &[]internalCart{
+			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
 						ItemId:   "2",
@@ -1068,8 +1060,8 @@ func TestCartRequests_Delete(t *testing.T) {
 							},
 						},
 					},
-					itemStock: 4,
-					status:    items.ItemStatusAvailable,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
 				},
 			},
 			itemId:      "2",
@@ -1080,9 +1072,9 @@ func TestCartRequests_Delete(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			CartDB.internalCarts = tt.internalCarts
-			CartDB.err = tt.DBerr
-			CartDB.deleteerror = tt.DeleteDBerr
+			CartDB.InternalCarts = tt.internalCarts
+			CartDB.Err = tt.DBerr
+			CartDB.DeleteError = tt.DeleteDBerr
 			err := CartRequests.Delete(tt.itemId, CartDB, CartUtils, ctx, "test")
 
 			if err != nil {

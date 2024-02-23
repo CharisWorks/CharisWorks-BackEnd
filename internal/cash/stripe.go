@@ -125,11 +125,14 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	return result, nil
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
-	Carts, err := CartDB.GetCart(ctx.MustGet("UserId").(string))
+func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, UserId string) (*string, error) {
+	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+
+	Carts, err := CartDB.GetCart(UserId)
 	if err != nil {
 		return nil, err
 	}
+
 	InspectedCart, err := CartUtils.InspectCart(*Carts)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err})
