@@ -25,6 +25,6 @@ func main() {
 	h.SetupRoutesForUser(app, user.ExampleUserRequests{})
 	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.ExampleCartDB{}, user.ExampleUserRequests{}, cart.CartUtils{})
 	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{}, items.ExampleItemDB{})
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{}, items.ExampleItemDB{}, cash.ExampleTransactionDBHistory{})
 	h.Router.Run("localhost:8080")
 }

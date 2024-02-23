@@ -3,8 +3,6 @@ package cash
 import (
 	"time"
 
-	"github.com/charisworks/charisworks-backend/internal/items"
-
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/gin-gonic/gin"
 )
@@ -51,8 +49,8 @@ type TransactionItems struct {
 	Quantity      int    `json:"quantity"`
 }
 type ITransactionRequests interface {
-	GetTransactionList(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils, items.IItemDB) (*[]TransactionPreview, error)
-	GetTransactionDetails(ctx *gin.Context, TransactionId string) (TransactionDetails, error)
+	GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory, userId string) (*[]TransactionPreview, error)
+	GetTransactionDetails(ctx *gin.Context, TransactionId string) (*TransactionDetails, error)
 	CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, userId string) error
 }
 
@@ -67,9 +65,9 @@ type ITransactionDB interface {
 	ReduceStock(itemId string, Quantity int) error
 }
 
-type ITransactionDBhistory interface {
-	GetTransactionList(UserId string) ([]TransactionPreview, error)
-	GetTransactionDetails(TransactionId string) (TransactionDetails, error)
-	RegisterTransaction(UserId string, transactionDetails TransactionDetails) (string, error)
+type ITransactionDBHistory interface {
+	GetTransactionList(UserId string) (*[]TransactionPreview, error)
+	GetTransactionDetails(TransactionId string) (*TransactionDetails, error)
+	RegisterTransaction(UserId string, transactionDetails TransactionDetails) (*string, error)
 	TransactionStatusUpdate(string, TransactionStatus) error
 }
