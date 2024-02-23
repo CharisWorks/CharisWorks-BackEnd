@@ -515,6 +515,7 @@ func TestCartRequests_Get(t *testing.T) {
 		internalCarts *[]InternalCart
 		want          *[]Cart
 		err           error
+		SelectErrerr  error
 	}{
 		{
 			name: "正常",
@@ -588,6 +589,7 @@ func TestCartRequests_Get(t *testing.T) {
 			internalCarts: nil,
 			want:          nil,
 			err:           &utils.InternalError{Message: utils.InternalErrorNotFound},
+			SelectErrerr:  &utils.InternalError{Message: utils.InternalErrorNotFound},
 		},
 		{
 			name: "無効なカート",
@@ -617,6 +619,7 @@ func TestCartRequests_Get(t *testing.T) {
 
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
 			CartDB.InternalCarts = tt.internalCarts
+			CartDB.SelectError = tt.SelectErrerr
 			result, err := CartRequests.Get(ctx, CartDB, CartUtils, "test")
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
@@ -642,6 +645,7 @@ func TestCartRequests_Register(t *testing.T) {
 		CartRequestPayload CartRequestPayload
 		itemStatus         *itemStatus
 		DBerr              error
+		SelectErr          error
 		UpdateDBerr        error
 		registerDBerr      error
 		err                error
@@ -673,8 +677,6 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: 2,
 			},
-			DBerr: nil,
-			err:   nil,
 		},
 		{
 			name: "正常 存在しない場合",
@@ -707,6 +709,20 @@ func TestCartRequests_Register(t *testing.T) {
 			err:   nil,
 		},
 		{
+			name:          "正常 初めて登録する場合",
+			internalCarts: nil,
+			itemStatus: &itemStatus{
+				itemStock: 4,
+				status:    items.ItemStatusAvailable,
+			},
+			CartRequestPayload: CartRequestPayload{
+				ItemId:   "1",
+				Quantity: 2,
+			},
+			SelectErr: &utils.InternalError{Message: utils.InternalErrorNotFound},
+			err:       &utils.InternalError{Message: utils.InternalErrorNotFound},
+		},
+		{
 			name:          "エラー カート取得失敗",
 			internalCarts: nil,
 			itemStatus: &itemStatus{
@@ -717,8 +733,8 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: 2,
 			},
-			DBerr: &utils.InternalError{Message: utils.InternalErrorNotFound},
-			err:   &utils.InternalError{Message: utils.InternalErrorNotFound},
+			SelectErr: &utils.InternalError{Message: utils.InternalErrorDB},
+			err:       &utils.InternalError{Message: utils.InternalErrorDB},
 		},
 		{
 			name: "エラー 商品が存在しない場合",
@@ -774,8 +790,7 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: 2,
 			},
-			DBerr: nil,
-			err:   &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidCart},
 		},
 		{
 			name: "エラー カートエラー 存在しない場合",
@@ -804,8 +819,7 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: 2,
 			},
-			DBerr: nil,
-			err:   &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidCart},
 		},
 		{
 			name: "ペイロードエラー 存在する場合",
@@ -834,8 +848,7 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: -1,
 			},
-			DBerr: nil,
-			err:   &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		},
 		{
 			name: "ペイロードエラー 存在しない場合",
@@ -864,8 +877,7 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: 0,
 			},
-			DBerr: nil,
-			err:   &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		},
 		{
 			name: "ペイロードエラー 在庫オーバーの場合",
@@ -894,8 +906,7 @@ func TestCartRequests_Register(t *testing.T) {
 				ItemId:   "1",
 				Quantity: 8,
 			},
-			DBerr: nil,
-			err:   &utils.InternalError{Message: utils.InternalErrorStockOver},
+			err: &utils.InternalError{Message: utils.InternalErrorStockOver},
 		},
 		{
 			name: "update  error",
@@ -962,8 +973,9 @@ func TestCartRequests_Register(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
 			CartDB.InternalCarts = tt.internalCarts
-			CartDB.Err = tt.DBerr
-			CartDB.UpdateErr = tt.UpdateDBerr
+			CartDB.ItemSelectError = tt.DBerr
+			CartDB.SelectError = tt.SelectErr
+			CartDB.UpdateError = tt.UpdateDBerr
 			CartDB.RegisterError = tt.registerDBerr
 			CartDB.ItemStatus = tt.itemStatus
 			err := CartRequests.Register(tt.CartRequestPayload, CartDB, CartUtils, ctx, "test")
@@ -986,7 +998,7 @@ func TestCartRequests_Delete(t *testing.T) {
 		name          string
 		internalCarts *[]InternalCart
 		itemId        string
-		DBerr         error
+		SelectError   error
 		UpdateDBerr   error
 		RegisterDBerr error
 		DeleteDBerr   error
@@ -1012,8 +1024,6 @@ func TestCartRequests_Delete(t *testing.T) {
 				},
 			},
 			itemId: "1",
-			DBerr:  nil,
-			err:    nil,
 		},
 		{
 			name: "エラー 対象が存在しない場合",
@@ -1035,15 +1045,13 @@ func TestCartRequests_Delete(t *testing.T) {
 				},
 			},
 			itemId: "1",
-			DBerr:  nil,
-			err:    nil,
 		},
 		{
 			name:          "エラー カート取得失敗",
 			internalCarts: nil,
 			itemId:        "1",
-			DBerr:         &utils.InternalError{Message: utils.InternalErrorNotFound},
-			err:           &utils.InternalError{Message: utils.InternalErrorNotFound},
+			SelectError:   &utils.InternalError{Message: utils.InternalErrorDB},
+			err:           &utils.InternalError{Message: utils.InternalErrorDB},
 		},
 		{
 			name: "delete  error",
@@ -1073,8 +1081,8 @@ func TestCartRequests_Delete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
 			CartDB.InternalCarts = tt.internalCarts
-			CartDB.Err = tt.DBerr
 			CartDB.DeleteError = tt.DeleteDBerr
+			CartDB.SelectError = tt.SelectError
 			err := CartRequests.Delete(tt.itemId, CartDB, CartUtils, ctx, "test")
 
 			if err != nil {

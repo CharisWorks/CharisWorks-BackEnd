@@ -49,23 +49,24 @@ type ExapleCartRequest struct {
 	}
 */
 type ExampleCartDB struct {
-	ItemStatus    *itemStatus
-	InternalCarts *[]InternalCart
-	Err           error
-	UpdateErr     error
-	RegisterError error
-	DeleteError   error
+	ItemStatus      *itemStatus
+	InternalCarts   *[]InternalCart
+	ItemSelectError error
+	SelectError     error
+	UpdateError     error
+	RegisterError   error
+	DeleteError     error
 }
 
 func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
-	if c.Err != nil {
+	if c.ItemSelectError != nil {
 		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
 	}
 	return c.ItemStatus, nil
 }
 func (c ExampleCartDB) GetCart(userId string) (*[]InternalCart, error) {
-	if c.InternalCarts == nil {
-		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
+	if c.SelectError != nil {
+		return nil, &utils.InternalError{Message: utils.InternalErrorMessage(c.SelectError.Error())}
 	}
 	return c.InternalCarts, nil
 }
@@ -76,7 +77,7 @@ func (c ExampleCartDB) RegisterCart(userId string, CartRequestPayload CartReques
 	return nil
 }
 func (c ExampleCartDB) UpdateCart(userId string, CartRequestPayload CartRequestPayload) error {
-	if c.UpdateErr != nil {
+	if c.UpdateError != nil {
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
