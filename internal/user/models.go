@@ -50,11 +50,26 @@ type UserAddressRegisterPayload struct {
 	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
 type IUserRequests interface {
-	UserCreate(UserId string, c *gin.Context) error
-	UserGet(UserID string, c *gin.Context) (*User, error)
-	UserDelete(UserId string, c *gin.Context) error
+	UserCreate(UserId string, ctx *gin.Context) error
+	UserGet(UserID string, ctx *gin.Context) (*User, error)
+	UserDelete(UserId string, ctx *gin.Context) error
 	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
 	UserProfileUpdate(UserProfile, *gin.Context) error
 	UserAddressRegister(UserAddressRegisterPayload, *gin.Context) error
 	UserAddressUpdate(UserAddress, *gin.Context) error
+}
+type IUserUtils interface {
+	InspectProfileRegisterPayload(UserProfileRegisterPayload) error
+	InspectAddressRegisterPayload(UserAddressRegisterPayload) error
+	InspectProfileUpdatePayload(UserProfile) error
+	InspectAddressUpdatePayload(UserAddress) error
+}
+type IUserDB interface {
+	CreateUser(User) error
+	GetUser(UserId string) (*User, error)
+	DeleteUser(UserId string) error
+	RegisterProfile(UserProfileRegisterPayload) error
+	UpdateProfile(UserProfile) error
+	RegisterAddress(UserAddressRegisterPayload) error
+	UpdateAddress(UserAddress) error
 }

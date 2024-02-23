@@ -36,7 +36,7 @@ func getQuery(params string, isRequired bool, ctx *gin.Context) (*string, error)
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
 			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidQuery}
 		}
-		return nil, nil
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidQuery}
 	}
 	return &itemId, nil
 }

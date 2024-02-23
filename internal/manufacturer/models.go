@@ -38,3 +38,14 @@ type IManufacturerRequests interface {
 	UpdateItem(ItemUpdatePayload, *gin.Context) error
 	DeleteItem(string, *gin.Context) error
 }
+
+type IManufactuerUtils interface {
+	InspectRegisterPayload(ItemRegisterPayload) error
+	InspectUpdatePayload(ItemUpdatePayload) error
+}
+
+type IManufacturerDB interface {
+	RegisterItem(ItemRegisterPayload) error
+	UpdateItem(ItemUpdatePayload) error
+	DeleteItem(string) error
+}
