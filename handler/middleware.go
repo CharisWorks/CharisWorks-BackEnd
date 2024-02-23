@@ -22,7 +22,7 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-func userMiddleware(i user.IUserRequests) gin.HandlerFunc {
+func userMiddleware(UserRequests user.IUserRequests) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		EmailVerified := ctx.MustGet("EmailVerified").(bool)
 		if !EmailVerified {
@@ -31,14 +31,14 @@ func userMiddleware(i user.IUserRequests) gin.HandlerFunc {
 			return
 		}
 		UserId := ctx.MustGet("UserId").(string)
-		User, err := i.UserGet(UserId, ctx)
+		User, err := UserRequests.UserGet(UserId, ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			ctx.Abort()
 			return
 		}
 		if User == nil {
-			err := i.UserCreate(UserId, ctx)
+			err := UserRequests.UserCreate(UserId, ctx)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, err)
 				ctx.Abort()

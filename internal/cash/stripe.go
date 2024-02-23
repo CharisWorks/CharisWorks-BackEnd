@@ -6,6 +6,7 @@ import (
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/account"
@@ -14,7 +15,10 @@ import (
 	"github.com/stripe/stripe-go/v76/paymentintent"
 )
 
-func CreateStripeAccount(ctx *gin.Context) (*string, error) {
+type StripeRequests struct {
+}
+
+func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string, error) {
 
 	email := ctx.MustGet("UserEmail").(string)
 	User := ctx.MustGet("User").(user.User)
@@ -87,7 +91,7 @@ func CreateAccountLink(ctx *gin.Context, StripeAccountId string) (*string, error
 	}
 	return &result.URL, nil
 }
-func GetMypage(ctx *gin.Context) (*string, error) {
+func (StripeRequests StripeRequests) GetStripeMypageLink(ctx *gin.Context) (*string, error) {
 	Account, err := GetAccount(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -121,19 +125,21 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	return result, nil
 }
 
-func CreatePaymentIntent(ctx *gin.Context, u ITransactionUtils, c cart.ICartRequest) (*string, error) {
-	Carts, err := c.Get(ctx)
+func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+	Carts, err := CartDB.GetCart(ctx.MustGet("UserId").(string))
 	if err != nil {
 		return nil, err
 	}
-	err = u.InspectCart(*Carts)
+	InspectedCart, err := CartUtils.InspectCart(*Carts)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
 	}
+	totalAmount := int64(CartUtils.GetTotalAmount(InspectedCart))
+
 	// Create a PaymentIntent with amount and currency
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(u.GetTotalAmount(*Carts)), //合計金額を算出する関数をインジェクト
+		Amount:   stripe.Int64(totalAmount), //合計金額を算出する関数をインジェクト
 		Currency: stripe.String(string(stripe.CurrencyJPY)),
 		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
 		PaymentMethodTypes: []*string{stripe.String("card"), stripe.String("konbini")},

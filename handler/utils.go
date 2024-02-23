@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -18,25 +19,12 @@ func NewHandler(router *gin.Engine) *Handler {
 	}
 }
 
-type internalError struct {
-	Message string
-}
-
-func (e *internalError) Error() string {
-	return e.Message
-}
-func (e *internalError) setError(msg string) {
-	e.Message = msg
-}
-
 func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	bind := new(T)
 	err := ctx.BindJSON(&bind)
 	if err != nil {
-		err := new(internalError)
-		err.setError("The request payload is malformed or contains invalid data.")
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The request payload is malformed or contains invalid data."})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
 	return bind, nil
 }
@@ -44,10 +32,8 @@ func getPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 func getQuery(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Query(params)
 	if itemId == "" {
-		err := new(internalError)
-		err.setError("cannot get" + params)
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidQuery}
 	}
 	return &itemId, nil
 }
@@ -55,10 +41,8 @@ func getQuery(params string, ctx *gin.Context) (*string, error) {
 func getParams(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Param(params)
 	if itemId == "" {
-		err := new(internalError)
-		err.setError("cannot get" + params)
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidParams}
 	}
 	return &itemId, nil
 }

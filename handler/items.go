@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForItem(itemsImpl items.IItemRequests) {
+func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests) {
 	itemGroup := h.Router.Group("/api/item")
 	{
 		itemGroup.GET("", func(ctx *gin.Context) {
 			// レスポンスの処理
-			PreviewList, err := itemsImpl.GetPreviewList(ctx)
+			PreviewList, err := ItemRequests.GetPreviewList(ctx)
 			if err != nil {
 				//error logなど
 				return
@@ -27,7 +27,7 @@ func (h *Handler) SetupRoutesForItem(itemsImpl items.IItemRequests) {
 			if err != nil {
 				return
 			}
-			Overview, err := itemsImpl.GetOverview(*itemId, ctx)
+			Overview, err := ItemRequests.GetOverview(*itemId, ctx)
 			if err != nil {
 				return
 			}
@@ -40,7 +40,7 @@ func (h *Handler) SetupRoutesForItem(itemsImpl items.IItemRequests) {
 			if err != nil {
 				return
 			}
-			PreviewList, err := itemsImpl.GetSearchPreviewList(strings.Split(*keywords, "+"), ctx)
+			PreviewList, err := ItemRequests.GetSearchPreviewList(strings.Split(*keywords, "+"), ctx)
 			if err != nil {
 				return
 			}

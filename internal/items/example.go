@@ -13,7 +13,7 @@ func ExampleItemPreview() []ItemPreview {
 			Name:  "クラウディ・エンチャント",
 			Price: 2480,
 			Details: ItemPreviewDetails{
-				Status: "Available",
+				Status: ItemStatusAvailable,
 			},
 		},
 	}
@@ -29,7 +29,7 @@ func ExampleItemOverview(itemId string) ItemOverview {
 			Name:  getStringPointer("クラウディ・エンチャント"),
 			Price: getIntPointer(2480),
 			Details: &ItemOverviewDetails{
-				Status:      getStringPointer("Available"),
+				Status:      ItemStatusAvailable,
 				Stock:       getIntPointer(1),
 				Size:        getIntPointer(10),
 				Description: getStringPointer("foo"),

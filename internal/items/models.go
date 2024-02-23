@@ -14,7 +14,7 @@ type ItemPreviewProperties struct {
 }
 
 type ItemPreviewDetails struct {
-	Status string `json:"status"`
+	Status ItemStatus `json:"status"`
 }
 
 type ItemOverview struct {
@@ -35,12 +35,20 @@ type ItemOverviewProperties struct {
 }
 
 type ItemOverviewDetails struct {
-	Status      *string   `json:"status"`
-	Stock       *int      `json:"stock"`
-	Size        *int      `json:"size"`
-	Description *string   `json:"description"`
-	Tags        *[]string `json:"tags"`
+	Status      ItemStatus `json:"status"`
+	Stock       *int       `json:"stock"`
+	Size        *int       `json:"size"`
+	Description *string    `json:"description"`
+	Tags        *[]string  `json:"tags"`
 }
+type ItemStatus string
+
+const (
+	ItemStatusAvailable ItemStatus = "Available"
+	ItemStatusExpired   ItemStatus = "Expired"
+	ItemStatusReady     ItemStatus = "Ready"
+)
+
 type IItemRequests interface {
 	GetOverview(string, *gin.Context) (*ItemOverview, error)
 	GetPreviewList(*gin.Context) (*[]ItemPreview, error)
