@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
-	"github.com/charisworks/charisworks-backend/internal/user"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/gin-gonic/gin"
@@ -20,6 +19,7 @@ type TransactionPreview struct {
 	TransactionId string             `json:"transaction_id"`
 	Items         []TransactionItems `json:"items"`
 	TransactionAt time.Time          `json:"transaction_at"`
+	Status        TransactionStatus  `json:"status"`
 }
 type TransactionDetails struct {
 	TransactionId string             `json:"transaction_id"`
@@ -27,7 +27,18 @@ type TransactionDetails struct {
 	UserAddress   TransactionAddress `json:"address"`
 	Items         []TransactionItems `json:"items"`
 	TransactionAt time.Time          `json:"transaction_at"`
+	Status        TransactionStatus  `json:"status"`
 }
+type TransactionStatus string
+
+const (
+	TransactionStatusPending  TransactionStatus = "Pending"
+	TransactionStatusComplete TransactionStatus = "Complete"
+	TransactionStatusCancel   TransactionStatus = "Cancel"
+	TransactionStatusFail     TransactionStatus = "Fail"
+	TransactionStatusRefund   TransactionStatus = "Refund"
+)
+
 type TransactionAddress struct {
 	ZipCode     string `json:"zip_code"`
 	Address     string `json:"address"`
@@ -40,15 +51,25 @@ type TransactionItems struct {
 	Quantity      int    `json:"quantity"`
 }
 type ITransactionRequests interface {
-	GetTransactionList(*gin.Context, user.IUserDB, items.IItemDB) ([]TransactionPreview, error)
+	GetTransactionList(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils, items.IItemDB) (*[]TransactionPreview, error)
 	GetTransactionDetails(ctx *gin.Context, TransactionId string) (TransactionDetails, error)
+	CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, userId string) error
 }
+
+type ITransactionStripeUtils interface {
+	PurchaseComplete(StipeTransactionId string) error
+	PurchaseCancel(StipeTransactionId string) error
+	PurchaseFail(StipeTransactionId string) error
+	PurchaseRefund(StipeTransactionId string) error
+}
+
 type ITransactionDB interface {
-	PurchaseComplete(TransactionDetails) (string, error)
+	ReduceStock(itemId string, Quantity int) error
 }
+
 type ITransactionDBhistory interface {
-	GetItem(ItemId string) (cart.Cart, error)
 	GetTransactionList(UserId string) ([]TransactionPreview, error)
 	GetTransactionDetails(TransactionId string) (TransactionDetails, error)
-	CreateTransaction(UserId string, transactionDetails TransactionDetails) (string, error)
+	RegisterTransaction(UserId string, transactionDetails TransactionDetails) (string, error)
+	TransactionStatusUpdate(string, TransactionStatus) error
 }

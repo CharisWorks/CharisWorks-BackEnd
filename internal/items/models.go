@@ -50,8 +50,8 @@ const (
 )
 
 type IItemRequests interface {
-	GetOverview(string, *gin.Context) (*ItemOverview, error)
-	GetSearchPreviewList(keywords *[]string, page *string, sort *string, manufacturer *string, ctx *gin.Context) (*[]ItemPreview, error)
+	GetOverview(string, IItemDB, *gin.Context) (*ItemOverview, error)
+	GetSearchPreviewList(keywords *[]string, page *string, sort *string, manufacturer *string, ItemDB IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error)
 }
 
 type IItemDB interface {
@@ -59,9 +59,6 @@ type IItemDB interface {
 	GetPreviewList(keywords *[]string, page *string, manufacturer *string) (*[]ItemPreview, error)
 }
 
-type IItemDBHistory interface {
-	GetItemOverview(itemId string) (*ItemOverview, error)
-}
 type IItemUtils interface {
 	SortItemsByHighPrice(items *[]ItemPreview) *[]ItemPreview
 	SortItemsByLowPrice(items *[]ItemPreview) *[]ItemPreview

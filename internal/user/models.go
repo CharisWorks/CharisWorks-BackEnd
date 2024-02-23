@@ -84,5 +84,5 @@ type IUserDB interface {
 }
 type IUserDBHistory interface {
 	GetUser(UserId string) (*User, error)
-	CreateUser(User) error
+	RegisterUserProfile(UserProfile UserProfile, UserId string) error
 }

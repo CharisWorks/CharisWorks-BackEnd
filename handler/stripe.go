@@ -5,13 +5,14 @@ import (
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
+	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/user"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartDB, cartUtils cart.ICartUtils, ItemDB items.IItemDB) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
@@ -25,13 +26,13 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 			ctx.JSON(http.StatusOK, gin.H{"clientSecret": ClientSecret})
 
 		})
-		/* StripeRouter.GET("/transaction", func(ctx *gin.Context) {
-			TransactionList, err := transactionRequests.GetTransactionList(ctx)
+		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
+			TransactionList, err := transactionRequests.GetTransactionList(ctx, CartRequests, cartDB, cartUtils, ItemDB)
 			if err != nil {
 				return
 			}
 			ctx.JSON(http.StatusOK, TransactionList)
-		}) */
+		})
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
 			TransactionId, err := getQuery("transactionId", true, ctx)
 			if err != nil {
