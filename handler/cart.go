@@ -15,14 +15,14 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRe
 	{
 		CartRouter.Use(userMiddleware(UserRequests))
 		{
-			CartRouter.GET("", func(ctx *gin.Context) {
+			CartRouter.GET("/", func(ctx *gin.Context) {
 				Cart, err := CartRequests.Get(ctx, CartDB, CartUtils, ctx.MustGet("UserId").(string))
 				if err != nil {
 					return
 				}
 				ctx.JSON(http.StatusOK, Cart)
 			})
-			CartRouter.POST("", func(ctx *gin.Context) {
+			CartRouter.POST("/", func(ctx *gin.Context) {
 				bindBody := new(cart.CartRequestPayload)
 				payload, err := getPayloadFromBody(ctx, &bindBody)
 				if err != nil {
@@ -34,8 +34,8 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRe
 				}
 				ctx.JSON(http.StatusOK, "Item was successfully registered")
 			})
-			CartRouter.DELETE("", func(ctx *gin.Context) {
-				itemId, err := getQuery("item_id", ctx)
+			CartRouter.DELETE("/", func(ctx *gin.Context) {
+				itemId, err := getQuery("item_id", true, ctx)
 				if err != nil {
 					return
 				}

@@ -39,7 +39,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
 			UserRouter.DELETE("/", func(ctx *gin.Context) {
-				itemId, err := getQuery("item_id", ctx)
+				itemId, err := getQuery("item_id", true, ctx)
 				if err != nil {
 					return
 				}

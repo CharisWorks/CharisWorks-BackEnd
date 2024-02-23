@@ -33,7 +33,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 			ctx.JSON(http.StatusOK, TransactionList)
 		})
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
-			TransactionId, err := getQuery("transactionId", ctx)
+			TransactionId, err := getQuery("transactionId", true, ctx)
 			if err != nil {
 				return
 			}

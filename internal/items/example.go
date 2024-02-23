@@ -56,11 +56,7 @@ func (i ExampleItemRequests) GetOverview(itemId string, ctx *gin.Context) (*Item
 	ItemOverview := ExampleItemOverview(itemId)
 	return &ItemOverview, nil
 }
-func (i ExampleItemRequests) GetPreviewList(ctx *gin.Context) (*[]ItemPreview, error) {
-	ItemPreview := ExampleItemPreview()
-	return &ItemPreview, nil
-}
-func (i ExampleItemRequests) GetSearchPreviewList(tags []string, ctx *gin.Context) (*[]ItemPreview, error) {
+func (i ExampleItemRequests) GetSearchPreviewList(tags *[]string, page *string, ctx *gin.Context) (*[]ItemPreview, error) {
 	log.Println("tags: ", tags)
 	ItemPreview := ExampleItemPreview()
 	return &ItemPreview, nil
