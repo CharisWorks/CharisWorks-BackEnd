@@ -1,6 +1,9 @@
 package cart
 
 import (
+	"log"
+	"sort"
+
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
@@ -32,11 +35,18 @@ func (CartUtils CartUtils) InspectCart(internalCarts []InternalCart) (result map
 }
 
 func (CartUtils CartUtils) ConvertCart(internalCarts map[string]InternalCart) (result []Cart) {
+	sortedCart := []InternalCart{}
 	for _, inteinternalCart := range internalCarts {
+		sortedCart = append(sortedCart, inteinternalCart)
+	}
+	sort.Slice(sortedCart, func(i, j int) bool { return sortedCart[i].Index < sortedCart[j].Index })
+	log.Print("sortedCart: ", sortedCart)
+	for _, inteinternalCart := range sortedCart {
 		Cart := new(Cart)
 		Cart = &inteinternalCart.Cart
 		result = append(result, *Cart)
 	}
+
 	return result
 }
 func (CartUtils CartUtils) GetTotalAmount(internalCarts map[string]InternalCart) int {

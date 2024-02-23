@@ -56,9 +56,13 @@ type IItemRequests interface {
 
 type IItemDB interface {
 	GetItemOverview(itemId string) (*ItemOverview, error)
-	GetPreviewList()
+	GetPreviewList(keywords *[]string, page *string) (*[]ItemPreview, error)
 }
 
 type IItemDBHistory interface {
 	GetItemOverview(itemId string) (*ItemOverview, error)
+}
+type IItemUtils interface {
+	SortItemsByPrice(items *[]ItemPreview) *[]ItemPreview
+	SortItemsByRecommendation(items *[]ItemPreview) *[]ItemPreview
 }

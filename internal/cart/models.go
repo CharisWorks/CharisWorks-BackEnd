@@ -33,6 +33,7 @@ type CartRequestPayload struct {
 	Quantity int    `json:"quantity" binding:"required"`
 }
 type InternalCart struct {
+	Index     int
 	Cart      Cart
 	ItemStock int
 	Status    items.ItemStatus

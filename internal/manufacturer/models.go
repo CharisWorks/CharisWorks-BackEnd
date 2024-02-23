@@ -2,12 +2,6 @@ package manufacturer
 
 import "github.com/gin-gonic/gin"
 
-type IManufacturerRequests interface {
-	RegisterItem(ItemRegisterPayload, *gin.Context) error
-	UpdateItem(ItemUpdatePayload, *gin.Context) error
-	DeleteItem(string, *gin.Context) error
-}
-
 type ItemRegisterPayload struct {
 	Name    *string                     `json:"name" binding:"required"`
 	Price   *int                        `json:"price" binding:"required"`
@@ -37,4 +31,10 @@ type ItemUpdateDetailsPayload struct {
 	Size        *int      `json:"size"`
 	Description *string   `json:"description" `
 	Tags        *[]string `json:"tags"`
+}
+
+type IManufacturerRequests interface {
+	RegisterItem(ItemRegisterPayload, *gin.Context) error
+	UpdateItem(ItemUpdatePayload, *gin.Context) error
+	DeleteItem(string, *gin.Context) error
 }

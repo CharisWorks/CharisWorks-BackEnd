@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"log"
 	"net/http/httptest"
 	"reflect"
 	"testing"
@@ -551,6 +552,93 @@ func TestCartRequests_Get(t *testing.T) {
 			},
 		},
 		{
+			name: "正常 DBから取得してきた順番に並び替える",
+			internalCarts: &[]InternalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					Index:     0,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+				{
+					Cart: Cart{
+						ItemId:   "3",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					Index:     2,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					Index:     1,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+				{
+					ItemId:   "2",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				}, {
+					ItemId:   "3",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "無効な商品",
 			internalCarts: &[]InternalCart{
 				{
@@ -621,6 +709,7 @@ func TestCartRequests_Get(t *testing.T) {
 			CartDB.InternalCarts = tt.internalCarts
 			CartDB.SelectError = tt.SelectErrerr
 			result, err := CartRequests.Get(ctx, CartDB, CartUtils, "test")
+			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
