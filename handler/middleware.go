@@ -58,7 +58,8 @@ func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.Ha
 func stripeMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet("User").(*user.User)
-		if !User.UserProfile.IsManufacturer {
+
+		if *User.Manufacturer.StripeAccountId == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
@@ -72,13 +73,8 @@ func stripeMiddleware() gin.HandlerFunc {
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet("User").(*user.User)
-		if !User.UserProfile.IsManufacturer {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
-			ctx.Abort()
-			return
-		}
 		if *User.Manufacturer.StripeAccountId == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "cannot get stripe account id"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
 		}

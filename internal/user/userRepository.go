@@ -34,12 +34,11 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 	user := new(User)
 	user.UserId = DBUser.Id
 	user.UserProfile = &UserProfile{
-		DisplayName:    DBUser.DisplayName,
-		Description:    DBUser.Description,
-		IsManufacturer: DBUser.StripeAccountId != "",
-		CreatedAt:      DBUser.CreatedAt,
+		DisplayName: DBUser.DisplayName,
+		Description: DBUser.Description,
+		CreatedAt:   DBUser.CreatedAt,
 	}
-	user.Manufacturer = &Manufacturer{
+	user.Manufacturer = Manufacturer{
 		StripeAccountId: &DBUser.StripeAccountId,
 	}
 	log.Print("user: ", user)
