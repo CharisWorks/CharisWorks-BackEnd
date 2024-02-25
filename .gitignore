@@ -1,1 +1,4 @@
 serviceAccountKey.json
+/test_server/docker/firebase/config/serviceAccountKey.json
+/test_server/docker/firebase/config
+/test_server/docker/firebase/bin

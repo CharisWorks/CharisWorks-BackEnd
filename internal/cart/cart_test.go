@@ -551,6 +551,7 @@ func TestCartRequests_Get(t *testing.T) {
 				},
 			},
 		},
+
 		{
 			name: "正常 DBから取得してきた順番に並び替える",
 			internalCarts: &[]InternalCart{

@@ -20,6 +20,8 @@ type FirebaseApp struct {
 // initialize app with ServiceAccountKey.json
 func NewFirebaseApp() (*FirebaseApp, error) {
 	opt := option.WithCredentialsFile("serviceAccountKey.json")
+	//opt = option.WithEndpoint("http://127.0.0.1:9099/identitytoolkit.googleapis.com")
+
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v\n", err)
@@ -41,6 +43,7 @@ func (app *FirebaseApp) VerifyIDToken(ctx *gin.Context) (string, error) {
 		log.Printf("error verifying ID token: %v\n", err)
 		return "", err
 	}
+	log.Print("Verified ID token: ", token.Claims["user_id"])
 	ctx.Set("UserEmail", token.Claims["email"].(string))
 	ctx.Set("UserId", token.Claims["user_id"].(string))
 	ctx.Set("EmailVerified", token.Claims["email_verified"].(bool))

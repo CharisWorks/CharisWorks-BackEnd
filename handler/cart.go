@@ -15,7 +15,9 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRe
 	{
 		CartRouter.Use(userMiddleware(UserRequests))
 		{
-			CartRouter.GET("/", func(ctx *gin.Context) {
+			CartRouter.GET("", func(ctx *gin.Context) {
+				ctx.JSON(http.StatusOK, "")
+
 				Cart, err := CartRequests.Get(ctx, CartDB, CartUtils, ctx.MustGet("UserId").(string))
 				if err != nil {
 					return

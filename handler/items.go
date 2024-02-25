@@ -29,9 +29,12 @@ func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemDB it
 			page, _ := getQuery("page", false, ctx)
 			sort, _ := getQuery("sort", false, ctx)
 			keywords, _ := getQuery("keyword", false, ctx)
-			keywordlist := strings.Split(*keywords, "+")
+			keywordlist := new([]string)
+			if keywords != nil {
+				*keywordlist = strings.Split(*keywords, "+")
+			}
 			manufacturer, _ := getQuery("manufacturer", false, ctx)
-			PreviewList, err := ItemRequests.GetSearchPreviewList(&keywordlist, page, sort, manufacturer, ItemDB, ItemUtils, ctx)
+			PreviewList, err := ItemRequests.GetSearchPreviewList(keywordlist, page, sort, manufacturer, ItemDB, ItemUtils, ctx)
 			if err != nil {
 				return
 			}
