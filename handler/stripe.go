@@ -19,7 +19,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
-			ClientSecret, err := StripeRequests.GetClientSecret(ctx, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{}, ctx.MustGet("UserId").(string))
+			ClientSecret, err := StripeRequests.GetClientSecret(ctx, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{})
 			if err != nil {
 				return
 			}
@@ -27,18 +27,14 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 
 		})
 		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
-			TransactionList, err := transactionRequests.GetTransactionList(ctx, TransactionDBHistory, ctx.MustGet("UserId").(string))
+			TransactionList, err := transactionRequests.GetTransactionList(ctx, TransactionDBHistory)
 			if err != nil {
 				return
 			}
 			ctx.JSON(http.StatusOK, TransactionList)
 		})
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
-			TransactionId, err := getQuery("transactionId", true, ctx)
-			if err != nil {
-				return
-			}
-			TransactionDetails, err := transactionRequests.GetTransactionDetails(ctx, *TransactionId)
+			TransactionDetails, err := transactionRequests.GetTransactionDetails(ctx)
 			if err != nil {
 				return
 			}

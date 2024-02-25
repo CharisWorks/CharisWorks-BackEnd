@@ -58,12 +58,12 @@ type HistoryUser struct {
 }
 
 type IUserRequests interface {
-	UserCreate(UserId string, ctx *gin.Context, UserDB IUserDB) error
-	UserGet(UserID string, ctx *gin.Context, UserDB IUserDB) (*User, error)
-	UserDelete(UserId string, ctx *gin.Context, UserDB IUserDB) error
-	UserProfileUpdate(UserProfile, *gin.Context, IUserDB) error
-	UserAddressRegister(UserAddressRegisterPayload, *gin.Context, IUserDB) error
-	UserAddressUpdate(UserAddress, *gin.Context, IUserDB) error
+	UserCreate(ctx *gin.Context, UserDB IUserDB) error
+	UserGet(ctx *gin.Context, UserDB IUserDB) (*User, error)
+	UserDelete(ctx *gin.Context, UserDB IUserDB) error
+	UserProfileUpdate(*gin.Context, IUserDB) error
+	UserAddressRegister(*gin.Context, IUserDB) error
+	UserAddressUpdate(*gin.Context, IUserDB) error
 }
 type IUserUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) error

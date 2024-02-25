@@ -1,16 +1,19 @@
 package cart
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type CartRequests struct {
 }
 
-func (c CartRequests) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils, userId string) (cart *[]Cart, err error) {
-	internalCart, err := CartDB.GetCart(userId)
+func (c CartRequests) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils) (cart *[]Cart, err error) {
+
+	internalCart, err := CartDB.GetCart(ctx.MustGet("UserId").(string))
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
 		return nil, err
@@ -24,9 +27,15 @@ func (c CartRequests) Get(ctx *gin.Context, CartDB ICartDB, CartUtils ICartUtils
 	return &resultCart, nil
 }
 
-func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
-
-	internalCart, err := CartDB.GetCart(userId)
+func (c CartRequests) Register(CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context) error {
+	UserId := ctx.MustGet("UserId").(string)
+	payload, err := utils.GetPayloadFromBody(ctx, &CartRequestPayload{})
+	if err != nil {
+		return err
+	}
+	CartRequestPayload := new(CartRequestPayload)
+	*CartRequestPayload = *payload
+	internalCart, err := CartDB.GetCart(UserId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
 		return err
@@ -39,19 +48,19 @@ func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICa
 		ctx.JSON(http.StatusNotFound, err)
 		return err
 	}
-	InspectedCartRequestPayload, err := CartUtils.InspectPayload(CartRequestPayload, *itemStatus)
+	InspectedCartRequestPayload, err := CartUtils.InspectPayload(*CartRequestPayload, *itemStatus)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 		return err
 	}
 	if exist {
-		err = CartDB.UpdateCart(userId, *InspectedCartRequestPayload)
+		err = CartDB.UpdateCart(UserId, *InspectedCartRequestPayload)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return err
 		}
 	} else {
-		err = CartDB.RegisterCart(userId, *InspectedCartRequestPayload)
+		err = CartDB.RegisterCart(UserId, *InspectedCartRequestPayload)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return err
@@ -60,19 +69,25 @@ func (c CartRequests) Register(CartRequestPayload CartRequestPayload, CartDB ICa
 	return nil
 }
 
-func (c CartRequests) Delete(itemId string, CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context, userId string) error {
-	internalCart, err := CartDB.GetCart(userId)
+func (c CartRequests) Delete(CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Context) error {
+	log.Print(ctx.Request.URL.Query())
+	itemId, err := utils.GetQuery("item_id", true, ctx)
+	if err != nil {
+		return err
+	}
+	UserId := ctx.MustGet("UserId").(string)
+	internalCart, err := CartDB.GetCart(UserId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "cannot get cart"})
 		return err
 	}
 	inspectedCart, _ := CartUtils.InspectCart(*internalCart)
-	_, exist := inspectedCart[itemId]
+	_, exist := inspectedCart[*itemId]
 	if !exist {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "this item is not exist in cart"})
 		return err
 	}
-	err = CartDB.DeleteCart(userId, itemId)
+	err = CartDB.DeleteCart(UserId, *itemId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return err

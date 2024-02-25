@@ -15,14 +15,14 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 	UserRouter.Use(userMiddleware(UserRequests, UserDB))
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
-			User, err := UserRequests.UserGet(ctx.MustGet("UserId").(string), ctx, UserDB)
+			User, err := UserRequests.UserGet(ctx, UserDB)
 			if err != nil {
 				return
 			}
 			ctx.JSON(http.StatusOK, User)
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
-			err := UserRequests.UserDelete(ctx.MustGet("UserId").(string), ctx, UserDB)
+			err := UserRequests.UserDelete(ctx, UserDB)
 			log.Print(err)
 			if err != nil {
 				return
@@ -31,34 +31,22 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 		})
 
 		UserRouter.PATCH("/profile", func(ctx *gin.Context) {
-			bindBody := new(user.UserProfile)
-			payload, err := getPayloadFromBody(ctx, &bindBody)
-			if err != nil {
-				return
-			}
-			err = UserRequests.UserProfileUpdate(**payload, ctx, UserDB)
+
+			err := UserRequests.UserProfileUpdate(ctx, UserDB)
 			if err != nil {
 				return
 			}
 		})
 		UserRouter.POST("/address", func(ctx *gin.Context) {
-			bindBody := new(user.UserAddressRegisterPayload)
-			payload, err := getPayloadFromBody(ctx, &bindBody)
-			if err != nil {
-				return
-			}
-			err = UserRequests.UserAddressRegister(**payload, ctx, UserDB)
+
+			err := UserRequests.UserAddressRegister(ctx, UserDB)
 			if err != nil {
 				return
 			}
 		})
 		UserRouter.PATCH("/address", func(ctx *gin.Context) {
-			bindBody := new(user.UserAddress)
-			payload, err := getPayloadFromBody(ctx, &bindBody)
-			if err != nil {
-				return
-			}
-			err = UserRequests.UserAddressUpdate(**payload, ctx, UserDB)
+
+			err := UserRequests.UserAddressUpdate(ctx, UserDB)
 			if err != nil {
 				return
 			}

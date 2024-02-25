@@ -1,25 +1,20 @@
 package manufacturer
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 )
 
 type ExampleManufacturerRequests struct {
 }
 
-func (m ExampleManufacturerRequests) RegisterItem(i ItemRegisterPayload, ctx *gin.Context) error {
-	log.Println("ItemRegisterPayload: ", i)
+func (m ExampleManufacturerRequests) RegisterItem(ctx *gin.Context) error {
 	return nil
 }
 
-func (m ExampleManufacturerRequests) UpdateItem(i ItemUpdatePayload, ctx *gin.Context) error {
-	log.Println("ItemUpdatePayload: ", i)
+func (m ExampleManufacturerRequests) UpdateItem(ctx *gin.Context) error {
 	return nil
 }
 
-func (m ExampleManufacturerRequests) DeleteItem(itemId string, ctx *gin.Context) error {
-	log.Println("itemId: ", itemId)
+func (m ExampleManufacturerRequests) DeleteItem(ctx *gin.Context) error {
 	return nil
 }

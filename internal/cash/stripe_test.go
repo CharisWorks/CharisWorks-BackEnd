@@ -111,8 +111,12 @@ func TestGetClientSecret(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			CartDB.SelectError = tt.SelectError
 			CartDB.InternalCarts = tt.cart
-			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			_, err := StripeRequests.GetClientSecret(ctx, CartRequests, CartDB, CartUtils, "test")
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			req := httptest.NewRequest("GET", "/stripe", nil)
+			ctx.Request = req
+			ctx.Set("UserId", "test")
+			_, err := StripeRequests.GetClientSecret(ctx, CartRequests, CartDB, CartUtils)
 
 			if err != nil {
 				log.Print(err)

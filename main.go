@@ -16,7 +16,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.ContextWithFallback = true
-	handler.CORS(r)
+	utils.CORS(r)
 	h := handler.NewHandler(r)
 	app, err := validation.NewFirebaseApp()
 	if err != nil {

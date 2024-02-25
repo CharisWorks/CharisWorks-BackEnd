@@ -31,8 +31,8 @@ func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.Ha
 			ctx.Abort()
 			return
 		}
-		UserId := ctx.MustGet("UserId").(string)
-		User, err := UserRequests.UserGet(UserId, ctx, UserDB)
+
+		User, err := UserRequests.UserGet(ctx, UserDB)
 		if err != nil && err.Error() != "record not found" {
 			ctx.JSON(http.StatusInternalServerError, err)
 			ctx.Abort()
@@ -40,7 +40,7 @@ func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.Ha
 		}
 		if User == nil {
 			log.Print("creating user for DB")
-			err := UserRequests.UserCreate(UserId, ctx, UserDB)
+			err := UserRequests.UserCreate(ctx, UserDB)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, err)
 				ctx.Abort()

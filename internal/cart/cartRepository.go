@@ -8,7 +8,7 @@ type CartDB struct {
 	DB *gorm.DB
 }
 
-func (c CartDB) GetCart(userId string) (*[]InternalCart, error) {
+func (c CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 
 	return nil, nil
 }

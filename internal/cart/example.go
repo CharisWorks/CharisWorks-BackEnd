@@ -26,7 +26,7 @@ import (
 type ExapleCartRequest struct {
 }
 
-	func (p ExapleCartRequest) Get(ctx *gin.Context, i ICartDB, userId string) (*[]Cart, error) {
+	func (p ExapleCartRequest) Get(ctx *gin.Context, i ICartDB, UserId string) (*[]Cart, error) {
 		Cart := ExampleCart()
 		return Cart, nil
 	}
@@ -64,25 +64,25 @@ func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
 	}
 	return c.ItemStatus, nil
 }
-func (c ExampleCartDB) GetCart(userId string) (*[]InternalCart, error) {
+func (c ExampleCartDB) GetCart(UserId string) (*[]InternalCart, error) {
 	if c.SelectError != nil {
 		return nil, &utils.InternalError{Message: utils.InternalErrorMessage(c.SelectError.Error())}
 	}
 	return c.InternalCarts, nil
 }
-func (c ExampleCartDB) RegisterCart(userId string, CartRequestPayload CartRequestPayload) error {
+func (c ExampleCartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayload) error {
 	if c.RegisterError != nil {
 		return c.RegisterError
 	}
 	return nil
 }
-func (c ExampleCartDB) UpdateCart(userId string, CartRequestPayload CartRequestPayload) error {
+func (c ExampleCartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload) error {
 	if c.UpdateError != nil {
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
-func (c ExampleCartDB) DeleteCart(userId string, itemId string) error {
+func (c ExampleCartDB) DeleteCart(UserId string, itemId string) error {
 	if c.DeleteError != nil {
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}

@@ -1,5 +1,6 @@
 package user
 
+/*
 import (
 	"log"
 	"time"
@@ -168,3 +169,4 @@ func (u ExampleUserRequests) UserCreate(UserId string, ctx *gin.Context) error {
 	log.Println("Create User for DB")
 	return nil
 }
+*/

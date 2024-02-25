@@ -3,7 +3,6 @@ package cash
 import (
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
@@ -76,8 +75,10 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return nil, err
 	}
-
-	URL, err := CreateAccountLink(ctx, a.ID)
+	User = ctx.MustGet("User").(*user.User)
+	User.Manufacturer.StripeAccountId = &a.ID
+	ctx.Set("User", User)
+	URL, err := CreateAccountLink(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return nil, err
@@ -86,9 +87,10 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 
 }
 
-func CreateAccountLink(ctx *gin.Context, StripeAccountId string) (*string, error) {
+func CreateAccountLink(ctx *gin.Context) (*string, error) {
+	StripeAccountId := ctx.MustGet("User").(*user.User).Manufacturer.StripeAccountId
 	params := &stripe.AccountLinkParams{
-		Account:    stripe.String(StripeAccountId),
+		Account:    stripe.String(*StripeAccountId),
 		RefreshURL: stripe.String("http://localhost:3000"),
 		ReturnURL:  stripe.String("http://localhost:3000"),
 		Type:       stripe.String("account_onboarding"),
@@ -142,9 +144,9 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, UserId string) (*string, error) {
-	stripe.Key = os.Getenv("STRIPE_API_KEY")
-
+func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+	UserId := ctx.MustGet("UserId").(string)
 	Carts, err := CartDB.GetCart(UserId)
 	if err != nil {
 		return nil, err
