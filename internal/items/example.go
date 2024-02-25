@@ -3,6 +3,7 @@ package items
 import (
 	"log"
 
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -51,13 +52,22 @@ func getIntPointer(i int) *int {
 type ExampleItemRequests struct {
 }
 
-func (i ExampleItemRequests) GetOverview(itemId string, ItemDB IItemDB, ctx *gin.Context) (*ItemOverview, error) {
+func (i ExampleItemRequests) GetOverview(ItemDB IItemDB, ctx *gin.Context) (*ItemOverview, error) {
+	itemId, err := utils.GetParams("itemId", true, ctx)
+	if err != nil {
+		return nil, err
+	}
 	log.Println("itemId: ", itemId)
-	ItemOverview := ExampleItemOverview(itemId)
+	ItemOverview := ExampleItemOverview(*itemId)
 	return &ItemOverview, nil
 }
-func (i ExampleItemRequests) GetSearchPreviewList(tags *[]string, page *string, sort *string, manufacturer *string, ItemDb IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
-	log.Println("tags: ", tags)
+func (i ExampleItemRequests) GetSearchPreviewList(ItemDb IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
+	//log.Println("tags: ", tags)
+	/* 	page, _ := utils.GetQuery("page", false, ctx)
+	   	sort, _ := utils.GetQuery("sort", false, ctx)
+	   	keywords, _ := utils.GetQuery("keyword", false, ctx)
+	   	keywordlist := strings.Split(*keywords, "+")
+	   	manufacturer, _ := utils.GetQuery("manufacturer", false, ctx) */
 	ItemPreview := ExampleItemPreview()
 	return &ItemPreview, nil
 }

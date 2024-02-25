@@ -34,9 +34,9 @@ type ItemUpdateDetailsPayload struct {
 }
 
 type IManufacturerRequests interface {
-	RegisterItem(ItemRegisterPayload, *gin.Context) error
-	UpdateItem(ItemUpdatePayload, *gin.Context) error
-	DeleteItem(string, *gin.Context) error
+	RegisterItem(*gin.Context) error
+	UpdateItem(*gin.Context) error
+	DeleteItem(*gin.Context) error
 }
 
 type IManufactuerUtils interface {

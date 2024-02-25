@@ -43,15 +43,15 @@ type itemStatus struct {
 	status    items.ItemStatus
 }
 type ICartRequests interface {
-	Get(*gin.Context, ICartDB, ICartUtils, string) (*[]Cart, error)
-	Register(CartRequestPayload, ICartDB, ICartUtils, *gin.Context, string) error
-	Delete(string, ICartDB, ICartUtils, *gin.Context, string) error
+	Get(*gin.Context, ICartDB, ICartUtils) (*[]Cart, error)
+	Register(ICartDB, ICartUtils, *gin.Context) error
+	Delete(ICartDB, ICartUtils, *gin.Context) error
 }
 type ICartDB interface {
-	GetCart(userId string) (*[]InternalCart, error)
-	RegisterCart(userId string, c CartRequestPayload) error
-	UpdateCart(userId string, c CartRequestPayload) error
-	DeleteCart(userId string, itemId string) error
+	GetCart(UserId string) (*[]InternalCart, error)
+	RegisterCart(UserId string, c CartRequestPayload) error
+	UpdateCart(UserId string, c CartRequestPayload) error
+	DeleteCart(UserId string, itemId string) error
 	GetItem(itemId string) (*itemStatus, error)
 }
 type ICartUtils interface {

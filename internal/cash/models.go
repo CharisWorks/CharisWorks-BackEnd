@@ -8,7 +8,7 @@ import (
 )
 
 type IStripeRequests interface {
-	GetClientSecret(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils, string) (url *string, err error)
+	GetClientSecret(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils) (url *string, err error)
 	GetRegisterLink(*gin.Context) (url *string, err error)
 	GetStripeMypageLink(*gin.Context) (url *string, err error)
 }
@@ -49,9 +49,9 @@ type TransactionItems struct {
 	Quantity      int    `json:"quantity"`
 }
 type ITransactionRequests interface {
-	GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory, userId string) (*[]TransactionPreview, error)
-	GetTransactionDetails(ctx *gin.Context, TransactionId string) (*TransactionDetails, error)
-	CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, userId string) error
+	GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error)
+	GetTransactionDetails(ctx *gin.Context) (*TransactionDetails, error)
+	CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) error
 }
 
 type ITransactionStripeUtils interface {

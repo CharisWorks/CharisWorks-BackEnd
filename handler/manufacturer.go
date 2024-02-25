@@ -15,35 +15,24 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 		UserRouter.Use(manufacturerMiddleware())
 		{
 			UserRouter.POST("/", func(ctx *gin.Context) {
-				bindBody := new(manufacturer.ItemRegisterPayload)
-				payload, err := getPayloadFromBody(ctx, &bindBody)
-				if err != nil {
-					return
-				}
-				err = ManufacturerRequests.RegisterItem(**payload, ctx)
+
+				err := ManufacturerRequests.RegisterItem(ctx)
 				if err != nil {
 					return
 				}
 				ctx.JSON(http.StatusOK, "Item was successfuly registered")
 			})
 			UserRouter.PATCH("/", func(ctx *gin.Context) {
-				bindBody := new(manufacturer.ItemUpdatePayload)
-				payload, err := getPayloadFromBody(ctx, &bindBody)
-				if err != nil {
-					return
-				}
-				err = ManufacturerRequests.UpdateItem(**payload, ctx)
+
+				err := ManufacturerRequests.UpdateItem(ctx)
 				if err != nil {
 					return
 				}
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
 			UserRouter.DELETE("/", func(ctx *gin.Context) {
-				itemId, err := getQuery("item_id", true, ctx)
-				if err != nil {
-					return
-				}
-				err = ManufacturerRequests.DeleteItem(*itemId, ctx)
+
+				err := ManufacturerRequests.DeleteItem(ctx)
 				if err != nil {
 					return
 				}

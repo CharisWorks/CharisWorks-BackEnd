@@ -1,34 +1,68 @@
 package user
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/charisworks/charisworks-backend/internal/utils"
+	"github.com/gin-gonic/gin"
+)
 
 type UserRequests struct {
 }
 
-func (r UserRequests) UserCreate(UserId string, ctx *gin.Context, UserDB IUserDB) error {
-	UserDB.CreateUser(UserId, 1)
+func (r UserRequests) UserCreate(ctx *gin.Context, UserDB IUserDB) error {
+	UserDB.CreateUser(ctx.MustGet("UserId").(string), 1)
 	return nil
 }
-func (r UserRequests) UserGet(UserId string, ctx *gin.Context, UserDB IUserDB) (*User, error) {
-	User, err := UserDB.GetUser(UserId)
+func (r UserRequests) UserGet(ctx *gin.Context, UserDB IUserDB) (*User, error) {
+	User, err := UserDB.GetUser(ctx.MustGet("UserId").(string))
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
 		return nil, err
 	}
 	return User, nil
 }
-func (r UserRequests) UserDelete(UserId string, ctx *gin.Context, UserDB IUserDB) error {
-	err := UserDB.DeleteUser(UserId)
+func (r UserRequests) UserDelete(ctx *gin.Context, UserDB IUserDB) error {
+	err := UserDB.DeleteUser(ctx.MustGet("UserId").(string))
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
 		return err
 	}
 	return nil
 }
-func (r UserRequests) UserProfileUpdate(p UserProfile, ctx *gin.Context, UserDB IUserDB) error {
+func (r UserRequests) UserProfileUpdate(ctx *gin.Context, UserDB IUserDB) error {
+	payload, err := utils.GetPayloadFromBody(ctx, &UserProfile{})
+	if err != nil {
+		return err
+	}
+	err = UserDB.UpdateProfile(ctx.MustGet("UserId").(string), *payload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
+		return err
+	}
 	return nil
 }
-func (r UserRequests) UserAddressRegister(p UserAddressRegisterPayload, ctx *gin.Context, UserDB IUserDB) error {
+func (r UserRequests) UserAddressRegister(ctx *gin.Context, UserDB IUserDB) error {
+	payload, err := utils.GetPayloadFromBody(ctx, &UserAddressRegisterPayload{})
+	if err != nil {
+		return err
+	}
+	err = UserDB.RegisterAddress(ctx.MustGet("UserId").(string), *payload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
+		return err
+	}
 	return nil
 }
-func (r UserRequests) UserAddressUpdate(p UserAddress, ctx *gin.Context, UserDB IUserDB) error {
+func (r UserRequests) UserAddressUpdate(ctx *gin.Context, UserDB IUserDB) error {
+	payload, err := utils.GetPayloadFromBody(ctx, &UserAddress{})
+	if err != nil {
+		return err
+	}
+	err = UserDB.UpdateAddress(ctx.MustGet("UserId").(string), *payload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
+		return err
+	}
 	return nil
 }

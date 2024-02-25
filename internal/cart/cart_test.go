@@ -1,9 +1,12 @@
 package cart
 
 import (
+	"io"
 	"log"
 	"net/http/httptest"
 	"reflect"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -708,7 +711,8 @@ func TestCartRequests_Get(t *testing.T) {
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
 			CartDB.InternalCarts = tt.internalCarts
 			CartDB.SelectError = tt.SelectErrerr
-			result, err := CartRequests.Get(ctx, CartDB, CartUtils, "test")
+			ctx.Set("UserId", "test")
+			result, err := CartRequests.Get(ctx, CartDB, CartUtils)
 			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
@@ -1060,14 +1064,21 @@ func TestCartRequests_Register(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+
 			CartDB.InternalCarts = tt.internalCarts
 			CartDB.ItemSelectError = tt.DBerr
 			CartDB.SelectError = tt.SelectErr
 			CartDB.UpdateError = tt.UpdateDBerr
 			CartDB.RegisterError = tt.registerDBerr
 			CartDB.ItemStatus = tt.itemStatus
-			err := CartRequests.Register(tt.CartRequestPayload, CartDB, CartUtils, ctx, "test")
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			req := httptest.NewRequest("POST", "/cart", nil)
+			req.Body = io.NopCloser(strings.NewReader(`{"item_id":"` + tt.CartRequestPayload.ItemId + `","quantity":` + strconv.Itoa(tt.CartRequestPayload.Quantity) + `}`))
+			ctx.Request = req
+			ctx.Set("UserId", "test")
+			err := CartRequests.Register(CartDB, CartUtils, ctx)
 			if err != nil {
 				if err.Error() != tt.err.Error() {
 					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
@@ -1168,11 +1179,19 @@ func TestCartRequests_Delete(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+
 			CartDB.InternalCarts = tt.internalCarts
 			CartDB.DeleteError = tt.DeleteDBerr
 			CartDB.SelectError = tt.SelectError
-			err := CartRequests.Delete(tt.itemId, CartDB, CartUtils, ctx, "test")
+
+			log.Print("pointer")
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			req := httptest.NewRequest("DELETE", "/cart?item_id="+tt.itemId, nil)
+			ctx.Request = req
+			ctx.Set("UserId", "test")
+			ctx.Request.URL.RawQuery = "item_id=" + tt.itemId
+			err := CartRequests.Delete(CartDB, CartUtils, ctx)
 
 			if err != nil {
 				if err.Error() != tt.err.Error() {

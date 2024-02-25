@@ -8,13 +8,13 @@ import (
 type ExampleTransactionRequests struct {
 }
 
-func (r ExampleTransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory, userId string) (*[]TransactionPreview, error) {
+func (r ExampleTransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error) {
 	return nil, nil
 }
-func (r ExampleTransactionRequests) GetTransactionDetails(ctx *gin.Context, TransactionId string) (*TransactionDetails, error) {
+func (r ExampleTransactionRequests) GetTransactionDetails(ctx *gin.Context) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionRequests) CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, userId string) error {
+func (r ExampleTransactionRequests) CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) error {
 	return nil
 }
 
@@ -24,13 +24,13 @@ type ExampleTransactionDBHistory struct {
 func (r ExampleTransactionDBHistory) CreateTransaction(TransactionDetails TransactionDetails) error {
 	return nil
 }
-func (r ExampleTransactionDBHistory) GetTransactionList(userId string) (*[]TransactionPreview, error) {
+func (r ExampleTransactionDBHistory) GetTransactionList(UserId string) (*[]TransactionPreview, error) {
 	return nil, nil
 }
 func (r ExampleTransactionDBHistory) GetTransactionDetails(TransactionId string) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionDBHistory) RegisterTransaction(userId string, TransactionDetails TransactionDetails) (*string, error) {
+func (r ExampleTransactionDBHistory) RegisterTransaction(UserId string, TransactionDetails TransactionDetails) (*string, error) {
 	return nil, nil
 }
 func (r ExampleTransactionDBHistory) TransactionStatusUpdate(TransactionId string, Status TransactionStatus) error {
@@ -40,7 +40,7 @@ func (r ExampleTransactionDBHistory) TransactionStatusUpdate(TransactionId strin
 /* type ExampleStripeRequests struct {
 }
 
-func (r ExampleStripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, userId string) (url *string, err error) {
+func (r ExampleStripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, UserId string) (url *string, err error) {
 	return nil, nil
 }
 func (r ExampleStripeRequests) GetRegisterLink(ctx *gin.Context) (url *string, err error) {

@@ -16,32 +16,23 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRe
 		CartRouter.Use(userMiddleware(UserRequests, UserDB))
 		{
 			CartRouter.GET("/", func(ctx *gin.Context) {
-				Cart, err := CartRequests.Get(ctx, CartDB, CartUtils, ctx.MustGet("UserId").(string))
+				Cart, err := CartRequests.Get(ctx, CartDB, CartUtils)
 				if err != nil {
 					return
 				}
 				ctx.JSON(http.StatusOK, Cart)
 			})
 			CartRouter.POST("/", func(ctx *gin.Context) {
-				bindBody := new(cart.CartRequestPayload)
-				payload, err := getPayloadFromBody(ctx, &bindBody)
-				if err != nil {
-					return
-				}
-				err = CartRequests.Register(**payload, CartDB, CartUtils, ctx, ctx.MustGet("UserId").(string))
+
+				err := CartRequests.Register(CartDB, CartUtils, ctx)
 				if err != nil {
 					return
 				}
 				ctx.JSON(http.StatusOK, "Item was successfully registered")
 			})
 			CartRouter.DELETE("/", func(ctx *gin.Context) {
-				itemId, err := getQuery("item_id", true, ctx)
+				err := CartRequests.Delete(CartDB, CartUtils, ctx)
 				if err != nil {
-					return
-				}
-				err = CartRequests.Delete(*itemId, CartDB, CartUtils, ctx, ctx.MustGet("UserId").(string))
-				if err != nil {
-					ctx.JSON(http.StatusBadRequest, err)
 					return
 				}
 				ctx.JSON(http.StatusOK, "Item was successfully deleted")
