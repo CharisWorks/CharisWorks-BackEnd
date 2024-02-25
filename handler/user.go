@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/user"
@@ -21,10 +22,12 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 			ctx.JSON(http.StatusOK, User)
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
-			err := UserRequests.UserDelete(ctx.MustGet("UserId").(string), ctx)
+			err := UserRequests.UserDelete(ctx.MustGet("UserId").(string), ctx, UserDB)
+			log.Print(err)
 			if err != nil {
 				return
 			}
+			ctx.JSON(http.StatusOK, gin.H{"message": "User was successfully deleted"})
 		})
 		UserRouter.POST("/profile", func(ctx *gin.Context) {
 			bindBody := new(user.UserProfileRegisterPayload)

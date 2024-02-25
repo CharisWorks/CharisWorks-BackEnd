@@ -60,7 +60,7 @@ type HistoryUser struct {
 type IUserRequests interface {
 	UserCreate(UserId string, ctx *gin.Context, UserDB IUserDB) error
 	UserGet(UserID string, ctx *gin.Context, UserDB IUserDB) (*User, error)
-	UserDelete(UserId string, ctx *gin.Context) error
+	UserDelete(UserId string, ctx *gin.Context, UserDB IUserDB) error
 	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
 	UserProfileUpdate(UserProfile, *gin.Context) error
 	UserAddressRegister(UserAddressRegisterPayload, *gin.Context) error

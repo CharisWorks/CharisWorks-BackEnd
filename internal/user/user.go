@@ -16,7 +16,11 @@ func (r UserRequests) UserGet(UserId string, ctx *gin.Context, UserDB IUserDB) (
 	}
 	return User, nil
 }
-func (r UserRequests) UserDelete(UserId string, ctx *gin.Context) error {
+func (r UserRequests) UserDelete(UserId string, ctx *gin.Context, UserDB IUserDB) error {
+	err := UserDB.DeleteUser(UserId)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 func (r UserRequests) UserProfileRegister(p UserProfileRegisterPayload, ctx *gin.Context) error {

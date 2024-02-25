@@ -27,7 +27,7 @@ func (r UserDB) CreateUser(UserId string, historyUserId int) error {
 }
 func (r UserDB) GetUser(UserId string) (*User, error) {
 	DBUser := new(utils.User)
-	result := r.DB.Where("id = ?", UserId).First(DBUser)
+	result := r.DB.Table("users").Where("id = ?", UserId).First(DBUser)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -45,7 +45,7 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 	return user, nil
 }
 func (r UserDB) DeleteUser(UserId string) error {
-	result := r.DB.Where("id = ?", UserId).Update("id", "")
+	result := r.DB.Table("users").Where("id = ?", UserId).Update("id", "deleted_"+UserId+"_"+time.Now().String())
 	if result.Error != nil {
 		return result.Error
 	}
