@@ -51,13 +51,41 @@ func getIntPointer(i int) *int {
 type ExampleItemRequests struct {
 }
 
-func (i ExampleItemRequests) GetOverview(itemId string, ctx *gin.Context) (*ItemOverview, error) {
+func (i ExampleItemRequests) GetOverview(itemId string, ItemDB IItemDB, ctx *gin.Context) (*ItemOverview, error) {
 	log.Println("itemId: ", itemId)
 	ItemOverview := ExampleItemOverview(itemId)
 	return &ItemOverview, nil
 }
-func (i ExampleItemRequests) GetSearchPreviewList(tags *[]string, page *string, sort *string, manufacturer *string, ctx *gin.Context) (*[]ItemPreview, error) {
+func (i ExampleItemRequests) GetSearchPreviewList(tags *[]string, page *string, sort *string, manufacturer *string, ItemDb IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
 	log.Println("tags: ", tags)
 	ItemPreview := ExampleItemPreview()
 	return &ItemPreview, nil
+}
+
+type ExampleItemDB struct {
+}
+
+func (i ExampleItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
+	ItemOverview := ExampleItemOverview(itemId)
+	return &ItemOverview, nil
+}
+func (i ExampleItemDB) GetPreviewList(keywords *[]string, page *string, manufacturer *string) (*[]ItemPreview, error) {
+	ItemPreview := ExampleItemPreview()
+	return &ItemPreview, nil
+}
+
+type ExampleItemUtils struct {
+}
+
+func (i ExampleItemUtils) SortItemsByHighPrice(items *[]ItemPreview) *[]ItemPreview {
+	return items
+}
+func (i ExampleItemUtils) SortItemsByLowPrice(items *[]ItemPreview) *[]ItemPreview {
+	return items
+}
+func (i ExampleItemUtils) SortItemsByRecommendation(items *[]ItemPreview) *[]ItemPreview {
+	return items
+}
+func (i ExampleItemUtils) SortItemsBySize(items *[]ItemPreview) *[]ItemPreview {
+	return items
 }

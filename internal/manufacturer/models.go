@@ -45,7 +45,10 @@ type IManufactuerUtils interface {
 }
 
 type IManufacturerDB interface {
-	RegisterItem(ItemRegisterPayload) error
-	UpdateItem(ItemUpdatePayload) error
-	DeleteItem(string) error
+	RegisterItem(i ItemRegisterPayload, history_item_id string) error
+	UpdateItem(i ItemUpdatePayload, history_item_id string) error
+	DeleteItem(itemId string) error
+}
+type IManufactuerDBHistory interface {
+	RegisterItemHistory(i ItemRegisterPayload) (history_item_id string, err error)
 }

@@ -21,10 +21,10 @@ func main() {
 	if err != nil {
 		return
 	}
-	h.SetupRoutesForItem(items.ExampleItemRequests{})
+	h.SetupRoutesForItem(items.ExampleItemRequests{}, items.ExampleItemDB{}, items.ExampleItemUtils{})
 	h.SetupRoutesForUser(app, user.ExampleUserRequests{})
 	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.ExampleCartDB{}, user.ExampleUserRequests{}, cart.CartUtils{})
 	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{})
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{}, items.ExampleItemDB{}, cash.ExampleTransactionDBHistory{})
 	h.Router.Run("localhost:8080")
 }
