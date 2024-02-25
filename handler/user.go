@@ -8,19 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, i user.IUserRequests) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests user.IUserRequests, UserDB user.IUserDB) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
+	UserRouter.Use(userMiddleware(UserRequests, UserDB))
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
-			User, err := i.UserGet(ctx.MustGet("UserId").(string), ctx)
+			User, err := UserRequests.UserGet(ctx.MustGet("UserId").(string), ctx, UserDB)
 			if err != nil {
 				return
 			}
 			ctx.JSON(http.StatusOK, User)
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
-			err := i.UserDelete(ctx.MustGet("UserId").(string), ctx)
+			err := UserRequests.UserDelete(ctx.MustGet("UserId").(string), ctx)
 			if err != nil {
 				return
 			}
@@ -31,7 +32,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, i user
 			if err != nil {
 				return
 			}
-			err = i.UserProfileRegister(**payload, ctx)
+			err = UserRequests.UserProfileRegister(**payload, ctx)
 			if err != nil {
 				return
 			}
@@ -42,7 +43,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, i user
 			if err != nil {
 				return
 			}
-			err = i.UserProfileUpdate(**payload, ctx)
+			err = UserRequests.UserProfileUpdate(**payload, ctx)
 			if err != nil {
 				return
 			}
@@ -53,7 +54,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, i user
 			if err != nil {
 				return
 			}
-			err = i.UserAddressRegister(**payload, ctx)
+			err = UserRequests.UserAddressRegister(**payload, ctx)
 			if err != nil {
 				return
 			}
@@ -64,7 +65,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, i user
 			if err != nil {
 				return
 			}
-			err = i.UserAddressUpdate(**payload, ctx)
+			err = UserRequests.UserAddressUpdate(**payload, ctx)
 			if err != nil {
 				return
 			}

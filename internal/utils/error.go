@@ -11,14 +11,15 @@ func (e *InternalError) Error() string {
 type InternalErrorMessage string
 
 const (
-	InternalErrorInvalidItem     InternalErrorMessage = "invalid item"
-	InternalErrorStockOver       InternalErrorMessage = "stock over"
-	InternalErrorInvalidQuantity InternalErrorMessage = "invalid quantity"
-	InternalErrorNoStock         InternalErrorMessage = "no stock"
-	InternalErrorInvalidPayload  InternalErrorMessage = "invaild payload"
-	InternalErrorInvalidQuery    InternalErrorMessage = "invalid Query"
-	InternalErrorInvalidParams   InternalErrorMessage = "invalid Params"
-	InternalErrorInvalidCart     InternalErrorMessage = "invalid cart"
-	InternalErrorNotFound        InternalErrorMessage = "not found"
-	InternalErrorDB              InternalErrorMessage = "DB error"
+	InternalErrorInvalidItem        InternalErrorMessage = "invalid item"
+	InternalErrorStockOver          InternalErrorMessage = "stock over"
+	InternalErrorInvalidQuantity    InternalErrorMessage = "invalid quantity"
+	InternalErrorNoStock            InternalErrorMessage = "no stock"
+	InternalErrorInvalidPayload     InternalErrorMessage = "invaild payload"
+	InternalErrorInvalidQuery       InternalErrorMessage = "invalid Query"
+	InternalErrorInvalidParams      InternalErrorMessage = "invalid Params"
+	InternalErrorInvalidCart        InternalErrorMessage = "invalid cart"
+	InternalErrorNotFound           InternalErrorMessage = "not found"
+	InternalErrorDB                 InternalErrorMessage = "DB error"
+	InternalErrorInvalidUserRequest InternalErrorMessage = "invalid user request"
 )

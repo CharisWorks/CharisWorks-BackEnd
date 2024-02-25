@@ -59,8 +59,8 @@ type HistoryUser struct {
 }
 
 type IUserRequests interface {
-	UserCreate(UserId string, ctx *gin.Context) error
-	UserGet(UserID string, ctx *gin.Context) (*User, error)
+	UserCreate(UserId string, ctx *gin.Context, UserDB IUserDB) error
+	UserGet(UserID string, ctx *gin.Context, UserDB IUserDB) (*User, error)
 	UserDelete(UserId string, ctx *gin.Context) error
 	UserProfileRegister(UserProfileRegisterPayload, *gin.Context) error
 	UserProfileUpdate(UserProfile, *gin.Context) error
@@ -74,13 +74,13 @@ type IUserUtils interface {
 	InspectAddressUpdatePayload(UserAddress) error
 }
 type IUserDB interface {
-	CreateUser(User) error
+	CreateUser(UserId string, HistoryUserId int) error
 	GetUser(UserId string) (*User, error)
 	DeleteUser(UserId string) error
-	RegisterProfile(UserProfileRegisterPayload) error
-	UpdateProfile(UserProfile) error
-	RegisterAddress(UserAddressRegisterPayload) error
-	UpdateAddress(UserAddress) error
+	RegisterProfile(string, UserProfileRegisterPayload) error
+	UpdateProfile(string, UserProfile) error
+	RegisterAddress(string, UserAddressRegisterPayload) error
+	UpdateAddress(string, UserAddress) error
 }
 type IUserDBHistory interface {
 	GetUser(UserId string) (*User, error)

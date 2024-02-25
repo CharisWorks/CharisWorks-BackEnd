@@ -7,6 +7,8 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/utils"
+
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
@@ -16,15 +18,18 @@ func main() {
 	r.ContextWithFallback = true
 	handler.CORS(r)
 	h := handler.NewHandler(r)
-
 	app, err := validation.NewFirebaseApp()
 	if err != nil {
 		return
 	}
+	db, err := utils.DBInit()
+	if err != nil {
+		return
+	}
 	h.SetupRoutesForItem(items.ExampleItemRequests{}, items.ExampleItemDB{}, items.ExampleItemUtils{})
-	h.SetupRoutesForUser(app, user.ExampleUserRequests{})
-	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.ExampleCartDB{}, user.ExampleUserRequests{}, cart.CartUtils{})
+	h.SetupRoutesForUser(app, user.UserRequests{}, user.UserDB{DB: db})
+	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.ExampleCartDB{}, user.UserRequests{}, cart.CartUtils{}, user.UserDB{})
 	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{}, items.ExampleItemDB{}, cash.ExampleTransactionDBHistory{})
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.ExampleCartDB{}, cart.CartUtils{}, items.ExampleItemDB{}, cash.ExampleTransactionDBHistory{}, user.UserRequests{}, user.UserDB{DB: db})
 	h.Router.Run("localhost:8080")
 }

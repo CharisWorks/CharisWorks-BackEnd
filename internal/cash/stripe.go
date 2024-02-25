@@ -3,6 +3,8 @@ package cash
 import (
 	"log"
 	"net/http"
+	"os"
+	"regexp"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/user"
@@ -21,8 +23,8 @@ type StripeRequests struct {
 func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string, error) {
 
 	email := ctx.MustGet("UserEmail").(string)
-	User := ctx.MustGet("User").(user.User)
-
+	User := ctx.MustGet("User").(*user.User)
+	log.Print(email)
 	Account, err := GetAccount(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
@@ -32,6 +34,12 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 	if Account.PayoutsEnabled {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "アカウントが存在しています。"})
 		return nil, nil
+	}
+	log.Print("pointer")
+	if User.UserAddress == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "住所が登録されていません。"})
+		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+
 	}
 	params := &stripe.AccountParams{
 
@@ -63,6 +71,7 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 	}
 
 	a, err := account.New(params)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
 		return nil, err
@@ -112,21 +121,29 @@ func (StripeRequests StripeRequests) GetStripeMypageLink(ctx *gin.Context) (*str
 
 func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	params := &stripe.AccountParams{}
-	StripeAccountId := ctx.MustGet("User").(user.User).Manufacturer.StripeAccountId
-	if *StripeAccountId == "" {
-		result := new(stripe.Account)
-		result.PayoutsEnabled = false
-		return result, nil
+	StripeAccountId := ctx.MustGet("User").(*user.User).Manufacturer.StripeAccountId
+	log.Print(*StripeAccountId)
+	regex := regexp.MustCompile(`acct_\w+`)
+	matches := regex.FindAllString(*StripeAccountId, -1)
+	for _, match := range matches {
+		if regex.MatchString(match) {
+			result, err := account.GetByID(*StripeAccountId, params)
+			if err != nil {
+				return nil, err
+			}
+			return result, nil
+		}
 	}
-	result, err := account.GetByID(*StripeAccountId, params)
-	if err != nil {
-		return nil, err
-	}
+	log.Print("no account")
+	result := new(stripe.Account)
+	result.PayoutsEnabled = false
+	log.Print(result)
 	return result, nil
+
 }
 
 func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, UserId string) (*string, error) {
-	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+	stripe.Key = os.Getenv("STRIPE_API_KEY")
 
 	Carts, err := CartDB.GetCart(UserId)
 	if err != nil {
