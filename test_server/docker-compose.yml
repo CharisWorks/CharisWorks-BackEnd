@@ -13,5 +13,20 @@ services:
     volumes:
       - ./sql_init:/docker-entrypoint-initdb.d
 
+  firebase:
+    build:
+      context: .
+      dockerfile: ./docker/firebase/Dockerfile
+    volumes:
+      - ./firebase.json:/opt/firebase/firebase.json
+      - ./docker/firebase/bin/:/root/.cache:cached
+      - ./docker/firebase/config/:/root/.config:cached
+    ports:
+      - 9099:9099 # Firebase Authentication
+      - 4000:4000 # Emulator Suite UI
+    working_dir: /opt/firebase
+    command: npx firebase emulators:start --import=./emulator_data --export-on-exit
+    tty: true
+
 volumes:
   data-volume:
