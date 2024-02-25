@@ -13,10 +13,9 @@ func ExampleUser(UserId string) User {
 	user := User{
 		UserId: UserId,
 		UserProfile: &UserProfile{
-			DisplayName:    "John Doe",
-			Description:    "Example user",
-			CreatedAt:      time.Now(),
-			IsManufacturer: true,
+			DisplayName: "John Doe",
+			Description: "Example user",
+			CreatedAt:   time.Now(),
 		},
 		UserAddress: &UserAddress{
 			LastName:      "適当",
@@ -29,7 +28,7 @@ func ExampleUser(UserId string) User {
 			Address3:      nil,
 			PhoneNumber:   "+81 80 12345678",
 		},
-		Manufacturer: &Manufacturer{
+		Manufacturer: Manufacturer{
 			StripeAccountId: stripe.String("acct_1Okj9YPFjznovTf3"),
 		},
 	}
@@ -42,10 +41,9 @@ func ExampleUser2(UserId string) User {
 	user := User{
 		UserId: UserId,
 		UserProfile: &UserProfile{
-			DisplayName:    "John Doe",
-			Description:    "Example user",
-			CreatedAt:      time.Now(),
-			IsManufacturer: true,
+			DisplayName: "John Doe",
+			Description: "Example user",
+			CreatedAt:   time.Now(),
 		},
 		UserAddress: &UserAddress{
 			LastName:      "適当",
@@ -58,7 +56,7 @@ func ExampleUser2(UserId string) User {
 			Address3:      nil,
 			PhoneNumber:   "+81 80 12345678",
 		},
-		Manufacturer: &Manufacturer{
+		Manufacturer: Manufacturer{
 			StripeAccountId: stripe.String("acct_1OkjHjPKEl3posmB"),
 		},
 	}
@@ -70,10 +68,9 @@ func ExampleUser3(UserId string) User {
 	user := User{
 		UserId: UserId,
 		UserProfile: &UserProfile{
-			DisplayName:    "John Doe",
-			Description:    "Example user",
-			CreatedAt:      time.Now(),
-			IsManufacturer: true,
+			DisplayName: "John Doe",
+			Description: "Example user",
+			CreatedAt:   time.Now(),
 		},
 		UserAddress: &UserAddress{
 			LastName:      "適当",
@@ -86,7 +83,7 @@ func ExampleUser3(UserId string) User {
 			Address3:      nil,
 			PhoneNumber:   "+81 80 12345678",
 		},
-		Manufacturer: &Manufacturer{
+		Manufacturer: Manufacturer{
 			StripeAccountId: new(string),
 		},
 	}
@@ -98,10 +95,9 @@ func ExampleUser4(UserId string) User {
 	user := User{
 		UserId: UserId,
 		UserProfile: &UserProfile{
-			DisplayName:    "John Doe",
-			Description:    "Example user",
-			CreatedAt:      time.Now(),
-			IsManufacturer: false,
+			DisplayName: "John Doe",
+			Description: "Example user",
+			CreatedAt:   time.Now(),
 		},
 		UserAddress: &UserAddress{
 			LastName:      "適当",
@@ -114,6 +110,9 @@ func ExampleUser4(UserId string) User {
 			Address3:      nil,
 			PhoneNumber:   "+81 80 12345678",
 		},
+		Manufacturer: Manufacturer{
+			StripeAccountId: nil,
+		},
 	}
 	return user
 }
@@ -121,7 +120,7 @@ func ExampleUser4(UserId string) User {
 type ExampleUserRequests struct {
 }
 
-func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context) (*User, error) {
+func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context, UserDB IUserDB) (*User, error) {
 	log.Println("UserId: ", UserId)
 	if UserId == "zbGHo5B74BNcnzEYFDIqmmtdtF82" {
 		log.Print("hoge")

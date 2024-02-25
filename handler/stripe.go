@@ -12,7 +12,7 @@ import (
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartDB, cartUtils cart.ICartUtils, ItemDB items.IItemDB, TransactionDBHistory cash.ITransactionDBHistory) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartDB, cartUtils cart.ICartUtils, ItemDB items.IItemDB, TransactionDBHistory cash.ITransactionDBHistory, UserRequests user.IUserRequests, UserDB user.IUserDB) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
@@ -48,7 +48,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 	StripeManufacturerRouter := h.Router.Group("/api/stripe")
 	StripeManufacturerRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		StripeManufacturerRouter.Use(userMiddleware(user.ExampleUserRequests{}))
+		StripeManufacturerRouter.Use(userMiddleware(UserRequests, UserDB))
 		StripeManufacturerRouter.Use(stripeMiddleware())
 		{
 			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {

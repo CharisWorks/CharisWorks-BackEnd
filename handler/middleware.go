@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/cash"
@@ -22,7 +23,7 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-func userMiddleware(UserRequests user.IUserRequests) gin.HandlerFunc {
+func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		EmailVerified := ctx.MustGet("EmailVerified").(bool)
 		if !EmailVerified {
@@ -31,20 +32,21 @@ func userMiddleware(UserRequests user.IUserRequests) gin.HandlerFunc {
 			return
 		}
 		UserId := ctx.MustGet("UserId").(string)
-		User, err := UserRequests.UserGet(UserId, ctx)
-		if err != nil {
+		User, err := UserRequests.UserGet(UserId, ctx, UserDB)
+		if err != nil && err.Error() != "record not found" {
 			ctx.JSON(http.StatusInternalServerError, err)
 			ctx.Abort()
 			return
 		}
 		if User == nil {
-			err := UserRequests.UserCreate(UserId, ctx)
+			log.Print("creating user for DB")
+			err := UserRequests.UserCreate(UserId, ctx, UserDB)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, err)
 				ctx.Abort()
 				return
 			}
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "create user for DB"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "creating user for DB"})
 			ctx.Abort()
 			return
 		}
@@ -56,7 +58,8 @@ func userMiddleware(UserRequests user.IUserRequests) gin.HandlerFunc {
 func stripeMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet("User").(*user.User)
-		if !User.UserProfile.IsManufacturer {
+
+		if *User.Manufacturer.StripeAccountId == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
@@ -70,13 +73,8 @@ func stripeMiddleware() gin.HandlerFunc {
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet("User").(*user.User)
-		if !User.UserProfile.IsManufacturer {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
-			ctx.Abort()
-			return
-		}
 		if *User.Manufacturer.StripeAccountId == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "cannot get stripe account id"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
 		}

@@ -9,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRequests cart.ICartRequests, CartDB cart.ICartDB, UserRequests user.IUserRequests, CartUtils cart.ICartUtils) {
+func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRequests cart.ICartRequests, CartDB cart.ICartDB, UserRequests user.IUserRequests, CartUtils cart.ICartUtils, UserDB user.IUserDB) {
 	CartRouter := h.Router.Group("/api/cart")
 	CartRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		CartRouter.Use(userMiddleware(UserRequests))
+		CartRouter.Use(userMiddleware(UserRequests, UserDB))
 		{
 			CartRouter.GET("/", func(ctx *gin.Context) {
 				Cart, err := CartRequests.Get(ctx, CartDB, CartUtils, ctx.MustGet("UserId").(string))
