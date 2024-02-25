@@ -29,24 +29,14 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 			}
 			ctx.JSON(http.StatusOK, gin.H{"message": "User was successfully deleted"})
 		})
-		UserRouter.POST("/profile", func(ctx *gin.Context) {
-			bindBody := new(user.UserProfileRegisterPayload)
-			payload, err := getPayloadFromBody(ctx, &bindBody)
-			if err != nil {
-				return
-			}
-			err = UserRequests.UserProfileRegister(**payload, ctx)
-			if err != nil {
-				return
-			}
-		})
+
 		UserRouter.PATCH("/profile", func(ctx *gin.Context) {
 			bindBody := new(user.UserProfile)
 			payload, err := getPayloadFromBody(ctx, &bindBody)
 			if err != nil {
 				return
 			}
-			err = UserRequests.UserProfileUpdate(**payload, ctx)
+			err = UserRequests.UserProfileUpdate(**payload, ctx, UserDB)
 			if err != nil {
 				return
 			}
@@ -57,7 +47,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 			if err != nil {
 				return
 			}
-			err = UserRequests.UserAddressRegister(**payload, ctx)
+			err = UserRequests.UserAddressRegister(**payload, ctx, UserDB)
 			if err != nil {
 				return
 			}
@@ -68,7 +58,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 			if err != nil {
 				return
 			}
-			err = UserRequests.UserAddressUpdate(**payload, ctx)
+			err = UserRequests.UserAddressUpdate(**payload, ctx, UserDB)
 			if err != nil {
 				return
 			}

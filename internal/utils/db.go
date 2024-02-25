@@ -17,22 +17,21 @@ func DBInit() (db *gorm.DB, err error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{}, &Item{}, &Cart{}, &Shipping{})
 
 	return
 }
 
 type IDBUtils interface {
 }
-type CartInDB struct {
-	Id       int    `json:"id"`
-	UserId   string `json:"purchaser_user_id"`
-	ItemId   string `json:"item_id"`
-	Quantity int    `json:"quantity"`
+type Cart struct {
+	Id       int    `gorm:"id"`
+	UserId   string `gorm:"purchaser_user_id"`
+	ItemId   string `gorm:"item_id"`
+	Quantity int    `gorm:"quantity"`
 }
 
 type User struct {
-	gorm.Model
 	Id              string    `gorm:"id"`
 	DisplayName     string    `gorm:"display_name"`
 	Description     string    `gorm:"description"`
@@ -40,15 +39,27 @@ type User struct {
 	HistoryUserId   string    `gorm:"history_user_id"`
 	CreatedAt       time.Time `gorm:"created_at"`
 }
-type ItemInDB struct {
-	Id                 int      `json:"id"`
-	ManufacturerUserId string   `json:"manufacturer_user_id"`
-	HisToryItemId      string   `json:"history_item_id"`
-	Name               string   `json:"name"`
-	Price              int      `json:"price"`
-	Status             string   `json:"status"`
-	Stock              int      `json:"stock"`
-	Size               int      `json:"size"`
-	Description        string   `json:"description"`
-	Tags               []string `json:"tags"`
+type Item struct {
+	Id                 int      `gorm:"id"`
+	ManufacturerUserId string   `gorm:"manufacturer_user_id"`
+	HisToryItemId      string   `gorm:"history_item_id"`
+	Name               string   `gorm:"name"`
+	Price              int      `gorm:"price"`
+	Status             string   `gorm:"status"`
+	Stock              int      `gorm:"stock"`
+	Size               int      `gorm:"size"`
+	Description        string   `gorm:"description"`
+	Tags               []string `gorm:"tags"`
+}
+type Shipping struct {
+	Id            string `gorm:"id"`
+	ZipCode       string `gorm:"zip_code"`
+	Address1      string `gorm:"address_1"`
+	Address2      string `gorm:"address_2"`
+	Address3      string `gorm:"address_3" null:"true"`
+	PhoneNumber   string `gorm:"phone_number"`
+	FirstName     string `gorm:"first_name"`
+	FirstNameKana string `gorm:"first_name_kana"`
+	LastName      string `gorm:"last_name"`
+	LastNameKana  string `gorm:"last_name_kana"`
 }
