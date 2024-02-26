@@ -1,6 +1,7 @@
 package manufacturer
 
 import (
+	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
 )
@@ -9,18 +10,18 @@ type ManufacturerDB struct {
 	DB *gorm.DB
 }
 
-func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id string, userId string) error {
+func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id int, userId string) error {
 
 	item := utils.Item{
 		ManufacturerUserId: userId,
 		HistoryItemId:      history_item_id,
-		Name:               *i.Name,
-		Price:              *i.Price,
-		Status:             *i.Details.Status,
-		Stock:              *i.Details.Stock,
-		Size:               *i.Details.Size,
-		Description:        *i.Details.Description,
-		Tags:               *i.Details.Tags,
+		Name:               i.Name,
+		Price:              i.Price,
+		Status:             string(items.ItemStatusReady),
+		Stock:              i.Details.Stock,
+		Size:               i.Details.Size,
+		Description:        i.Details.Description,
+		Tags:               i.Details.Tags,
 	}
 	result := m.DB.Create(&item)
 	if result.Error != nil {
