@@ -48,7 +48,7 @@ type User struct {
 type Item struct {
 	Id                 int      `gorm:"id"`
 	ManufacturerUserId string   `gorm:"manufacturer_user_id"`
-	HisToryItemId      string   `gorm:"history_item_id"`
+	HistoryItemId      string   `gorm:"history_item_id"`
 	Name               string   `gorm:"name"`
 	Price              int      `gorm:"price"`
 	Status             string   `gorm:"status"`
