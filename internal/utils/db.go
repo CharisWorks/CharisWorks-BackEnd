@@ -31,6 +31,12 @@ type Cart struct {
 	Quantity int    `gorm:"quantity"`
 }
 
+type InternalCart struct {
+	Cart       Cart   `gorm:"foreignKey:item_id"`
+	ItemStock  int    `gorm:"stock"`
+	ItemStatus string `gorm:"status"`
+}
+
 type User struct {
 	Id              string    `gorm:"id"`
 	DisplayName     string    `gorm:"display_name"`
