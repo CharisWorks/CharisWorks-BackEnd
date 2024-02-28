@@ -72,9 +72,9 @@ type Item struct {
 type Shipping struct {
 	Id            string `gorm:"id"`
 	ZipCode       string `gorm:"zip_code"`
-	Address1      string `gorm:"address_1"`
-	Address2      string `gorm:"address_2"`
-	Address3      string `gorm:"address_3" null:"true"`
+	Address_1     string `gorm:"address_1"`
+	Address_2     string `gorm:"address_2"`
+	Address_3     string `gorm:"address_3" null:"true"`
 	PhoneNumber   string `gorm:"phone_number"`
 	FirstName     string `gorm:"first_name"`
 	FirstNameKana string `gorm:"first_name_kana"`

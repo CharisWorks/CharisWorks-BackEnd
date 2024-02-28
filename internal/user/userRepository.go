@@ -53,9 +53,9 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 		LastName:      Address.LastName,
 		LastNameKana:  Address.LastNameKana,
 		ZipCode:       Address.ZipCode,
-		Address1:      Address.Address1,
-		Address2:      Address.Address2,
-		Address3:      &Address.Address3,
+		Address1:      Address.Address_1,
+		Address2:      Address.Address_2,
+		Address3:      &Address.Address_3,
 		PhoneNumber:   Address.PhoneNumber,
 	}
 	log.Print("user: ", user)
@@ -91,12 +91,16 @@ func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayloa
 	Shipping := new(utils.Shipping)
 	Shipping.Id = UserId
 	Shipping.ZipCode = payload.ZipCode
-	Shipping.Address1 = payload.Address1
-	Shipping.Address2 = payload.Address2
+	Shipping.Address_1 = payload.Address1
+	Shipping.Address_2 = payload.Address2
 	if payload.Address3 != nil {
-		Shipping.Address3 = *payload.Address3
+		Shipping.Address_3 = *payload.Address3
 	}
 	Shipping.PhoneNumber = payload.PhoneNumber
+	Shipping.FirstName = payload.FirstName
+	Shipping.FirstNameKana = payload.FirstNameKana
+	Shipping.LastName = payload.LastName
+	Shipping.LastNameKana = payload.LastNameKana
 	if err := r.DB.Create(Shipping).Error; err != nil {
 		return err
 	}

@@ -159,7 +159,7 @@ CREATE TABLE `shippings` (
   `last_name` text NOT NULL,
   `last_name_kana` text NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `shippings_users_FK` FOREIGN KEY (`id`) REFERENCES `users` (`id`)
+  CONSTRAINT `shippings_users_FK` FOREIGN KEY (`id`) REFERENCES `users` (`id`)ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
