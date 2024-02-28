@@ -67,16 +67,16 @@ type IUserRequests interface {
 }
 type IUserUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) error
-	InspectProfileUpdatePayload(UserProfile) error
-	InspectAddressUpdatePayload(UserAddress) error
+	InspectProfileUpdatePayload(UserProfile) (map[string]string, error)
+	InspectAddressUpdatePayload(UserAddress) (map[string]string, error)
 }
 type IUserDB interface {
 	CreateUser(UserId string, HistoryUserId int) error
 	GetUser(UserId string) (*User, error)
 	DeleteUser(UserId string) error
-	UpdateProfile(string, UserProfile) error
+	UpdateProfile(string, map[string]string) error
 	RegisterAddress(string, UserAddressRegisterPayload) error
-	UpdateAddress(string, UserAddress) error
+	UpdateAddress(string, map[string]string) error
 }
 type IUserDBHistory interface {
 	GetUser(UserId string) (*User, error)

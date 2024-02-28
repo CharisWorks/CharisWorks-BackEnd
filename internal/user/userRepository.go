@@ -99,8 +99,8 @@ func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayloa
 
 	return nil
 }
-func (r UserDB) UpdateAddress(UserId string, payload UserAddress) error {
-	if err := r.DB.Table("shippings").Where("id = ?", UserId).Update("zip_code", payload.ZipCode).Update("address1", payload.Address1).Update("address2", payload.Address2).Update("address3", payload.Address3).Update("phone_number", payload.PhoneNumber).Error; err != nil {
+func (r UserDB) UpdateAddress(UserId string, payload map[string]string) error {
+	if err := r.DB.Table("shippings").Where("id = ?", UserId).Updates(payload).Error; err != nil {
 		return err
 	}
 	return nil
