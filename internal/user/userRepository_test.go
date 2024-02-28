@@ -26,7 +26,6 @@ func Test_UserDB_Create_User(t *testing.T) {
 			want: User{
 				UserId: "aaa",
 			},
-
 			hasError: false,
 		},
 	}
