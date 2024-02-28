@@ -1,6 +1,8 @@
 package items
 
 import (
+	"encoding/json"
+
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
 )
@@ -15,6 +17,10 @@ func (r *ItemDB) GetItemOverview(itemId string) (*utils.Item, error) {
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
 		return nil, err
 	}
+
+	tags := new([]string)
+	json.Unmarshal([]byte(DBItem.Tags), &tags)
+
 	ItemOverview.Item_id = DBItem.Id
 	ItemOverview.Properties = &ItemOverviewProperties{
 		Name:  &DBItem.Name,
@@ -24,7 +30,7 @@ func (r *ItemDB) GetItemOverview(itemId string) (*utils.Item, error) {
 			Stock:       &DBItem.Stock,
 			Size:        &DBItem.Size,
 			Description: &DBItem.Description,
-			Tags:        &DBItem.Tags,
+			Tags:        tags,
 		},
 	}
 	return DBItem, nil

@@ -21,13 +21,25 @@ func DBInit() (db *gorm.DB, err error) {
 
 	return
 }
+func DBInitTest() (db *gorm.DB, err error) {
+	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
+	dsn := "root:password@tcp(127.0.0.1:3306)/CharisWorks?parseTime=true"
+	log.Print("connect to ", dsn)
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	db.AutoMigrate(&User{}, &Item{}, &Cart{}, &Shipping{})
+
+	return
+}
 
 type IDBUtils interface {
 }
 type Cart struct {
 	Id       int    `gorm:"id"`
-	UserId   string `gorm:"purchaser_user_id"`
-	ItemId   string `gorm:"item_id"`
+	UserId   string `gorm:"purchaser_user_id;type:varchar(100)"`
+	ItemId   int    `gorm:"item_id;type:int(11)"`
 	Quantity int    `gorm:"quantity"`
 }
 
@@ -38,24 +50,24 @@ type InternalCart struct {
 }
 
 type User struct {
-	Id              string    `gorm:"id"`
+	Id              string    `gorm:"id;type:varchar(100)"`
 	DisplayName     string    `gorm:"display_name"`
 	Description     string    `gorm:"description"`
 	StripeAccountId string    `gorm:"stripe_account_id"`
-	HistoryUserId   string    `gorm:"history_user_id"`
+	HistoryUserId   int       `gorm:"history_user_id"`
 	CreatedAt       time.Time `gorm:"created_at"`
 }
 type Item struct {
-	Id                 int      `gorm:"id"`
-	ManufacturerUserId string   `gorm:"manufacturer_user_id"`
-	HistoryItemId      int      `gorm:"history_item_id"`
-	Name               string   `gorm:"name"`
-	Price              int      `gorm:"price"`
-	Status             string   `gorm:"status"`
-	Stock              int      `gorm:"stock"`
-	Size               int      `gorm:"size"`
-	Description        string   `gorm:"description"`
-	Tags               []string `gorm:"tags"`
+	Id                 int    `gorm:"id"`
+	ManufacturerUserId string `gorm:"manufacturer_user_id;type:varchar(100)"`
+	HistoryItemId      int    `gorm:"history_item_id"`
+	Name               string `gorm:"name"`
+	Price              int    `gorm:"price"`
+	Status             string `gorm:"status"`
+	Stock              int    `gorm:"stock"`
+	Size               int    `gorm:"size"`
+	Description        string `gorm:"description"`
+	Tags               string `gorm:"tags"`
 }
 type Shipping struct {
 	Id            string `gorm:"id"`

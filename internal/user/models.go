@@ -9,8 +9,8 @@ import (
 
 type User struct {
 	UserId       string       `json:"user_id" gorm:"user_id"`
-	UserProfile  *UserProfile `json:"profile" gorm:"profile"`
-	UserAddress  *UserAddress `json:"address" gorm:"address"`
+	UserProfile  UserProfile  `json:"profile" gorm:"profile"`
+	UserAddress  UserAddress  `json:"address" gorm:"address"`
 	Manufacturer Manufacturer `json:"manufacturer" gorm:"manufacturer"`
 }
 type Manufacturer struct {

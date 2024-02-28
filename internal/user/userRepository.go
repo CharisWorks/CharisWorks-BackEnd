@@ -14,11 +14,13 @@ type UserDB struct {
 	DB *gorm.DB
 }
 
+// firstorinitをそのうち使うかもしれない
 func (r UserDB) CreateUser(UserId string, historyUserId int) error {
 	DBUser := new(utils.User)
 	log.Print("UserId: ", UserId)
 	log.Print("historyUserId: ", historyUserId)
 	DBUser.Id = UserId
+	DBUser.HistoryUserId = historyUserId
 	DBUser.CreatedAt = time.Now()
 	result := r.DB.Create(DBUser)
 	log.Print("result: ", result)
@@ -34,17 +36,18 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 	}
 	user := new(User)
 	user.UserId = DBUser.Id
-	user.UserProfile = &UserProfile{
+	user.UserProfile = UserProfile{
 		DisplayName: DBUser.DisplayName,
 		Description: DBUser.Description,
 		CreatedAt:   DBUser.CreatedAt,
 	}
+	log.Print("successfully got data. id: ", DBUser.Id, "displayname: ", DBUser.DisplayName, "description: ", DBUser.Description, "created_at: ", DBUser.CreatedAt)
 	user.Manufacturer = Manufacturer{
 		StripeAccountId: &DBUser.StripeAccountId,
 	}
 	Address := new(utils.Shipping)
 	_ = r.DB.Table("shippings").Where("id = ?", UserId).First(Address)
-	user.UserAddress = &UserAddress{
+	user.UserAddress = UserAddress{
 		FirstName:     Address.FirstName,
 		FirstNameKana: Address.FirstNameKana,
 		LastName:      Address.LastName,

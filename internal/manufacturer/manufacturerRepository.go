@@ -1,6 +1,8 @@
 package manufacturer
 
 import (
+	"encoding/json"
+
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
@@ -11,7 +13,10 @@ type ManufacturerDB struct {
 }
 
 func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id int, userId string) error {
-
+	json, err := json.Marshal(i.Details.Tags)
+	if err != nil {
+		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
+	}
 	item := utils.Item{
 		ManufacturerUserId: userId,
 		HistoryItemId:      history_item_id,
@@ -21,7 +26,7 @@ func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id int
 		Stock:              i.Details.Stock,
 		Size:               i.Details.Size,
 		Description:        i.Details.Description,
-		Tags:               i.Details.Tags,
+		Tags:               string(json),
 	}
 	result := m.DB.Create(&item)
 	if result.Error != nil {
