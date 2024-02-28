@@ -77,8 +77,12 @@ func (r UserDB) DeleteUser(UserId string) error {
 	return nil
 }
 
-func (r UserDB) UpdateProfile(UserId string, payload UserProfile) error {
-	if err := r.DB.Table("users").Where("id = ?", UserId).Update("display_name", payload.DisplayName).Update("description", payload.Description).Error; err != nil {
+func (r UserDB) UpdateProfile(UserId string, payload map[string]interface{}) error {
+	for key, value := range payload {
+		log.Print("key: ", key, "value: ", value)
+	}
+	log.Print("UserId: ", UserId)
+	if err := r.DB.Table("users").Where("id = ?", UserId).Updates(payload).Error; err != nil {
 		return err
 	}
 	return nil
