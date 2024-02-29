@@ -79,18 +79,20 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 		})
 	}
 }
-func Test_UserDB_Register_Address(t *testing.T) {
+
+func Test_UserDB_Register_Update_Address(t *testing.T) {
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
-
 	}
 	UserDB := UserDB{DB: db}
 	Cases := []struct {
-		name      string
-		userId    string
-		shippings UserAddressRegisterPayload
-		want      User
+		name          string
+		userId        string
+		shippings     UserAddressRegisterPayload
+		updatePayload map[string]interface{}
+		want          User
+		wantUpdated   User
 	}{
 		{
 			name:   "正常",
@@ -120,68 +122,10 @@ func Test_UserDB_Register_Address(t *testing.T) {
 					LastNameKana:  "タロウ",
 				},
 			},
-		},
-	}
-	for _, tt := range Cases {
-		t.Run(tt.name, func(t *testing.T) {
-			err := UserDB.CreateUser(tt.userId, 1)
-			if err != nil {
-				t.Errorf("error")
-			}
-			err = UserDB.RegisterAddress(tt.userId, tt.shippings)
-			log.Print(err)
-			if err != nil {
-				t.Errorf("error")
-
-			}
-			User, err := UserDB.GetUser(tt.userId)
-			if err != nil {
-				t.Errorf("error")
-			}
-
-			log.Print(&User)
-			if reflect.DeepEqual(*User, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.want)
-			}
-			err = UserDB.DeleteUser(tt.userId)
-			if err != nil {
-				t.Errorf("error")
-			}
-
-		})
-	}
-}
-func Test_UserDB_Update_Address(t *testing.T) {
-	db, err := utils.DBInitTest()
-	if err != nil {
-		t.Errorf("error")
-	}
-	UserDB := UserDB{DB: db}
-	Cases := []struct {
-		name          string
-		userId        string
-		shippings     UserAddressRegisterPayload
-		updatePayload map[string]interface{}
-		want          User
-	}{
-		{
-			name:   "正常",
-			userId: "aaa",
-			shippings: UserAddressRegisterPayload{
-				ZipCode:       "000-0000",
-				Address1:      "abc",
-				Address2:      "def",
-				Address3:      stripe.String("ghi"),
-				PhoneNumber:   "000-0000-0000",
-				FirstName:     "適当",
-				FirstNameKana: "テキトウ",
-				LastName:      "太郎",
-				LastNameKana:  "タロウ",
-			},
 			updatePayload: map[string]interface{}{
 				"address_1": "123",
 			},
-			want: User{
+			wantUpdated: User{
 				UserId: "aaa",
 				UserAddress: UserAddress{
 					ZipCode:       "000-0000",
@@ -210,10 +154,24 @@ func Test_UserDB_Update_Address(t *testing.T) {
 				LastName:      "太郎",
 				LastNameKana:  "タロウ",
 			},
+			want: User{
+				UserId: "aaa",
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "abc",
+					Address2:      "def",
+					Address3:      nil,
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "適当",
+					FirstNameKana: "テキトウ",
+					LastName:      "太郎",
+					LastNameKana:  "タロウ",
+				},
+			},
 			updatePayload: map[string]interface{}{
 				"address_3": "123",
 			},
-			want: User{
+			wantUpdated: User{
 				UserId: "aaa",
 				UserAddress: UserAddress{
 					ZipCode:       "000-0000",
@@ -242,10 +200,25 @@ func Test_UserDB_Update_Address(t *testing.T) {
 				LastName:      "太郎",
 				LastNameKana:  "タロウ",
 			},
+
+			want: User{
+				UserId: "aaa",
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "abc",
+					Address2:      "def",
+					Address3:      stripe.String("ghi"),
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "適当",
+					FirstNameKana: "テキトウ",
+					LastName:      "太郎",
+					LastNameKana:  "タロウ",
+				},
+			},
 			updatePayload: map[string]interface{}{
 				"address_3": nil,
 			},
-			want: User{
+			wantUpdated: User{
 				UserId: "aaa",
 				UserAddress: UserAddress{
 					ZipCode:       "000-0000",
@@ -273,20 +246,27 @@ func Test_UserDB_Update_Address(t *testing.T) {
 				t.Errorf("error")
 
 			}
+			User, err := UserDB.GetUser(tt.userId)
+			if err != nil {
+				t.Errorf("error")
+			}
+			if reflect.DeepEqual(User, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.want)
+			}
 			err = UserDB.UpdateAddress(tt.userId, tt.updatePayload)
 			log.Print(err)
 			if err != nil {
 				t.Errorf("error")
 
 			}
-			User, err := UserDB.GetUser(tt.userId)
+			User, err = UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf("error")
 			}
 
 			log.Print(&User)
-			if reflect.DeepEqual(*User, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.want)
+			if reflect.DeepEqual(*User, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.wantUpdated)
 			}
 			err = UserDB.DeleteUser(tt.userId)
 			if err != nil {
