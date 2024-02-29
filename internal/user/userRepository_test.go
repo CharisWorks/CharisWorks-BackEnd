@@ -17,10 +17,11 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 	}
 	UserDB := UserDB{DB: db}
 	Cases := []struct {
-		name    string
-		userId  string
-		payload map[string]interface{}
-		want    User
+		name        string
+		userId      string
+		payload     map[string]interface{}
+		want        User
+		wantUpdated User
 	}{
 		{
 			name:   "正常",
@@ -30,6 +31,9 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 				"description":  "description",
 			},
 			want: User{
+				UserId: "aaa",
+			},
+			wantUpdated: User{
 				UserId: "aaa",
 				UserProfile: UserProfile{
 					DisplayName: "display_name",
@@ -44,11 +48,6 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			err = UserDB.UpdateProfile(tt.userId, tt.payload)
-			log.Print(err)
-			if err != nil {
-				t.Errorf("error")
-			}
 			User, err := UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf("error")
@@ -57,6 +56,20 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			log.Print(&User)
 			if reflect.DeepEqual(*User, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.want)
+			}
+			err = UserDB.UpdateProfile(tt.userId, tt.payload)
+			log.Print(err)
+			if err != nil {
+				t.Errorf("error")
+			}
+			User, err = UserDB.GetUser(tt.userId)
+			if err != nil {
+				t.Errorf("error")
+			}
+
+			log.Print(&User)
+			if reflect.DeepEqual(*User, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.wantUpdated)
 			}
 			err = UserDB.DeleteUser(tt.userId)
 			if err != nil {

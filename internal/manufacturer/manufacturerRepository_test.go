@@ -9,7 +9,7 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
-func Test_ManufacturerDB_Register_Item(t *testing.T) {
+func Test_ManufacturerDB(t *testing.T) {
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
