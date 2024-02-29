@@ -292,6 +292,38 @@ func Test_UserDB_Update_Address(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:   "address3の挙動のテスト(アドレスが削除された)",
+			userId: "aaa",
+			shippings: UserAddressRegisterPayload{
+				ZipCode:       "000-0000",
+				Address1:      "abc",
+				Address2:      "def",
+				Address3:      stripe.String("ghi"),
+				PhoneNumber:   "000-0000-0000",
+				FirstName:     "適当",
+				FirstNameKana: "テキトウ",
+				LastName:      "太郎",
+				LastNameKana:  "タロウ",
+			},
+			updatePayload: map[string]interface{}{
+				"address_3": nil,
+			},
+			want: User{
+				UserId: "aaa",
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "abc",
+					Address2:      "def",
+					Address3:      stripe.String(""),
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "適当",
+					FirstNameKana: "テキトウ",
+					LastName:      "太郎",
+					LastNameKana:  "タロウ",
+				},
+			},
+		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -317,6 +349,7 @@ func Test_UserDB_Update_Address(t *testing.T) {
 			}
 
 			log.Print(&User)
+			log.Print("address_3: ", *User.UserAddress.Address3)
 			if User.UserId != tt.want.UserId {
 				t.Errorf("%v,got,%v,want%v", tt.name, User.UserId, tt.want.UserId)
 			}
