@@ -180,6 +180,9 @@ func Test_UserDB_Register_Address(t *testing.T) {
 			if User.UserId != tt.want.UserId {
 				t.Errorf("%v,got,%v,want%v", tt.name, User.UserId, tt.want.UserId)
 			}
+			if User.UserAddress.Address1 != tt.want.UserAddress.Address1 || User.UserAddress.Address2 != tt.want.UserAddress.Address2 || *User.UserAddress.Address3 != *tt.want.UserAddress.Address3 || User.UserAddress.FirstName != tt.want.UserAddress.FirstName || User.UserAddress.FirstNameKana != tt.want.UserAddress.FirstNameKana || User.UserAddress.LastName != tt.want.UserAddress.LastName || User.UserAddress.LastNameKana != tt.want.UserAddress.LastNameKana || User.UserAddress.PhoneNumber != tt.want.UserAddress.PhoneNumber || User.UserAddress.ZipCode != tt.want.UserAddress.ZipCode {
+				t.Errorf("error")
+			}
 
 			err = UserDB.DeleteUser(tt.userId)
 			if err != nil {
