@@ -27,7 +27,7 @@ func ExampleItemPreview() []ItemPreview {
 func ExampleItemOverview(itemId int) ItemOverview {
 	e := ItemOverview{
 		Item_id: itemId,
-		Properties: &ItemOverviewProperties{
+		Properties: ItemOverviewProperties{
 			Name:  "クラウディ・エンチャント",
 			Price: 2480,
 			Details: ItemOverviewDetails{

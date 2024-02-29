@@ -18,15 +18,15 @@ type UserProfile struct {
 	CreatedAt       time.Time `json:"crated_at" gorm:"created_at"`
 }
 type UserAddress struct {
-	FirstName     string  `json:"first_name" gorm:"first_name"`
-	FirstNameKana string  `json:"first_name_kana" gorm:"first_name_kana"`
-	LastName      string  `json:"last_name" gorm:"last_name"`
-	LastNameKana  string  `json:"last_name_kana" gorm:"last_name_kana"`
-	ZipCode       string  `json:"zip_code" gorm:"zip_code"`
-	Address1      string  `json:"address_1" gorm:"address_1"`
-	Address2      string  `json:"address_2" gorm:"address_2"`
-	Address3      *string `json:"address_3" gorm:"address_3"`
-	PhoneNumber   string  `json:"phone_number" gorm:"phone_number"`
+	FirstName     string `json:"first_name" gorm:"first_name"`
+	FirstNameKana string `json:"first_name_kana" gorm:"first_name_kana"`
+	LastName      string `json:"last_name" gorm:"last_name"`
+	LastNameKana  string `json:"last_name_kana" gorm:"last_name_kana"`
+	ZipCode       string `json:"zip_code" gorm:"zip_code"`
+	Address1      string `json:"address_1" gorm:"address_1"`
+	Address2      string `json:"address_2" gorm:"address_2"`
+	Address3      string `json:"address_3" gorm:"address_3"`
+	PhoneNumber   string `json:"phone_number" gorm:"phone_number"`
 }
 type UserProfileRegisterPayload struct {
 	DisplayName string `json:"display_name" binding:"required"`

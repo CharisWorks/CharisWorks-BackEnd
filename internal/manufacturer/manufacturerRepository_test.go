@@ -13,15 +13,17 @@ func Test_ManufacturerDB(t *testing.T) {
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
-
 	}
+
 	UserDB := user.UserDB{DB: db}
 	ManufacturerDB := ManufacturerDB{DB: db}
 	ItemDB := items.ItemDB{DB: db}
 	Cases := []struct {
-		name    string
-		payload ItemRegisterPayload
-		want    items.ItemOverview
+		name          string
+		payload       ItemRegisterPayload
+		want          items.ItemOverview
+		updatePayload map[string]interface{}
+		wantUpdated   items.ItemOverview
 	}{
 		{
 			name: "正常",
@@ -37,12 +39,29 @@ func Test_ManufacturerDB(t *testing.T) {
 			},
 			want: items.ItemOverview{
 				Item_id: 1,
-				Properties: &items.ItemOverviewProperties{
+				Properties: items.ItemOverviewProperties{
 					Name:  "abc",
 					Price: 2000,
 					Details: items.ItemOverviewDetails{
 						Status:      items.ItemStatusReady,
 						Stock:       2,
+						Size:        3,
+						Description: "test",
+						Tags:        []string{"aaa", "bbb"},
+					},
+				},
+			},
+			updatePayload: map[string]interface{}{
+				"stock": 4,
+			},
+			wantUpdated: items.ItemOverview{
+				Item_id: 1,
+				Properties: items.ItemOverviewProperties{
+					Name:  "abc",
+					Price: 2000,
+					Details: items.ItemOverviewDetails{
+						Status:      items.ItemStatusReady,
+						Stock:       4,
 						Size:        3,
 						Description: "test",
 						Tags:        []string{"aaa", "bbb"},
@@ -68,9 +87,25 @@ func Test_ManufacturerDB(t *testing.T) {
 				t.Errorf("error")
 			}
 
-			if reflect.DeepEqual(ItemOverview, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, ItemOverview, tt.want)
+			if !reflect.DeepEqual(*ItemOverview, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.want)
 			}
+			err = ManufacturerDB.UpdateItem(tt.updatePayload, 1, 1)
+			if err != nil {
+				t.Errorf("error")
+			}
+			ItemOverview, err = ItemDB.GetItemOverview(1)
+			if err != nil {
+				t.Errorf("error")
+			}
+			if !reflect.DeepEqual(*ItemOverview, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.wantUpdated)
+			}
+			err = ManufacturerDB.DeleteItem(1)
+			if err != nil {
+				t.Errorf("error")
+			}
+
 		})
 	}
 	err = UserDB.DeleteUser("aaa")

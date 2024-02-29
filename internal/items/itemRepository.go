@@ -22,7 +22,7 @@ func (r *ItemDB) GetItemOverview(itemId int) (*ItemOverview, error) {
 	json.Unmarshal([]byte(DBItem.Tags), &tags)
 
 	ItemOverview.Item_id = DBItem.Id
-	ItemOverview.Properties = &ItemOverviewProperties{
+	ItemOverview.Properties = ItemOverviewProperties{
 		Name:  DBItem.Name,
 		Price: DBItem.Price,
 		Details: ItemOverviewDetails{

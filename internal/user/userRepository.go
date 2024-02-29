@@ -52,14 +52,14 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 		ZipCode:       Address.ZipCode,
 		Address1:      Address.Address_1,
 		Address2:      Address.Address_2,
-		Address3:      &Address.Address_3,
+		Address3:      Address.Address_3,
 		PhoneNumber:   Address.PhoneNumber,
 	}
 	log.Print("user: ", user)
 	return user, nil
 }
 func (r UserDB) DeleteUser(UserId string) error {
-	if err := r.DB.Table("users").Where("id = ?", UserId).Update("id", "deleted_"+UserId+"_"+time.Now().String()).Error; err != nil {
+	if err := r.DB.Table("users").Where("id = ?", UserId).Delete(utils.User{}).Error; err != nil {
 		return err
 	}
 	return nil
