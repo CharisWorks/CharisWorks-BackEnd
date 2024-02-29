@@ -58,7 +58,7 @@ type ExampleCartDB struct {
 	DeleteError     error
 }
 
-func (c ExampleCartDB) GetItem(itemId string) (*itemStatus, error) {
+func (c ExampleCartDB) GetItem(itemId int) (*itemStatus, error) {
 	if c.ItemSelectError != nil {
 		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
 	}
@@ -82,7 +82,7 @@ func (c ExampleCartDB) UpdateCart(UserId string, CartRequestPayload CartRequestP
 	}
 	return nil
 }
-func (c ExampleCartDB) DeleteCart(UserId string, itemId string) error {
+func (c ExampleCartDB) DeleteCart(UserId string, itemId int) error {
 	if c.DeleteError != nil {
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}

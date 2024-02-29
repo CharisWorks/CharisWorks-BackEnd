@@ -3,6 +3,7 @@ package cart
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -75,6 +76,10 @@ func (c CartRequests) Delete(CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Cont
 	if err != nil {
 		return err
 	}
+	_itemId, err := strconv.Atoi(*itemId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": utils.InternalErrorInvalidPayload})
+	}
 	UserId := ctx.MustGet("UserId").(string)
 	internalCart, err := CartDB.GetCart(UserId)
 	if err != nil {
@@ -82,12 +87,13 @@ func (c CartRequests) Delete(CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Cont
 		return err
 	}
 	inspectedCart, _ := CartUtils.InspectCart(*internalCart)
-	_, exist := inspectedCart[*itemId]
+
+	_, exist := inspectedCart[_itemId]
 	if !exist {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "this item is not exist in cart"})
 		return err
 	}
-	err = CartDB.DeleteCart(UserId, *itemId)
+	err = CartDB.DeleteCart(UserId, _itemId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
 		return err

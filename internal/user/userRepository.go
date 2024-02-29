@@ -2,10 +2,8 @@ package user
 
 import (
 	"log"
-	"regexp"
 	"time"
 
-	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
 )
@@ -37,14 +35,13 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 	user := new(User)
 	user.UserId = DBUser.Id
 	user.UserProfile = UserProfile{
-		DisplayName: DBUser.DisplayName,
-		Description: DBUser.Description,
-		CreatedAt:   DBUser.CreatedAt,
+		DisplayName:     DBUser.DisplayName,
+		Description:     DBUser.Description,
+		StripeAccountId: DBUser.StripeAccountId,
+		CreatedAt:       DBUser.CreatedAt,
 	}
 	log.Print("successfully got data. id: ", DBUser.Id, "displayname: ", DBUser.DisplayName, "description: ", DBUser.Description, "created_at: ", DBUser.CreatedAt)
-	user.Manufacturer = Manufacturer{
-		StripeAccountId: &DBUser.StripeAccountId,
-	}
+
 	Address := new(utils.Shipping)
 	_ = r.DB.Table("shippings").Where("id = ?", UserId).First(Address)
 	user.UserAddress = UserAddress{
@@ -59,15 +56,6 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 		PhoneNumber:   Address.PhoneNumber,
 	}
 	log.Print("user: ", user)
-	regex := regexp.MustCompile(`acct_\w+`)
-	matches := regex.FindAllString(*user.Manufacturer.StripeAccountId, -1)
-	for _, match := range matches {
-		if regex.MatchString(match) {
-			items := new([]items.ItemPreview)
-			_ = r.DB.Table("items").Where("manufacturer_user_id = ?", UserId).Find(items)
-			user.Manufacturer.Items = *items
-		}
-	}
 	return user, nil
 }
 func (r UserDB) DeleteUser(UserId string) error {

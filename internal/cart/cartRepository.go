@@ -57,14 +57,14 @@ func (r CartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload)
 	return nil
 }
 
-func (r CartDB) DeleteCart(UserId string, itemId string) error {
+func (r CartDB) DeleteCart(UserId string, itemId int) error {
 	log.Print("UserId: ", UserId)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
 		return err
 	}
 	return nil
 }
-func (r CartDB) GetItem(itemId string) (*itemStatus, error) {
+func (r CartDB) GetItem(itemId int) (*itemStatus, error) {
 	itemDB := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(itemDB).Error; err != nil {
 		return nil, err

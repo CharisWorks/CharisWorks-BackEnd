@@ -10,7 +10,7 @@ import (
 
 func ExampleItemPreview() []ItemPreview {
 	e := ItemPreview{
-		Item_id: "f6d655da-6fff-11ee-b3bc-e86a6465f38b",
+		Item_id: 1,
 		Properties: ItemPreviewProperties{
 			Name:  "クラウディ・エンチャント",
 			Price: 2480,
@@ -28,26 +28,19 @@ func ExampleItemOverview(itemId int) ItemOverview {
 	e := ItemOverview{
 		Item_id: itemId,
 		Properties: &ItemOverviewProperties{
-			Name:  getStringPointer("クラウディ・エンチャント"),
-			Price: getIntPointer(2480),
-			Details: &ItemOverviewDetails{
+			Name:  "クラウディ・エンチャント",
+			Price: 2480,
+			Details: ItemOverviewDetails{
 				Status:      ItemStatusAvailable,
-				Stock:       getIntPointer(1),
-				Size:        getIntPointer(10),
-				Description: getStringPointer("foo"),
-				Tags:        &[]string{"Golang", "Java"},
+				Stock:       1,
+				Size:        10,
+				Description: "foo",
+				Tags:        []string{"Golang", "Java"},
 			},
 		},
 	}
 
 	return e
-}
-func getStringPointer(s string) *string {
-	return &s
-}
-
-func getIntPointer(i int) *int {
-	return &i
 }
 
 type ExampleItemRequests struct {

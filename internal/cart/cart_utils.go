@@ -11,8 +11,8 @@ import (
 type CartUtils struct {
 }
 
-func (CartUtils CartUtils) InspectCart(internalCarts []InternalCart) (result map[string]InternalCart, err error) {
-	cartMap := map[string]InternalCart{}
+func (CartUtils CartUtils) InspectCart(internalCarts []InternalCart) (result map[int]InternalCart, err error) {
+	cartMap := map[int]InternalCart{}
 	for _, internalCart := range internalCarts {
 		if internalCart.ItemStock < internalCart.Cart.Quantity {
 			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusStockOver
@@ -34,7 +34,7 @@ func (CartUtils CartUtils) InspectCart(internalCarts []InternalCart) (result map
 	return cartMap, nil
 }
 
-func (CartUtils CartUtils) ConvertCart(internalCarts map[string]InternalCart) (result []Cart) {
+func (CartUtils CartUtils) ConvertCart(internalCarts map[int]InternalCart) (result []Cart) {
 	sortedCart := []InternalCart{}
 	for _, inteinternalCart := range internalCarts {
 		sortedCart = append(sortedCart, inteinternalCart)
@@ -49,7 +49,7 @@ func (CartUtils CartUtils) ConvertCart(internalCarts map[string]InternalCart) (r
 
 	return result
 }
-func (CartUtils CartUtils) GetTotalAmount(internalCarts map[string]InternalCart) int {
+func (CartUtils CartUtils) GetTotalAmount(internalCarts map[int]InternalCart) int {
 	totalAmount := 0
 	for _, internalCart := range internalCarts {
 		totalAmount += internalCart.Cart.ItemProperties.Price * internalCart.Cart.Quantity

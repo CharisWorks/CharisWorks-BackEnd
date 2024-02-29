@@ -3,24 +3,19 @@ package user
 import (
 	"time"
 
-	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/gin-gonic/gin"
 )
 
 type User struct {
-	UserId       string       `json:"user_id" gorm:"user_id"`
-	UserProfile  UserProfile  `json:"profile" gorm:"profile"`
-	UserAddress  UserAddress  `json:"address" gorm:"address"`
-	Manufacturer Manufacturer `json:"manufacturer" gorm:"manufacturer"`
-}
-type Manufacturer struct {
-	StripeAccountId *string             `json:"stripe_account_id" gorm:"stripe_account_id"`
-	Items           []items.ItemPreview `json:"items" gorm:"items"`
+	UserId      string      `json:"user_id" gorm:"user_id"`
+	UserProfile UserProfile `json:"profile" gorm:"profile"`
+	UserAddress UserAddress `json:"address" gorm:"address"`
 }
 type UserProfile struct {
-	DisplayName string    `json:"display_name" gorm:"display_name"`
-	Description string    `json:"description" gorm:"description"`
-	CreatedAt   time.Time `json:"crated_at" gorm:"created_at"`
+	DisplayName     string    `json:"display_name" gorm:"display_name"`
+	Description     string    `json:"description" gorm:"description"`
+	StripeAccountId string    `json:"stripe_account_id" gorm:"stripe_account_id"`
+	CreatedAt       time.Time `json:"crated_at" gorm:"created_at"`
 }
 type UserAddress struct {
 	FirstName     string  `json:"first_name" gorm:"first_name"`
