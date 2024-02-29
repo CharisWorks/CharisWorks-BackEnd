@@ -40,12 +40,12 @@ type IManufacturerRequests interface {
 
 type IManufactuerUtils interface {
 	InspectRegisterPayload(ItemRegisterPayload) error
-	InspectUpdatePayload(ItemUpdatePayload) (*map[string]string, error)
+	InspectUpdatePayload(ItemUpdatePayload) (*map[string]interface{}, error)
 }
 
 type IManufacturerDB interface {
 	RegisterItem(i ItemRegisterPayload, history_item_id string, userId string) error
-	UpdateItem(i map[string]string, history_item_id string) error
+	UpdateItem(i map[string]interface{}, history_item_id string) error
 	DeleteItem(itemId string) error
 }
 type IManufactuerDBHistory interface {

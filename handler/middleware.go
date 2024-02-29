@@ -59,7 +59,7 @@ func stripeMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet("User").(*user.User)
 
-		if *User.Manufacturer.StripeAccountId == "" {
+		if User.UserProfile.StripeAccountId == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
@@ -73,12 +73,12 @@ func stripeMiddleware() gin.HandlerFunc {
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet("User").(*user.User)
-		if *User.Manufacturer.StripeAccountId == "" {
+		if *&User.UserProfile.StripeAccountId == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
 			return
 		}
-		ctx.Set("Stripe_Account_Id", User.Manufacturer.StripeAccountId)
+		ctx.Set("Stripe_Account_Id", User.UserProfile.StripeAccountId)
 		Account, err := cash.GetAccount(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "stripeのアカウントが取得できませんでした。"})

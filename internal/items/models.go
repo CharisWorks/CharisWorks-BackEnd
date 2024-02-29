@@ -18,9 +18,9 @@ type ItemPreviewDetails struct {
 }
 
 type ItemOverview struct {
-	Item_id      int                     `json:"item_id"`
-	Properties   *ItemOverviewProperties `json:"properties"`
-	Manufacturer *ManufacturerDetails    `json:"manufacturer"`
+	Item_id      string                 `json:"item_id"`
+	Properties   ItemOverviewProperties `json:"properties"`
+	Manufacturer ManufacturerDetails    `json:"manufacturer"`
 }
 
 type ManufacturerDetails struct {
@@ -29,17 +29,17 @@ type ManufacturerDetails struct {
 }
 
 type ItemOverviewProperties struct {
-	Name    *string              `json:"name"`
-	Price   *int                 `json:"price"`
-	Details *ItemOverviewDetails `json:"details"`
+	Name    string              `json:"name"`
+	Price   int                 `json:"price"`
+	Details ItemOverviewDetails `json:"details"`
 }
 
 type ItemOverviewDetails struct {
 	Status      ItemStatus `json:"status"`
-	Stock       *int       `json:"stock"`
-	Size        *int       `json:"size"`
-	Description *string    `json:"description"`
-	Tags        *[]string  `json:"tags"`
+	Stock       int        `json:"stock"`
+	Size        int        `json:"size"`
+	Description string     `json:"description"`
+	Tags        []string   `json:"tags"`
 }
 type ItemStatus string
 
@@ -55,8 +55,8 @@ type IItemRequests interface {
 }
 
 type IItemDB interface {
-	GetItemOverview(itemId int) (*ItemOverview, error)
-	GetPreviewList(keywords *[]string, page *string, manufacturer *string) (*[]ItemPreview, error)
+	GetItemOverview(itemId string) (*ItemOverview, error)
+	GetPreviewList(pageNum *int, pageSize *int, conditions map[string]interface{}) (*[]ItemPreview, error)
 }
 
 type IItemUtils interface {

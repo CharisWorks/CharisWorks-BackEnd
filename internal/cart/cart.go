@@ -82,6 +82,7 @@ func (c CartRequests) Delete(CartDB ICartDB, CartUtils ICartUtils, ctx *gin.Cont
 		return err
 	}
 	inspectedCart, _ := CartUtils.InspectCart(*internalCart)
+
 	_, exist := inspectedCart[*itemId]
 	if !exist {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "this item is not exist in cart"})

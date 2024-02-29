@@ -2,7 +2,6 @@ package items
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,7 @@ import (
 
 func ExampleItemPreview() []ItemPreview {
 	e := ItemPreview{
-		Item_id: "f6d655da-6fff-11ee-b3bc-e86a6465f38b",
+		Item_id: "aaa",
 		Properties: ItemPreviewProperties{
 			Name:  "クラウディ・エンチャント",
 			Price: 2480,
@@ -24,30 +23,23 @@ func ExampleItemPreview() []ItemPreview {
 	return append(*re, e)
 
 }
-func ExampleItemOverview(itemId int) ItemOverview {
+func ExampleItemOverview(itemId string) ItemOverview {
 	e := ItemOverview{
 		Item_id: itemId,
-		Properties: &ItemOverviewProperties{
-			Name:  getStringPointer("クラウディ・エンチャント"),
-			Price: getIntPointer(2480),
-			Details: &ItemOverviewDetails{
+		Properties: ItemOverviewProperties{
+			Name:  "クラウディ・エンチャント",
+			Price: 2480,
+			Details: ItemOverviewDetails{
 				Status:      ItemStatusAvailable,
-				Stock:       getIntPointer(1),
-				Size:        getIntPointer(10),
-				Description: getStringPointer("foo"),
-				Tags:        &[]string{"Golang", "Java"},
+				Stock:       1,
+				Size:        10,
+				Description: "foo",
+				Tags:        []string{"Golang", "Java"},
 			},
 		},
 	}
 
 	return e
-}
-func getStringPointer(s string) *string {
-	return &s
-}
-
-func getIntPointer(i int) *int {
-	return &i
 }
 
 type ExampleItemRequests struct {
@@ -59,8 +51,7 @@ func (i ExampleItemRequests) GetOverview(ItemDB IItemDB, ctx *gin.Context) (*Ite
 		return nil, err
 	}
 	log.Println("itemId: ", itemId)
-	id, _ := strconv.Atoi(*itemId)
-	ItemOverview := ExampleItemOverview(id)
+	ItemOverview := ExampleItemOverview(*itemId)
 	return &ItemOverview, nil
 }
 func (i ExampleItemRequests) GetSearchPreviewList(ItemDb IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
@@ -77,7 +68,7 @@ func (i ExampleItemRequests) GetSearchPreviewList(ItemDb IItemDB, ItemUtils IIte
 type ExampleItemDB struct {
 }
 
-func (i ExampleItemDB) GetItemOverview(itemId int) (*ItemOverview, error) {
+func (i ExampleItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	ItemOverview := ExampleItemOverview(itemId)
 	return &ItemOverview, nil
 }

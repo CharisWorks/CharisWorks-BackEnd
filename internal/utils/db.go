@@ -39,7 +39,7 @@ type IDBUtils interface {
 type Cart struct {
 	Id       int    `gorm:"id"`
 	UserId   string `gorm:"purchaser_user_id;type:varchar(100)"`
-	ItemId   int    `gorm:"item_id;type:int(11)"`
+	ItemId   string `gorm:"item_id;type:varchar(100)"`
 	Quantity int    `gorm:"quantity"`
 }
 
@@ -58,7 +58,7 @@ type User struct {
 	CreatedAt       time.Time `gorm:"created_at"`
 }
 type Item struct {
-	Id                 int    `gorm:"id"`
+	Id                 string `gorm:"id"`
 	ManufacturerUserId string `gorm:"manufacturer_user_id;type:varchar(100)"`
 	HistoryItemId      int    `gorm:"history_item_id"`
 	Name               string `gorm:"name"`
@@ -72,9 +72,9 @@ type Item struct {
 type Shipping struct {
 	Id            string `gorm:"id"`
 	ZipCode       string `gorm:"zip_code"`
-	Address1      string `gorm:"address_1"`
-	Address2      string `gorm:"address_2"`
-	Address3      string `gorm:"address_3" null:"true"`
+	Address_1     string `gorm:"address_1"`
+	Address_2     string `gorm:"address_2"`
+	Address_3     string `gorm:"address_3" null:"true"`
 	PhoneNumber   string `gorm:"phone_number"`
 	FirstName     string `gorm:"first_name"`
 	FirstNameKana string `gorm:"first_name_kana"`

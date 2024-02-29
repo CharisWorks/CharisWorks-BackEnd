@@ -35,7 +35,7 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 		return nil, nil
 	}
 	log.Print("pointer")
-	if User.UserAddress == nil {
+	if &User.UserAddress == new(user.UserAddress) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "住所が登録されていません。"})
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
 
@@ -76,7 +76,7 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 		return nil, err
 	}
 	User = ctx.MustGet("User").(*user.User)
-	User.Manufacturer.StripeAccountId = &a.ID
+	User.UserProfile.StripeAccountId = a.ID
 	ctx.Set("User", User)
 	URL, err := CreateAccountLink(ctx)
 	if err != nil {
@@ -88,9 +88,9 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 }
 
 func CreateAccountLink(ctx *gin.Context) (*string, error) {
-	StripeAccountId := ctx.MustGet("User").(*user.User).Manufacturer.StripeAccountId
+	StripeAccountId := ctx.MustGet("User").(*user.User).UserProfile.StripeAccountId
 	params := &stripe.AccountLinkParams{
-		Account:    stripe.String(*StripeAccountId),
+		Account:    stripe.String(StripeAccountId),
 		RefreshURL: stripe.String("http://localhost:3000"),
 		ReturnURL:  stripe.String("http://localhost:3000"),
 		Type:       stripe.String("account_onboarding"),
@@ -123,13 +123,13 @@ func (StripeRequests StripeRequests) GetStripeMypageLink(ctx *gin.Context) (*str
 
 func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 	params := &stripe.AccountParams{}
-	StripeAccountId := ctx.MustGet("User").(*user.User).Manufacturer.StripeAccountId
-	log.Print(*StripeAccountId)
+	StripeAccountId := ctx.MustGet("User").(*user.User).UserProfile.StripeAccountId
+	log.Print(StripeAccountId)
 	regex := regexp.MustCompile(`acct_\w+`)
-	matches := regex.FindAllString(*StripeAccountId, -1)
+	matches := regex.FindAllString(StripeAccountId, -1)
 	for _, match := range matches {
 		if regex.MatchString(match) {
-			result, err := account.GetByID(*StripeAccountId, params)
+			result, err := account.GetByID(StripeAccountId, params)
 			if err != nil {
 				return nil, err
 			}

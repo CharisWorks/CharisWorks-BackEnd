@@ -25,12 +25,12 @@ DROP TABLE IF EXISTS `carts`;
 CREATE TABLE `carts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `purchaser_user_id` varchar(100) NOT NULL,
-  `item_id` int(11) NOT NULL,
+  `item_id` varchar(100) NOT NULL,
   `quantity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `carts_items_FK` (`item_id`),
   KEY `carts_users_FK` (`purchaser_user_id`),
-  CONSTRAINT `carts_items_FK` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`),
+  CONSTRAINT `carts_items_FK` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`)ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `carts_users_FK` FOREIGN KEY (`purchaser_user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -53,7 +53,7 @@ DROP TABLE IF EXISTS `history_items`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `history_items` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `item_id` int(11) NOT NULL,
+  `item_id` varchar(100) NOT NULL,
   `manufacturer_user_id` varchar(100) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `price` int(11) NOT NULL,
@@ -114,7 +114,7 @@ DROP TABLE IF EXISTS `items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `items` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(100) NOT NULL ,
   `manufacturer_user_id` varchar(100) NOT NULL,
   `history_item_id` int(11) NOT NULL,
   `name` text DEFAULT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE `items` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `history_item_id` (`history_item_id`),
   KEY `items_users_FK` (`manufacturer_user_id`),
-  CONSTRAINT `items_users_FK` FOREIGN KEY (`manufacturer_user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `items_users_FK` FOREIGN KEY (`manufacturer_user_id`) REFERENCES `users` (`id`)ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -159,7 +159,7 @@ CREATE TABLE `shippings` (
   `last_name` text NOT NULL,
   `last_name_kana` text NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `shippings_users_FK` FOREIGN KEY (`id`) REFERENCES `users` (`id`)
+  CONSTRAINT `shippings_users_FK` FOREIGN KEY (`id`) REFERENCES `users` (`id`)ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -182,7 +182,7 @@ DROP TABLE IF EXISTS `transaction_items`;
 CREATE TABLE `transaction_items` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `transaction_id` int(11) NOT NULL,
-  `item_id` int(11) NOT NULL,
+  `item_id` varchar(100) NOT NULL,
   `quantity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `transaction_items_unique` (`transaction_id`),
