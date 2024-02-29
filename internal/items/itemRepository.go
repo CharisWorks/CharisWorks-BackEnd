@@ -35,16 +35,17 @@ func (r *ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	}
 	return ItemOverview, nil
 }
-func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}) ([]ItemPreview, error) {
+func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}, tags []string) ([]ItemPreview, error) {
 	previews := new([]ItemPreview)
 	items := new([]utils.Item)
 	offset := (page - 1) * pageSize
-
 	query := db.Model(&utils.Item{}).Offset(offset).Limit(pageSize)
 	for key, value := range conditions {
 		query = query.Where(key, value)
 	}
-
+	for _, tag := range tags {
+		query = query.Where("tags LIKE ?", "%"+tag+"%")
+	}
 	err := query.Find(&items).Error
 	if err != nil {
 		return nil, err
@@ -59,14 +60,8 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	}
 	return *previews, nil
 }
-func (r *ItemDB) GetPreviewList(pageNum *int, pageSize *int, conditions map[string]interface{}) (*[]ItemPreview, error) {
-	if pageNum == nil {
-		*pageNum = 1
-	}
-	if pageSize == nil {
-		*pageSize = 20
-	}
-	ItemPreview, err := getItemPreview(r.DB, *pageNum, *pageSize, conditions)
+func (r *ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error) {
+	ItemPreview, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}

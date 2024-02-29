@@ -39,7 +39,7 @@ type ItemOverviewDetails struct {
 	Stock       int        `json:"stock"`
 	Size        int        `json:"size"`
 	Description string     `json:"description"`
-	Tags        []string   `json:"tags"`
+	Tags        []string   `json:"tags" gorm:"type:json"`
 }
 type ItemStatus string
 

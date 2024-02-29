@@ -67,7 +67,7 @@ type Item struct {
 	Stock              int    `gorm:"stock"`
 	Size               int    `gorm:"size"`
 	Description        string `gorm:"description"`
-	Tags               string `gorm:"tags"`
+	Tags               string `gorm:"type:json"`
 }
 type Shipping struct {
 	Id            string `gorm:"id"`
