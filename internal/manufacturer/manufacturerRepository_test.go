@@ -38,7 +38,7 @@ func Test_ManufacturerDB(t *testing.T) {
 				},
 			},
 			want: items.ItemOverview{
-				Item_id: 1,
+				Item_id: "aaa",
 				Properties: items.ItemOverviewProperties{
 					Name:  "abc",
 					Price: 2000,
@@ -55,7 +55,7 @@ func Test_ManufacturerDB(t *testing.T) {
 				"stock": 4,
 			},
 			wantUpdated: items.ItemOverview{
-				Item_id: 1,
+				Item_id: "aaa",
 				Properties: items.ItemOverviewProperties{
 					Name:  "abc",
 					Price: 2000,

@@ -20,14 +20,14 @@ func TestCartUtils_InspectCart(t *testing.T) {
 	Cases := []struct {
 		name string
 		cart []InternalCart
-		want map[int]InternalCart
+		want map[string]InternalCart
 		err  utils.InternalErrorMessage
 	}{
 		{
 			name: "正常",
 			cart: []InternalCart{{
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -40,10 +40,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				ItemStock: 4,
 				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[int]InternalCart{
-				1: {
+			want: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -61,7 +61,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 			name: "在庫足りない",
 			cart: []InternalCart{{
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -74,10 +74,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				ItemStock: 1,
 				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[int]InternalCart{
-				1: {
+			want: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -96,7 +96,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 			name: "在庫なし",
 			cart: []InternalCart{{
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -109,10 +109,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				ItemStock: 0,
 				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[int]InternalCart{
-				1: {
+			want: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -131,7 +131,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 			name: "無効な商品",
 			cart: []InternalCart{{
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -144,10 +144,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				ItemStock: 4,
 				Status:    items.ItemStatusExpired,
 			}},
-			want: map[int]InternalCart{
-				1: {
+			want: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -166,7 +166,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 			name: "無効な商品で在庫なしの場合は無効な商品がエラーとして優先される",
 			cart: []InternalCart{{
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -179,10 +179,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				ItemStock: 0,
 				Status:    items.ItemStatusExpired,
 			}},
-			want: map[int]InternalCart{
-				1: {
+			want: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -201,7 +201,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 			name: "同じ商品が2つ登録されている場合に一つとして表示されるか",
 			cart: []InternalCart{{
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -215,7 +215,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusAvailable,
 			}, {
 				Cart: Cart{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -228,10 +228,10 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				ItemStock: 4,
 				Status:    items.ItemStatusAvailable,
 			}},
-			want: map[int]InternalCart{
-				1: {
+			want: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -279,7 +279,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 		{
 			name: "正常なパターン",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			Status: itemStatus{
@@ -287,13 +287,13 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			want: &CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 		}, {
 			name: "在庫足りない",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			Status: itemStatus{
@@ -305,7 +305,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 		}, {
 			name: "在庫ない",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			Status: itemStatus{
@@ -317,7 +317,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 		}, {
 			name: "無効な商品",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			Status: itemStatus{
@@ -329,7 +329,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 		}, {
 			name: "在庫切れだけど無効な商品だと無効な商品のエラーを出す",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			Status: itemStatus{
@@ -341,7 +341,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 		}, {
 			name: "無効なペイロード(0)",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 0,
 			},
 			Status: itemStatus{
@@ -353,7 +353,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 		}, {
 			name: "無効なペイロード(負数)",
 			Payload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: -3,
 			},
 			Status: itemStatus{
@@ -383,15 +383,15 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 	CartUtils := new(CartUtils)
 	Cases := []struct {
 		name          string
-		inspectedCart map[int]InternalCart
+		inspectedCart map[string]InternalCart
 		want          []Cart
 	}{
 		{
 			name: "正常",
-			inspectedCart: map[int]InternalCart{
-				1: {
+			inspectedCart: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -407,7 +407,7 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 			},
 			want: []Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -436,15 +436,15 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 	CartUtils := new(CartUtils)
 	Cases := []struct {
 		name          string
-		inspectedCart map[int]InternalCart
+		inspectedCart map[string]InternalCart
 		want          int
 	}{
 		{
 			name: "1つパターン",
-			inspectedCart: map[int]InternalCart{
-				1: {
+			inspectedCart: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -462,10 +462,10 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 		},
 		{
 			name: "2つパターン",
-			inspectedCart: map[int]InternalCart{
-				1: {
+			inspectedCart: map[string]InternalCart{
+				"1": {
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -478,9 +478,9 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 					ItemStock: 4,
 					Status:    items.ItemStatusAvailable,
 				},
-				2: {
+				"2": {
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 1,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -527,7 +527,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -543,7 +543,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			},
 			want: &[]Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -560,7 +560,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -576,7 +576,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 				},
 				{
 					Cart: Cart{
-						ItemId:   3,
+						ItemId:   "test3",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -592,7 +592,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 				},
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -609,7 +609,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			},
 			want: &[]Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -620,7 +620,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 					},
 				},
 				{
-					ItemId:   2,
+					ItemId:   "test2",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -630,7 +630,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 						},
 					},
 				}, {
-					ItemId:   3,
+					ItemId:   "test3",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -647,7 +647,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -663,7 +663,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			},
 			want: &[]Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -688,7 +688,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 0,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -744,7 +744,7 @@ func TestCartRequests_Get(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -760,7 +760,7 @@ func TestCartRequests_Get(t *testing.T) {
 			},
 			want: &[]Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -777,7 +777,7 @@ func TestCartRequests_Get(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -793,7 +793,7 @@ func TestCartRequests_Get(t *testing.T) {
 				},
 				{
 					Cart: Cart{
-						ItemId:   3,
+						ItemId:   "test3",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -809,7 +809,7 @@ func TestCartRequests_Get(t *testing.T) {
 				},
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -826,7 +826,7 @@ func TestCartRequests_Get(t *testing.T) {
 			},
 			want: &[]Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -837,7 +837,7 @@ func TestCartRequests_Get(t *testing.T) {
 					},
 				},
 				{
-					ItemId:   2,
+					ItemId:   "test2",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -847,7 +847,7 @@ func TestCartRequests_Get(t *testing.T) {
 						},
 					},
 				}, {
-					ItemId:   3,
+					ItemId:   "test3",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -864,7 +864,7 @@ func TestCartRequests_Get(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -880,7 +880,7 @@ func TestCartRequests_Get(t *testing.T) {
 			},
 			want: &[]Cart{
 				{
-					ItemId:   1,
+					ItemId:   "test",
 					Quantity: 2,
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test",
@@ -905,7 +905,7 @@ func TestCartRequests_Get(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 0,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -965,7 +965,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -984,7 +984,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 		},
@@ -993,7 +993,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1012,7 +1012,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			DBerr: nil,
@@ -1026,7 +1026,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			SelectErr: &utils.InternalError{Message: utils.InternalErrorNotFound},
@@ -1040,7 +1040,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			SelectErr: &utils.InternalError{Message: utils.InternalErrorDB},
@@ -1051,7 +1051,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1067,7 +1067,7 @@ func TestCartRequests_Register(t *testing.T) {
 			},
 			itemStatus: nil,
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			DBerr: &utils.InternalError{Message: utils.InternalErrorNotFound},
@@ -1078,7 +1078,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1097,7 +1097,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidCart},
@@ -1107,7 +1107,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1126,7 +1126,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidCart},
@@ -1136,7 +1136,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1155,7 +1155,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: -1,
 			},
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
@@ -1165,7 +1165,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1184,7 +1184,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 0,
 			},
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
@@ -1194,7 +1194,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1213,7 +1213,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 8,
 			},
 			err: &utils.InternalError{Message: utils.InternalErrorStockOver},
@@ -1223,7 +1223,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1242,7 +1242,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   2,
+				ItemId:   "test2",
 				Quantity: 2,
 			},
 			UpdateDBerr: &utils.InternalError{Message: utils.InternalErrorDB},
@@ -1253,7 +1253,7 @@ func TestCartRequests_Register(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1272,7 +1272,7 @@ func TestCartRequests_Register(t *testing.T) {
 				status:    items.ItemStatusAvailable,
 			},
 			CartRequestPayload: CartRequestPayload{
-				ItemId:   1,
+				ItemId:   "test",
 				Quantity: 2,
 			},
 			registerDBerr: &utils.InternalError{Message: utils.InternalErrorDB},
@@ -1333,7 +1333,7 @@ func TestCartRequests_Delete(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   1,
+						ItemId:   "test",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1354,7 +1354,7 @@ func TestCartRequests_Delete(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",
@@ -1382,7 +1382,7 @@ func TestCartRequests_Delete(t *testing.T) {
 			internalCarts: &[]InternalCart{
 				{
 					Cart: Cart{
-						ItemId:   2,
+						ItemId:   "test2",
 						Quantity: 2,
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test",

@@ -6,7 +6,7 @@ import (
 )
 
 type Cart struct {
-	ItemId         int                       `json:"item_id"`
+	ItemId         string                    `json:"item_id"`
 	Quantity       int                       `json:"quantity"`
 	ItemProperties CartItemPreviewProperties `json:"properties"`
 }
@@ -29,8 +29,8 @@ const (
 )
 
 type CartRequestPayload struct {
-	ItemId   int `json:"item_id" binding:"required" `
-	Quantity int `json:"quantity" binding:"required"`
+	ItemId   string `json:"item_id" binding:"required" `
+	Quantity int    `json:"quantity" binding:"required"`
 }
 type InternalCart struct {
 	Index     int
@@ -51,12 +51,12 @@ type ICartDB interface {
 	GetCart(UserId string) (*[]InternalCart, error)
 	RegisterCart(UserId string, c CartRequestPayload) error
 	UpdateCart(UserId string, c CartRequestPayload) error
-	DeleteCart(UserId string, itemId int) error
-	GetItem(itemId int) (*itemStatus, error)
+	DeleteCart(UserId string, itemId string) error
+	GetItem(itemId string) (*itemStatus, error)
 }
 type ICartUtils interface {
-	InspectCart([]InternalCart) (map[int]InternalCart, error)
-	ConvertCart(map[int]InternalCart) []Cart
-	GetTotalAmount(map[int]InternalCart) int
+	InspectCart([]InternalCart) (map[string]InternalCart, error)
+	ConvertCart(map[string]InternalCart) []Cart
+	GetTotalAmount(map[string]InternalCart) int
 	InspectPayload(c CartRequestPayload, itemStatus itemStatus) (*CartRequestPayload, error)
 }

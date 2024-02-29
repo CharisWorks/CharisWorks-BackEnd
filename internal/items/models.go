@@ -3,7 +3,7 @@ package items
 import "github.com/gin-gonic/gin"
 
 type ItemPreview struct {
-	Item_id    int                   `json:"item_id"`
+	Item_id    string                `json:"item_id"`
 	Properties ItemPreviewProperties `json:"properties"`
 }
 
@@ -18,7 +18,7 @@ type ItemPreviewDetails struct {
 }
 
 type ItemOverview struct {
-	Item_id      int                    `json:"item_id"`
+	Item_id      string                 `json:"item_id"`
 	Properties   ItemOverviewProperties `json:"properties"`
 	Manufacturer ManufacturerDetails    `json:"manufacturer"`
 }
@@ -55,7 +55,7 @@ type IItemRequests interface {
 }
 
 type IItemDB interface {
-	GetItemOverview(itemId int) (*ItemOverview, error)
+	GetItemOverview(itemId string) (*ItemOverview, error)
 	GetPreviewList(pageNum *int, pageSize *int, conditions map[string]interface{}) (*[]ItemPreview, error)
 }
 

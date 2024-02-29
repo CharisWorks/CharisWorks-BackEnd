@@ -39,7 +39,7 @@ type IDBUtils interface {
 type Cart struct {
 	Id       int    `gorm:"id"`
 	UserId   string `gorm:"purchaser_user_id;type:varchar(100)"`
-	ItemId   int    `gorm:"item_id;type:int(11)"`
+	ItemId   string `gorm:"item_id;type:int(11)"`
 	Quantity int    `gorm:"quantity"`
 }
 
@@ -58,7 +58,7 @@ type User struct {
 	CreatedAt       time.Time `gorm:"created_at"`
 }
 type Item struct {
-	Id                 int    `gorm:"id"`
+	Id                 string `gorm:"id"`
 	ManufacturerUserId string `gorm:"manufacturer_user_id;type:varchar(100)"`
 	HistoryItemId      int    `gorm:"history_item_id"`
 	Name               string `gorm:"name"`

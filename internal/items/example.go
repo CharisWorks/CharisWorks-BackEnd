@@ -2,7 +2,6 @@ package items
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,7 @@ import (
 
 func ExampleItemPreview() []ItemPreview {
 	e := ItemPreview{
-		Item_id: 1,
+		Item_id: "aaa",
 		Properties: ItemPreviewProperties{
 			Name:  "クラウディ・エンチャント",
 			Price: 2480,
@@ -24,7 +23,7 @@ func ExampleItemPreview() []ItemPreview {
 	return append(*re, e)
 
 }
-func ExampleItemOverview(itemId int) ItemOverview {
+func ExampleItemOverview(itemId string) ItemOverview {
 	e := ItemOverview{
 		Item_id: itemId,
 		Properties: ItemOverviewProperties{
@@ -52,8 +51,7 @@ func (i ExampleItemRequests) GetOverview(ItemDB IItemDB, ctx *gin.Context) (*Ite
 		return nil, err
 	}
 	log.Println("itemId: ", itemId)
-	id, _ := strconv.Atoi(*itemId)
-	ItemOverview := ExampleItemOverview(id)
+	ItemOverview := ExampleItemOverview(*itemId)
 	return &ItemOverview, nil
 }
 func (i ExampleItemRequests) GetSearchPreviewList(ItemDb IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
@@ -70,7 +68,7 @@ func (i ExampleItemRequests) GetSearchPreviewList(ItemDb IItemDB, ItemUtils IIte
 type ExampleItemDB struct {
 }
 
-func (i ExampleItemDB) GetItemOverview(itemId int) (*ItemOverview, error) {
+func (i ExampleItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	ItemOverview := ExampleItemOverview(itemId)
 	return &ItemOverview, nil
 }

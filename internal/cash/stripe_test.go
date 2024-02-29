@@ -27,7 +27,7 @@ func TestGetClientSecret(t *testing.T) {
 			cart: &[]cart.InternalCart{
 				{
 					Cart: cart.Cart{
-						ItemId:   2,
+						ItemId:   "abc",
 						Quantity: 2,
 						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test",
@@ -54,7 +54,7 @@ func TestGetClientSecret(t *testing.T) {
 			cart: &[]cart.InternalCart{
 				{
 					Cart: cart.Cart{
-						ItemId:   1,
+						ItemId:   "abc",
 						Quantity: 2,
 						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test",
@@ -69,7 +69,7 @@ func TestGetClientSecret(t *testing.T) {
 				},
 				{
 					Cart: cart.Cart{
-						ItemId:   2,
+						ItemId:   "abc",
 						Quantity: 2,
 						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test",
@@ -90,7 +90,7 @@ func TestGetClientSecret(t *testing.T) {
 			cart: &[]cart.InternalCart{
 				{
 					Cart: cart.Cart{
-						ItemId:   2,
+						ItemId:   "abc",
 						Quantity: 5,
 						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test",
