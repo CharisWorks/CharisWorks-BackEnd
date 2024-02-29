@@ -35,11 +35,10 @@ func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id int
 	return nil
 }
 
-func (m *ManufacturerDB) UpdateItem(i map[string]string, history_item_id string, itemId string) error {
+func (m *ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId int) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Update("history_item_id", history_item_id).Updates(i).Error; err != nil {
 		return err
 	}
-
 	return nil
 }
 func (m *ManufacturerDB) DeleteItem(itemId string) error {
