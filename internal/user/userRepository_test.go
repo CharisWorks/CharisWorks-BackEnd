@@ -349,7 +349,6 @@ func Test_UserDB_Update_Address(t *testing.T) {
 			}
 
 			log.Print(&User)
-			log.Print("address_3: ", *User.UserAddress.Address3)
 			if User.UserId != tt.want.UserId {
 				t.Errorf("%v,got,%v,want%v", tt.name, User.UserId, tt.want.UserId)
 			}
