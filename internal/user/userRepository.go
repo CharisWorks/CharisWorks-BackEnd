@@ -101,13 +101,13 @@ func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayloa
 	Shipping.FirstNameKana = payload.FirstNameKana
 	Shipping.LastName = payload.LastName
 	Shipping.LastNameKana = payload.LastNameKana
-	if err := r.DB.Create(Shipping).Error; err != nil {
+	if err := r.DB.Table("shippings").Create(Shipping).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
-func (r UserDB) UpdateAddress(UserId string, payload map[string]string) error {
+func (r UserDB) UpdateAddress(UserId string, payload map[string]interface{}) error {
 	if err := r.DB.Table("shippings").Where("id = ?", UserId).Updates(payload).Error; err != nil {
 		return err
 	}
