@@ -40,7 +40,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusAvailable,
 			}},
 			want: map[string]InternalCart{
-				"1": {
+				"test": {
 					Cart: Cart{
 						ItemId:   "test",
 						Quantity: 2,
@@ -74,7 +74,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusAvailable,
 			}},
 			want: map[string]InternalCart{
-				"1": {
+				"test": {
 					Cart: Cart{
 						ItemId:   "test",
 						Quantity: 2,
@@ -109,7 +109,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusAvailable,
 			}},
 			want: map[string]InternalCart{
-				"1": {
+				"test": {
 					Cart: Cart{
 						ItemId:   "test",
 						Quantity: 2,
@@ -144,7 +144,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusExpired,
 			}},
 			want: map[string]InternalCart{
-				"1": {
+				"test": {
 					Cart: Cart{
 						ItemId:   "test",
 						Quantity: 2,
@@ -179,7 +179,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusExpired,
 			}},
 			want: map[string]InternalCart{
-				"1": {
+				"test": {
 					Cart: Cart{
 						ItemId:   "test",
 						Quantity: 2,
@@ -228,7 +228,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 				Status:    items.ItemStatusAvailable,
 			}},
 			want: map[string]InternalCart{
-				"1": {
+				"test": {
 					Cart: Cart{
 						ItemId:   "test",
 						Quantity: 2,

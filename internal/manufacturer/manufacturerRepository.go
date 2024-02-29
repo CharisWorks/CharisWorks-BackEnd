@@ -12,12 +12,13 @@ type ManufacturerDB struct {
 	DB *gorm.DB
 }
 
-func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id int, userId string) error {
+func (m *ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, history_item_id int, userId string) error {
 	json, err := json.Marshal(i.Details.Tags)
 	if err != nil {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
 	item := utils.Item{
+		Id:                 itemId,
 		ManufacturerUserId: userId,
 		HistoryItemId:      history_item_id,
 		Name:               i.Name,
@@ -35,7 +36,7 @@ func (m *ManufacturerDB) RegisterItem(i ItemRegisterPayload, history_item_id int
 	return nil
 }
 
-func (m *ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId int) error {
+func (m *ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Update("history_item_id", history_item_id).Updates(i).Error; err != nil {
 		return err
 	}

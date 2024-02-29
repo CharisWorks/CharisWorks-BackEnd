@@ -39,7 +39,7 @@ type IDBUtils interface {
 type Cart struct {
 	Id       int    `gorm:"id"`
 	UserId   string `gorm:"purchaser_user_id;type:varchar(100)"`
-	ItemId   string `gorm:"item_id;type:int(11)"`
+	ItemId   string `gorm:"item_id;type:varchar(100)"`
 	Quantity int    `gorm:"quantity"`
 }
 

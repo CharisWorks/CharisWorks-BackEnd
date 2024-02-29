@@ -38,7 +38,7 @@ func Test_ManufacturerDB(t *testing.T) {
 				},
 			},
 			want: items.ItemOverview{
-				Item_id: "aaa",
+				Item_id: "test",
 				Properties: items.ItemOverviewProperties{
 					Name:  "abc",
 					Price: 2000,
@@ -55,7 +55,7 @@ func Test_ManufacturerDB(t *testing.T) {
 				"stock": 4,
 			},
 			wantUpdated: items.ItemOverview{
-				Item_id: "aaa",
+				Item_id: "test",
 				Properties: items.ItemOverviewProperties{
 					Name:  "abc",
 					Price: 2000,
@@ -78,11 +78,11 @@ func Test_ManufacturerDB(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err = ManufacturerDB.RegisterItem(tt.payload, 1, "aaa")
+			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemOverview, err := ItemDB.GetItemOverview(1)
+			ItemOverview, err := ItemDB.GetItemOverview("test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -90,11 +90,11 @@ func Test_ManufacturerDB(t *testing.T) {
 			if !reflect.DeepEqual(*ItemOverview, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.want)
 			}
-			err = ManufacturerDB.UpdateItem(tt.updatePayload, 1, 1)
+			err = ManufacturerDB.UpdateItem(tt.updatePayload, 1, "test")
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemOverview, err = ItemDB.GetItemOverview(1)
+			ItemOverview, err = ItemDB.GetItemOverview("test")
 			if err != nil {
 				t.Errorf("error")
 			}

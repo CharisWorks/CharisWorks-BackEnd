@@ -11,7 +11,7 @@ type ItemDB struct {
 	DB *gorm.DB
 }
 
-func (r *ItemDB) GetItemOverview(itemId int) (*ItemOverview, error) {
+func (r *ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	ItemOverview := new(ItemOverview)
 	DBItem := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
