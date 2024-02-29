@@ -30,12 +30,17 @@ func (r UserRequests) UserDelete(ctx *gin.Context, UserDB IUserDB) error {
 	}
 	return nil
 }
-func (r UserRequests) UserProfileUpdate(ctx *gin.Context, UserDB IUserDB) error {
+func (r UserRequests) UserProfileUpdate(ctx *gin.Context, UserDB IUserDB, UserUtils IUserUtils) error {
 	payload, err := utils.GetPayloadFromBody(ctx, &UserProfile{})
 	if err != nil {
 		return err
 	}
-	err = UserDB.UpdateProfile(ctx.MustGet("UserId").(string), *payload)
+	updatePayload, err := UserUtils.InspectProfileUpdatePayload(*payload)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": utils.InternalErrorInvalidPayload})
+		return err
+	}
+	err = UserDB.UpdateProfile(ctx.MustGet("UserId").(string), updatePayload)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
 		return err
@@ -54,12 +59,17 @@ func (r UserRequests) UserAddressRegister(ctx *gin.Context, UserDB IUserDB) erro
 	}
 	return nil
 }
-func (r UserRequests) UserAddressUpdate(ctx *gin.Context, UserDB IUserDB) error {
+func (r UserRequests) UserAddressUpdate(ctx *gin.Context, UserDB IUserDB, UserUtils IUserUtils) error {
 	payload, err := utils.GetPayloadFromBody(ctx, &UserAddress{})
 	if err != nil {
 		return err
 	}
-	err = UserDB.UpdateAddress(ctx.MustGet("UserId").(string), *payload)
+	updatePayload, err := UserUtils.InspectAddressUpdatePayload(*payload)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": utils.InternalErrorInvalidPayload})
+		return err
+	}
+	err = UserDB.UpdateAddress(ctx.MustGet("UserId").(string), updatePayload)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": utils.InternalErrorDB})
 		return err

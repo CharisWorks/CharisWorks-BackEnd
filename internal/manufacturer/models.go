@@ -3,16 +3,15 @@ package manufacturer
 import "github.com/gin-gonic/gin"
 
 type ItemRegisterPayload struct {
-	Name    *string                     `json:"name" binding:"required"`
-	Price   *int                        `json:"price" binding:"required"`
-	Details *ItemRegisterDetailsPayload `json:"details" binding:"required"`
+	Name    string                     `json:"name" binding:"required"`
+	Price   int                        `json:"price" binding:"required"`
+	Details ItemRegisterDetailsPayload `json:"details" binding:"required"`
 }
 type ItemRegisterDetailsPayload struct {
-	Status      *string   `json:"status" binding:"required"`
-	Stock       *int      `json:"stock" binding:"required"`
-	Size        *int      `json:"size" binding:"required"`
-	Description *string   `json:"description" binding:"required"`
-	Tags        *[]string `json:"tags" binding:"required"`
+	Stock       int      `json:"stock" binding:"required"`
+	Size        int      `json:"size" binding:"required"`
+	Description string   `json:"description" binding:"required"`
+	Tags        []string `json:"tags" binding:"required"`
 }
 
 type ItemUpdatePayload struct {
@@ -41,12 +40,12 @@ type IManufacturerRequests interface {
 
 type IManufactuerUtils interface {
 	InspectRegisterPayload(ItemRegisterPayload) error
-	InspectUpdatePayload(ItemUpdatePayload) error
+	InspectUpdatePayload(ItemUpdatePayload) (*map[string]string, error)
 }
 
 type IManufacturerDB interface {
-	RegisterItem(i ItemRegisterPayload, history_item_id string) error
-	UpdateItem(i ItemUpdatePayload, history_item_id string) error
+	RegisterItem(i ItemRegisterPayload, history_item_id string, userId string) error
+	UpdateItem(i map[string]string, history_item_id string) error
 	DeleteItem(itemId string) error
 }
 type IManufactuerDBHistory interface {

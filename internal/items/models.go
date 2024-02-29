@@ -18,7 +18,7 @@ type ItemPreviewDetails struct {
 }
 
 type ItemOverview struct {
-	Item_id      string                  `json:"item_id"`
+	Item_id      int                     `json:"item_id"`
 	Properties   *ItemOverviewProperties `json:"properties"`
 	Manufacturer *ManufacturerDetails    `json:"manufacturer"`
 }
@@ -55,7 +55,7 @@ type IItemRequests interface {
 }
 
 type IItemDB interface {
-	GetItemOverview(itemId string) (*ItemOverview, error)
+	GetItemOverview(itemId int) (*ItemOverview, error)
 	GetPreviewList(keywords *[]string, page *string, manufacturer *string) (*[]ItemPreview, error)
 }
 

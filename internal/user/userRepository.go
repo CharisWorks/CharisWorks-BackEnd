@@ -14,11 +14,13 @@ type UserDB struct {
 	DB *gorm.DB
 }
 
+// firstorinitをそのうち使うかもしれない
 func (r UserDB) CreateUser(UserId string, historyUserId int) error {
 	DBUser := new(utils.User)
 	log.Print("UserId: ", UserId)
 	log.Print("historyUserId: ", historyUserId)
 	DBUser.Id = UserId
+	DBUser.HistoryUserId = historyUserId
 	DBUser.CreatedAt = time.Now()
 	result := r.DB.Create(DBUser)
 	log.Print("result: ", result)
@@ -29,23 +31,23 @@ func (r UserDB) CreateUser(UserId string, historyUserId int) error {
 }
 func (r UserDB) GetUser(UserId string) (*User, error) {
 	DBUser := new(utils.User)
-	result := r.DB.Table("users").Where("id = ?", UserId).First(DBUser)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
+		return nil, err
 	}
 	user := new(User)
 	user.UserId = DBUser.Id
-	user.UserProfile = &UserProfile{
+	user.UserProfile = UserProfile{
 		DisplayName: DBUser.DisplayName,
 		Description: DBUser.Description,
 		CreatedAt:   DBUser.CreatedAt,
 	}
+	log.Print("successfully got data. id: ", DBUser.Id, "displayname: ", DBUser.DisplayName, "description: ", DBUser.Description, "created_at: ", DBUser.CreatedAt)
 	user.Manufacturer = Manufacturer{
 		StripeAccountId: &DBUser.StripeAccountId,
 	}
 	Address := new(utils.Shipping)
 	_ = r.DB.Table("shippings").Where("id = ?", UserId).First(Address)
-	user.UserAddress = &UserAddress{
+	user.UserAddress = UserAddress{
 		FirstName:     Address.FirstName,
 		FirstNameKana: Address.FirstNameKana,
 		LastName:      Address.LastName,
@@ -69,17 +71,19 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 	return user, nil
 }
 func (r UserDB) DeleteUser(UserId string) error {
-	result := r.DB.Table("users").Where("id = ?", UserId).Update("id", "deleted_"+UserId+"_"+time.Now().String())
-	if result.Error != nil {
-		return result.Error
+	if err := r.DB.Table("users").Where("id = ?", UserId).Update("id", "deleted_"+UserId+"_"+time.Now().String()).Error; err != nil {
+		return err
 	}
 	return nil
 }
 
-func (r UserDB) UpdateProfile(UserId string, payload UserProfile) error {
-	result := r.DB.Table("users").Where("id = ?", UserId).Update("display_name", payload.DisplayName).Update("description", payload.Description)
-	if result.Error != nil {
-		return result.Error
+func (r UserDB) UpdateProfile(UserId string, payload map[string]interface{}) error {
+	for key, value := range payload {
+		log.Print("key: ", key, "value: ", value)
+	}
+	log.Print("UserId: ", UserId)
+	if err := r.DB.Table("users").Where("id = ?", UserId).Updates(payload).Error; err != nil {
+		return err
 	}
 	return nil
 }
@@ -93,17 +97,15 @@ func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayloa
 		Shipping.Address3 = *payload.Address3
 	}
 	Shipping.PhoneNumber = payload.PhoneNumber
-	result := r.DB.Create(Shipping)
-	if result.Error != nil {
-		return result.Error
+	if err := r.DB.Create(Shipping).Error; err != nil {
+		return err
 	}
 
 	return nil
 }
-func (r UserDB) UpdateAddress(UserId string, payload UserAddress) error {
-	result := r.DB.Table("shippings").Where("id = ?", UserId).Update("zip_code", payload.ZipCode).Update("address1", payload.Address1).Update("address2", payload.Address2).Update("address3", payload.Address3).Update("phone_number", payload.PhoneNumber)
-	if result.Error != nil {
-		return result.Error
+func (r UserDB) UpdateAddress(UserId string, payload map[string]string) error {
+	if err := r.DB.Table("shippings").Where("id = ?", UserId).Updates(payload).Error; err != nil {
+		return err
 	}
 	return nil
 }

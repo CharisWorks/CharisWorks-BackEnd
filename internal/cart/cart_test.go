@@ -509,6 +509,223 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 
 }
 
+func TestCartRequests_Get_example(t *testing.T) {
+	CartRequests := new(CartRequests)
+	CartUtils := new(CartUtils)
+	CartDB := new(ExampleCartDB)
+
+	Cases := []struct {
+		name          string
+		internalCarts *[]InternalCart
+		want          *[]Cart
+		err           error
+		SelectErrerr  error
+	}{
+		{
+			name: "正常",
+			internalCarts: &[]InternalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "正常 DBから取得してきた順番に並び替える",
+			internalCarts: &[]InternalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					Index:     0,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+				{
+					Cart: Cart{
+						ItemId:   "3",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					Index:     2,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+				{
+					Cart: Cart{
+						ItemId:   "2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					Index:     1,
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+				{
+					ItemId:   "2",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				}, {
+					ItemId:   "3",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusAvailable,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "無効な商品",
+			internalCarts: &[]InternalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusInvalidItem,
+							},
+						},
+					},
+					ItemStock: 4,
+					Status:    items.ItemStatusAvailable,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "1",
+					Quantity: 2,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test",
+						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: CartItemStatusInvalidItem,
+						},
+					},
+				},
+			},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+		},
+		{
+			name:          "カートが存在しない",
+			internalCarts: nil,
+			want:          nil,
+			err:           &utils.InternalError{Message: utils.InternalErrorNotFound},
+			SelectErrerr:  &utils.InternalError{Message: utils.InternalErrorNotFound},
+		},
+		{
+			name: "無効なカート",
+			internalCarts: &[]InternalCart{
+				{
+					Cart: Cart{
+						ItemId:   "1",
+						Quantity: 0,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: CartItemStatusAvailable,
+							},
+						},
+					},
+					ItemStock: 0,
+					Status:    items.ItemStatusAvailable,
+				},
+			},
+			want: nil,
+			err:  &utils.InternalError{Message: utils.InternalErrorInvalidCart},
+		},
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			CartDB.InternalCarts = tt.internalCarts
+			CartDB.SelectError = tt.SelectErrerr
+			ctx.Set("UserId", "test")
+			result, err := CartRequests.Get(ctx, CartDB, CartUtils)
+			log.Print(result, tt.want)
+			if !reflect.DeepEqual(result, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
+			}
+			if err != nil {
+				if err.Error() != tt.err.Error() {
+					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
+				}
+			}
+		})
+	}
+
+}
 func TestCartRequests_Get(t *testing.T) {
 	CartRequests := new(CartRequests)
 	CartUtils := new(CartUtils)
@@ -726,7 +943,6 @@ func TestCartRequests_Get(t *testing.T) {
 	}
 
 }
-
 func TestCartRequests_Register(t *testing.T) {
 	CartRequests := new(CartRequests)
 	CartUtils := new(CartUtils)
