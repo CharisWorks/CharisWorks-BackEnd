@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http/httptest"
 	"reflect"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -1321,7 +1320,7 @@ func TestCartRequests_Delete(t *testing.T) {
 	Cases := []struct {
 		name          string
 		internalCarts *[]InternalCart
-		itemId        int
+		itemId        string
 		SelectError   error
 		UpdateDBerr   error
 		RegisterDBerr error
@@ -1347,7 +1346,7 @@ func TestCartRequests_Delete(t *testing.T) {
 					Status:    items.ItemStatusAvailable,
 				},
 			},
-			itemId: 1,
+			itemId: "1",
 		},
 		{
 			name: "エラー 対象が存在しない場合",
@@ -1368,12 +1367,12 @@ func TestCartRequests_Delete(t *testing.T) {
 					Status:    items.ItemStatusAvailable,
 				},
 			},
-			itemId: 1,
+			itemId: "1",
 		},
 		{
 			name:          "エラー カート取得失敗",
 			internalCarts: nil,
-			itemId:        1,
+			itemId:        "1",
 			SelectError:   &utils.InternalError{Message: utils.InternalErrorDB},
 			err:           &utils.InternalError{Message: utils.InternalErrorDB},
 		},
@@ -1396,7 +1395,7 @@ func TestCartRequests_Delete(t *testing.T) {
 					Status:    items.ItemStatusAvailable,
 				},
 			},
-			itemId:      2,
+			itemId:      "2",
 			DeleteDBerr: &utils.InternalError{Message: utils.InternalErrorDB},
 			err:         &utils.InternalError{Message: utils.InternalErrorDB},
 		},
@@ -1411,10 +1410,10 @@ func TestCartRequests_Delete(t *testing.T) {
 			log.Print("pointer")
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			req := httptest.NewRequest("DELETE", "/cart?item_id="+strconv.Itoa(tt.itemId), nil)
+			req := httptest.NewRequest("DELETE", "/cart?item_id="+tt.itemId, nil)
 			ctx.Request = req
 			ctx.Set("UserId", "test")
-			ctx.Request.URL.RawQuery = "item_id=" + string(rune(tt.itemId))
+			ctx.Request.URL.RawQuery = "item_id=" + tt.itemId
 			err := CartRequests.Delete(CartDB, CartUtils, ctx)
 
 			if err != nil {
