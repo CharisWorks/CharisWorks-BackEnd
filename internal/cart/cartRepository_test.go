@@ -39,46 +39,6 @@ func Test_CartCRUD(t *testing.T) {
 				Tags:        []string{"aaa", "ccc"},
 			},
 		},
-		{
-			Name:  "test3",
-			Price: 4000,
-			Details: manufacturer.ItemRegisterDetailsPayload{
-				Stock:       4,
-				Size:        5,
-				Description: "test",
-				Tags:        []string{"aaa", "ddd"},
-			},
-		},
-		{
-			Name:  "test4",
-			Price: 4000,
-			Details: manufacturer.ItemRegisterDetailsPayload{
-				Stock:       4,
-				Size:        5,
-				Description: "test",
-				Tags:        []string{"eee", "ddd"},
-			},
-		},
-		{
-			Name:  "test5",
-			Price: 4000,
-			Details: manufacturer.ItemRegisterDetailsPayload{
-				Stock:       4,
-				Size:        5,
-				Description: "test",
-				Tags:        []string{"fff", "ddd"},
-			},
-		},
-		{
-			Name:  "test6",
-			Price: 5000,
-			Details: manufacturer.ItemRegisterDetailsPayload{
-				Stock:       4,
-				Size:        5,
-				Description: "test",
-				Tags:        []string{"ggg", "ddd"},
-			},
-		},
 	}
 
 	if err = UserDB.CreateUser("aaa", 1); err != nil {
