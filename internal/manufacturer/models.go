@@ -1,6 +1,9 @@
 package manufacturer
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/charisworks/charisworks-backend/internal/utils"
+	"github.com/gin-gonic/gin"
+)
 
 type ItemRegisterPayload struct {
 	Name    string                     `json:"name" binding:"required"`
@@ -33,8 +36,8 @@ type ItemUpdateDetailsPayload struct {
 }
 
 type IManufacturerRequests interface {
-	RegisterItem(*gin.Context) error
-	UpdateItem(*gin.Context) error
+	RegisterItem(itemRegisterPayload ItemRegisterPayload, historyItemId int, userId string, manufacturerDB IManufacturerDB, manufacturerUtils IManufactuerUtils) error
+	UpdateItem(map[string]interface{}, IManufacturerDB, IManufactuerUtils) error
 	DeleteItem(*gin.Context) error
 }
 
@@ -44,10 +47,14 @@ type IManufactuerUtils interface {
 }
 
 type IManufacturerDB interface {
-	RegisterItem(i ItemRegisterPayload, history_item_id string, userId string) error
-	UpdateItem(i map[string]interface{}, history_item_id string) error
+	RegisterItem(i ItemRegisterPayload, userId string) error
+	UpdateItem(i map[string]interface{}, history_item_id int) error
 	DeleteItem(itemId string) error
 }
-type IManufactuerDBHistory interface {
-	RegisterItemHistory(i ItemRegisterPayload) (history_item_id string, err error)
+type IManufactuerHistoryDB interface {
+	HistoryItemRegister(i utils.Item) (history_item_id int, err error)
+	HistoryItemGet(itemId string) (utils.Item, error)
+}
+type IManufactuerHistoryUtils interface {
+	HistoryItemUpdate(i utils.Item, payload map[string]interface{}) (utils.Item, error)
 }

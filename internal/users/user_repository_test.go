@@ -47,7 +47,7 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			User, err := UserDB.GetUser(tt.userId)
+			User, _, err := UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -61,7 +61,7 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			User, err = UserDB.GetUser(tt.userId)
+			User, _, err = UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -242,7 +242,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				t.Errorf(err.Error())
 
 			}
-			User, err := UserDB.GetUser(tt.userId)
+			User, _, err := UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -254,7 +254,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				t.Errorf(err.Error())
 
 			}
-			User, err = UserDB.GetUser(tt.userId)
+			User, _, err = UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}

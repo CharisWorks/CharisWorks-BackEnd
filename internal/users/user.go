@@ -11,7 +11,7 @@ func (r UserRequests) UserCreate(userId string, UserDB IUserDB) error {
 	return nil
 }
 func (r UserRequests) UserGet(userId string, UserDB IUserDB) (*User, error) {
-	User, err := UserDB.GetUser(userId)
+	User, _, err := UserDB.GetUser(userId)
 	if err != nil {
 		return nil, err
 	}
