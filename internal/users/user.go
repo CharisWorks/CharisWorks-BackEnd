@@ -32,8 +32,12 @@ func (r UserRequests) UserProfileUpdate(userId string, userProfile UserProfile, 
 	}
 	return nil
 }
-func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, userDB IUserDB) error {
-	err := userDB.RegisterAddress(userId, userAddressRegisterPayload)
+func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, userDB IUserDB, UserUtils IUserUtils) error {
+	payload, err := UserUtils.InspectAddressRegisterPayload(userAddressRegisterPayload)
+	if err != nil {
+		return err
+	}
+	err = userDB.RegisterAddress(userId, payload)
 	if err != nil {
 		return err
 	}

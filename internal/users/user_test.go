@@ -101,6 +101,147 @@ func TestUserCRUD(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:   "正常",
+			userId: "test",
+			want: User{
+				UserId: "test",
+			},
+			updateProfile: UserProfile{
+				DisplayName: "test",
+			},
+			wantProfileUpdated: User{
+				UserId: "test",
+				UserProfile: UserProfile{
+					DisplayName: "test",
+				},
+			},
+			registerAddress: UserAddressRegisterPayload{
+				ZipCode:       "000-0000",
+				Address1:      "test",
+				Address2:      "test",
+				Address3:      "test",
+				PhoneNumber:   "000-0000-0000",
+				FirstName:     "test",
+				LastName:      "test",
+				FirstNameKana: "テスト",
+				LastNameKana:  "テスト",
+			},
+			wantAddressRegistered: User{
+				UserId: "test",
+				UserProfile: UserProfile{
+					DisplayName: "test",
+				},
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "test",
+					Address2:      "test",
+					Address3:      "test",
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "test",
+					LastName:      "test",
+					FirstNameKana: "テスト",
+					LastNameKana:  "テスト",
+				},
+			},
+			updateAddress: UserAddress{
+				ZipCode:  "000-0000",
+				Address1: "updated",
+			},
+			wantAddressUpdated: User{
+				UserId: "test",
+				UserProfile: UserProfile{
+					DisplayName: "test",
+				},
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "updated",
+					Address2:      "test",
+					Address3:      "test",
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "test",
+					LastName:      "test",
+					FirstNameKana: "テスト",
+					LastNameKana:  "テスト",
+				},
+			},
+		},
+		{
+			name:   "電話番号などが自動変換されるか",
+			userId: "test",
+			want: User{
+				UserId: "test",
+			},
+			updateProfile: UserProfile{
+				DisplayName: "test",
+				Description: "test",
+			},
+			wantProfileUpdated: User{
+				UserId: "test",
+				UserProfile: UserProfile{
+					DisplayName: "test",
+					Description: "test",
+				},
+			},
+			registerAddress: UserAddressRegisterPayload{
+				ZipCode:       "0000000",
+				Address1:      "test",
+				Address2:      "test",
+				Address3:      "test",
+				PhoneNumber:   "00000000000",
+				FirstName:     "test",
+				LastName:      "test",
+				FirstNameKana: "テスト",
+				LastNameKana:  "テスト",
+			},
+			wantAddressRegistered: User{
+				UserId: "test",
+				UserProfile: UserProfile{
+					DisplayName: "test",
+					Description: "test",
+				},
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "test",
+					Address2:      "test",
+					Address3:      "test",
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "test",
+					LastName:      "test",
+					FirstNameKana: "テスト",
+					LastNameKana:  "テスト",
+				},
+			},
+			updateAddress: UserAddress{
+				ZipCode:       "000-0000",
+				Address1:      "updated",
+				Address2:      "updated",
+				Address3:      "updated",
+				PhoneNumber:   "000-0000-0000",
+				FirstName:     "updated",
+				LastName:      "updated",
+				FirstNameKana: "テスト",
+				LastNameKana:  "テスト",
+			},
+			wantAddressUpdated: User{
+				UserId: "test",
+				UserProfile: UserProfile{
+					DisplayName: "test",
+					Description: "test",
+				},
+				UserAddress: UserAddress{
+					ZipCode:       "000-0000",
+					Address1:      "updated",
+					Address2:      "updated",
+					Address3:      "updated",
+					PhoneNumber:   "000-0000-0000",
+					FirstName:     "updated",
+					LastName:      "updated",
+					FirstNameKana: "テスト",
+					LastNameKana:  "テスト",
+				},
+			},
+		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -129,7 +270,7 @@ func TestUserCRUD(t *testing.T) {
 			if CompareUser(*user, tt.wantProfileUpdated) {
 				t.Errorf("got: %v, want: %v", user, tt.wantProfileUpdated)
 			}
-			err = UserRequests.UserAddressRegister(tt.userId, tt.registerAddress, UserDB)
+			err = UserRequests.UserAddressRegister(tt.userId, tt.registerAddress, UserDB, UserUtils)
 			if err != nil {
 				t.Errorf("error")
 			}
