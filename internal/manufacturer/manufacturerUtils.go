@@ -2,6 +2,7 @@ package manufacturer
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
@@ -39,7 +40,7 @@ func (m ManufacturerUtils) InspectUpdatePayload(i ItemUpdatePayload) (*map[strin
 	}
 	if i.ItemUpdatePropertiesPayload.Price != nil {
 		if *i.ItemUpdatePropertiesPayload.Price < 0 {
-			updatepayload["price"] = string(rune(*i.ItemUpdatePropertiesPayload.Price))
+			updatepayload["price"] = strconv.Itoa(*i.ItemUpdatePropertiesPayload.Price)
 		} else {
 			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 		}
@@ -54,14 +55,14 @@ func (m ManufacturerUtils) InspectUpdatePayload(i ItemUpdatePayload) (*map[strin
 		}
 		if i.ItemUpdatePropertiesPayload.Details.Stock != nil {
 			if *i.ItemUpdatePropertiesPayload.Details.Stock < 0 {
-				updatepayload["stock"] = string(rune(*i.ItemUpdatePropertiesPayload.Details.Stock))
+				updatepayload["stock"] = strconv.Itoa(*i.ItemUpdatePropertiesPayload.Details.Stock)
 			} else {
 				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 			}
 		}
 		if i.ItemUpdatePropertiesPayload.Details.Size != nil {
 			if *i.ItemUpdatePropertiesPayload.Details.Size < 0 {
-				updatepayload["size"] = string(rune(*i.ItemUpdatePropertiesPayload.Details.Size))
+				updatepayload["size"] = strconv.Itoa(*i.ItemUpdatePropertiesPayload.Details.Size)
 			} else {
 				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 			}
