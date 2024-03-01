@@ -46,7 +46,7 @@ type ExampleItemRequests struct {
 }
 
 func (i ExampleItemRequests) GetOverview(ItemDB IItemDB, ctx *gin.Context) (*ItemOverview, error) {
-	itemId, err := utils.GetParams("itemId", true, ctx)
+	itemId, err := utils.GetParams("itemId", ctx)
 	if err != nil {
 		return nil, err
 	}

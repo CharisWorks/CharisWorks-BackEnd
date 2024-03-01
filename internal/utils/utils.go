@@ -16,7 +16,7 @@ func GetPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	return bind, nil
 }
 
-func GetQuery(params string, isRequired bool, ctx *gin.Context) (*string, error) {
+func GetQuery(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Query(params)
 	if itemId == "" {
 		return nil, &InternalError{Message: InternalErrorInvalidQuery}
@@ -24,10 +24,10 @@ func GetQuery(params string, isRequired bool, ctx *gin.Context) (*string, error)
 	return &itemId, nil
 }
 
-func GetParams(params string, isRequired bool, ctx *gin.Context) (*string, error) {
+func GetParams(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Param(params)
 	if itemId == "" {
-		return nil, &InternalError{Message: InternalErrorInvalidQuery}
+		return nil, &InternalError{Message: InternalErrorInvalidParams}
 	}
 	return &itemId, nil
 }

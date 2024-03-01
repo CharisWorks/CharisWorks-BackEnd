@@ -12,7 +12,7 @@ type ItemDB struct {
 	DB *gorm.DB
 }
 
-func (r *ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
+func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	ItemOverview := new(ItemOverview)
 	DBItem := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
@@ -62,7 +62,7 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	}
 	return *previews, nil
 }
-func (r *ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error) {
+func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error) {
 	ItemPreview, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
 		return nil, err

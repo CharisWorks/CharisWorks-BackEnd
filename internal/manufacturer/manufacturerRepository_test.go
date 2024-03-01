@@ -80,6 +80,7 @@ func Test_ManufacturerDB(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
 			if err != nil {
+				log.Print("error", err.Error())
 				t.Errorf("error")
 			}
 			ItemOverview, err := ItemDB.GetItemOverview("test")

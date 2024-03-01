@@ -13,7 +13,7 @@ type ManufacturerDB struct {
 	DB *gorm.DB
 }
 
-func (m *ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, history_item_id int, userId string) error {
+func (m ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, history_item_id int, userId string) error {
 	json, err := json.Marshal(i.Details.Tags)
 	if err != nil {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
@@ -30,21 +30,21 @@ func (m *ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, hist
 		Description:        i.Details.Description,
 		Tags:               string(json),
 	}
-	if err := m.DB.Create(&item); err != nil {
+	if err := m.DB.Create(&item).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
 
-func (m *ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId string) error {
+func (m ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Update("history_item_id", history_item_id).Updates(i).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
-func (m *ManufacturerDB) DeleteItem(itemId string) error {
+func (m ManufacturerDB) DeleteItem(itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Delete(&utils.Item{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}

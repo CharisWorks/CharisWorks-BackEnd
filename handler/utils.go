@@ -11,3 +11,11 @@ func NewHandler(router *gin.Engine) *Handler {
 		Router: router,
 	}
 }
+
+type structInContext string
+
+const (
+	userId        structInContext = "userId"
+	user          structInContext = "user"
+	emailVerified structInContext = "EmailVerified"
+)

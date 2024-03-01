@@ -118,8 +118,7 @@ func TestCartRequests_Get(t *testing.T) {
 			log.Println(req.Body)
 			ctx.Request = req
 
-			ctx.Set("UserId", "test")
-			result, err := CartRequests.Get(ctx, CartDB, CartUtils)
+			result, err := CartRequests.Get("test", CartDB, CartUtils)
 			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)

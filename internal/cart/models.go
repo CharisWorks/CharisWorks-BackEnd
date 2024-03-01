@@ -2,7 +2,6 @@ package cart
 
 import (
 	"github.com/charisworks/charisworks-backend/internal/items"
-	"github.com/gin-gonic/gin"
 )
 
 type Cart struct {
@@ -43,9 +42,9 @@ type itemStatus struct {
 	status    items.ItemStatus
 }
 type ICartRequests interface {
-	Get(*gin.Context, ICartDB, ICartUtils) (*[]Cart, error)
-	Register(ICartDB, ICartUtils, *gin.Context) error
-	Delete(ICartDB, ICartUtils, *gin.Context) error
+	Get(userId string, CartDB ICartDB, CartUtils ICartUtils) (*[]Cart, error)
+	Register(userId string, cartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils) error
+	Delete(userId string, itemId string, CartDB ICartDB, CartUtils ICartUtils) error
 }
 type ICartDB interface {
 	GetCart(UserId string) (*[]InternalCart, error)

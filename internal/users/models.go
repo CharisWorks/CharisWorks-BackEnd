@@ -54,7 +54,7 @@ type IUserRequests interface {
 	UserCreate(userId string, UserDB IUserDB) error
 	UserGet(userId string, UserDB IUserDB) (*User, error)
 	UserDelete(userId string, UserDB IUserDB) error
-	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB) error
+	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error
 	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserDB) error
 	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error
 }
