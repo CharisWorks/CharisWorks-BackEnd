@@ -16,15 +16,29 @@ type CartDB struct {
 
 func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 	InternalCarts := new([]utils.InternalCart)
+	resultCart := new([]InternalCart)
 	if err := r.DB.Table("carts").
-		Select("carts.*, stock, status").
+		Select("carts.*, items.*").
 		Joins("JOIN items ON carts.item_id = items.id").
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
 		return nil, err
 	}
+	for i, icart := range *InternalCarts {
+		cart := new(InternalCart)
+		cart.Index = i
+		cart.ItemStock = icart.Item.Stock
+		cart.Status = items.ItemStatus(icart.Item.Status)
+
+		cart.Cart.ItemId = icart.Cart.ItemId
+		cart.Cart.Quantity = icart.Cart.Quantity
+		cart.Cart.ItemProperties.Name = icart.Item.Name
+		cart.Cart.ItemProperties.Price = icart.Item.Price
+
+		*resultCart = append(*resultCart, *cart)
+	}
 	log.Print("InternalCarts: ", InternalCarts)
-	return &[]InternalCart{}, nil
+	return resultCart, nil
 }
 
 func (r CartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayload) error {

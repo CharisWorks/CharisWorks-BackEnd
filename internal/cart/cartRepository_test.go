@@ -10,7 +10,7 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
-func Test_CartCRD(t *testing.T) {
+func Test_CartCRUD(t *testing.T) {
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -95,9 +95,11 @@ func Test_CartCRD(t *testing.T) {
 		}
 	}
 	Cases := []struct {
-		name    string
-		payload []CartRequestPayload
-		want    []InternalCart
+		name          string
+		payload       []CartRequestPayload
+		want          []InternalCart
+		updatePayload CartRequestPayload
+		wantUpdated   []InternalCart
 	}{
 		{
 			name: "正常",
@@ -115,9 +117,25 @@ func Test_CartCRD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
-							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
-							},
+						},
+					},
+
+					ItemStock: 2,
+					Status:    items.ItemStatusAvailable,
+				},
+			},
+			updatePayload: CartRequestPayload{
+				ItemId:   "test1",
+				Quantity: 3,
+			},
+			wantUpdated: []InternalCart{
+				{
+					Cart: Cart{
+						ItemId:   "test1",
+						Quantity: 3,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test1",
+							Price: 2000,
 						},
 					},
 
@@ -135,12 +153,11 @@ func Test_CartCRD(t *testing.T) {
 					t.Errorf(err.Error())
 				}
 			}
-
 			Cart, err := CartDB.GetCart("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if reflect.DeepEqual(*Cart, tt.want) {
+			if !reflect.DeepEqual(*Cart, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
 			for _, p := range tt.payload {
@@ -149,6 +166,18 @@ func Test_CartCRD(t *testing.T) {
 					t.Errorf(err.Error())
 				}
 			}
+			err = CartDB.RegisterCart("aaa", tt.updatePayload)
+			if err != nil {
+				t.Errorf(err.Error())
+			}
+			Cart, err = CartDB.GetCart("aaa")
+			if err != nil {
+				t.Errorf(err.Error())
+			}
+			if !reflect.DeepEqual(*Cart, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
+			}
+
 		})
 	}
 	for _, item := range Items {

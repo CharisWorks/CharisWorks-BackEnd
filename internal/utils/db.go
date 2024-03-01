@@ -44,9 +44,8 @@ type Cart struct {
 }
 
 type InternalCart struct {
-	Cart   Cart   `gorm:"embedded"`
-	Stock  int    `gorm:"stock"`
-	Status string `gorm:"status"`
+	Cart Cart `gorm:"embedded"`
+	Item Item `gorm:"embedded"`
 }
 
 type User struct {
