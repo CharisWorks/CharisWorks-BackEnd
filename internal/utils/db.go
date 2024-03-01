@@ -37,16 +37,15 @@ func DBInitTest() (db *gorm.DB, err error) {
 type IDBUtils interface {
 }
 type Cart struct {
-	Id       int    `gorm:"id"`
-	UserId   string `gorm:"purchaser_user_id;type:varchar(100)"`
-	ItemId   string `gorm:"item_id;type:varchar(100)"`
-	Quantity int    `gorm:"quantity"`
+	Id              int    `gorm:"id"`
+	PurchaserUserId string `gorm:"purchaser_user_id; type:varchar(100)"`
+	ItemId          string `gorm:"item_id;type:varchar(100)"`
+	Quantity        int    `gorm:"quantity"`
 }
 
 type InternalCart struct {
-	Cart       Cart   `gorm:"foreignKey:item_id"`
-	ItemStock  int    `gorm:"stock"`
-	ItemStatus string `gorm:"status"`
+	Cart Cart `gorm:"embedded"`
+	Item Item `gorm:"embedded"`
 }
 
 type User struct {
