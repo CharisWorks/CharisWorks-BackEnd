@@ -2,13 +2,11 @@ package cash
 
 import (
 	"log"
-	"net/http"
 	"regexp"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
-	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/account"
 	"github.com/stripe/stripe-go/v76/accountlink"
@@ -19,29 +17,19 @@ import (
 type StripeRequests struct {
 }
 
-func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string, error) {
-
-	email := ctx.MustGet("UserEmail").(string)
-	User := ctx.MustGet("User").(*user.User)
+func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.User, UserDB users.IUserDB) (*string, error) {
 	log.Print(email)
-	Account, err := GetAccount(ctx)
+	Account, err := GetAccount(user.UserProfile.StripeAccountId)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
-		return nil, err
+		return nil, &utils.InternalError{Message: utils.InternalErrorNotFound}
 	}
-
 	if Account.PayoutsEnabled {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "アカウントが存在しています。"})
-		return nil, nil
+		return nil, &utils.InternalError{Message: utils.InternalErrorManufacturerAlreadyHasBank}
 	}
-	log.Print("pointer")
-	if &User.UserAddress == new(user.UserAddress) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "住所が登録されていません。"})
-		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
-
+	if &user.UserAddress == new(users.UserAddress) {
+		return nil, &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
 	}
 	params := &stripe.AccountParams{
-
 		Capabilities: &stripe.AccountCapabilitiesParams{
 			Transfers: &stripe.AccountCapabilitiesTransfersParams{
 				Requested: stripe.Bool(true),
@@ -55,88 +43,76 @@ func (StripeRequests StripeRequests) GetRegisterLink(ctx *gin.Context) (*string,
 		Type:         stripe.String(*stripe.String(string(stripe.AccountTypeExpress))),
 		BusinessType: stripe.String(*stripe.String(string(stripe.AccountBusinessTypeIndividual))),
 		Individual: &stripe.PersonParams{
-			FirstNameKanji: stripe.String(User.UserAddress.FirstName),
-			FirstNameKana:  stripe.String(User.UserAddress.FirstNameKana),
-			LastNameKanji:  stripe.String(User.UserAddress.LastName),
-			LastNameKana:   stripe.String(User.UserAddress.LastNameKana),
+			FirstNameKanji: stripe.String(user.UserAddress.FirstName),
+			FirstNameKana:  stripe.String(user.UserAddress.FirstNameKana),
+			LastNameKanji:  stripe.String(user.UserAddress.LastName),
+			LastNameKana:   stripe.String(user.UserAddress.LastNameKana),
 			Email:          stripe.String(email),
-			Phone:          stripe.String(User.UserAddress.PhoneNumber),
+			Phone:          stripe.String(user.UserAddress.PhoneNumber),
 		},
 		BusinessProfile: &stripe.AccountBusinessProfileParams{
 			MCC:                stripe.String("5699"),
-			URL:                stripe.String("charis.works/user/profile/" + User.UserId),
+			URL:                stripe.String("charis.works/user/profile/" + user.UserId),
 			ProductDescription: stripe.String("this is an account of manufacturer for charis works"),
 		},
 	}
 
 	a, err := account.New(params)
-
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		log.Print("Stripe Error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
+	}
+	err = UserDB.UpdateProfile(user.UserId, map[string]interface{}{"stripe_account_id": a.ID})
+	if err != nil {
 		return nil, err
 	}
-	User = ctx.MustGet("User").(*user.User)
-	User.UserProfile.StripeAccountId = a.ID
-	ctx.Set("User", User)
-	URL, err := CreateAccountLink(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err})
-		return nil, err
-	}
-	return URL, nil
-
-}
-
-func CreateAccountLink(ctx *gin.Context) (*string, error) {
-	StripeAccountId := ctx.MustGet("User").(*user.User).UserProfile.StripeAccountId
-	params := &stripe.AccountLinkParams{
-		Account:    stripe.String(StripeAccountId),
+	accountLinkParams := &stripe.AccountLinkParams{
+		Account:    stripe.String(a.ID),
 		RefreshURL: stripe.String("http://localhost:3000"),
 		ReturnURL:  stripe.String("http://localhost:3000"),
 		Type:       stripe.String("account_onboarding"),
 		Collect:    stripe.String("eventually_due"),
 	}
-	result, err := accountlink.New(params)
+	accountLink, err := accountlink.New(accountLinkParams)
 	if err != nil {
-		return nil, err
+		log.Print("Stripe Error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
 	}
-	return &result.URL, nil
+	return &accountLink.URL, nil
+
 }
-func (StripeRequests StripeRequests) GetStripeMypageLink(ctx *gin.Context) (*string, error) {
-	Account, err := GetAccount(ctx)
+
+func (StripeRequests StripeRequests) GetStripeMypageLink(stripeAccountId string) (*string, error) {
+	Account, err := GetAccount(stripeAccountId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return nil, err
 	}
 	if !Account.PayoutsEnabled {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "口座が登録されていません。"})
-		return nil, nil
+		return nil, &utils.InternalError{Message: utils.InternalErrorManufacturerDoesNotHaveBank}
 	}
 	params := &stripe.LoginLinkParams{Account: &Account.ID}
 	result, err := loginlink.New(params)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
-		return nil, err
+		log.Print("Stripe Error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
 	}
 	return &result.URL, nil
 }
 
-func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
+func GetAccount(stripeAccountId string) (*stripe.Account, error) {
 	params := &stripe.AccountParams{}
-	StripeAccountId := ctx.MustGet("User").(*user.User).UserProfile.StripeAccountId
-	log.Print(StripeAccountId)
 	regex := regexp.MustCompile(`acct_\w+`)
-	matches := regex.FindAllString(StripeAccountId, -1)
+	matches := regex.FindAllString(stripeAccountId, -1)
 	for _, match := range matches {
 		if regex.MatchString(match) {
-			result, err := account.GetByID(StripeAccountId, params)
+			result, err := account.GetByID(stripeAccountId, params)
 			if err != nil {
-				return nil, err
+				log.Print("Stripe Error: ", err)
+				return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
 			}
 			return result, nil
 		}
 	}
-	log.Print("no account")
 	result := new(stripe.Account)
 	result.PayoutsEnabled = false
 	log.Print(result)
@@ -144,17 +120,15 @@ func GetAccount(ctx *gin.Context) (*stripe.Account, error) {
 
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
-	UserId := ctx.MustGet("UserId").(string)
-	Carts, err := CartDB.GetCart(UserId)
+	Carts, err := CartDB.GetCart(userId)
 	if err != nil {
 		return nil, err
 	}
 
 	InspectedCart, err := CartUtils.InspectCart(*Carts)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err})
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
 	}
 	totalAmount := int64(CartUtils.GetTotalAmount(InspectedCart))
@@ -169,11 +143,10 @@ func (StripeRequests StripeRequests) GetClientSecret(ctx *gin.Context, CartReque
 
 	pi, err := paymentintent.New(params)
 	log.Printf("pi.New: %v", pi.ClientSecret)
-
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		log.Printf("pi.New: %v", err)
-		return nil, err
+		log.Print("Stripe Error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
 	}
 	return &pi.ClientSecret, nil
 }

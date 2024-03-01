@@ -2,6 +2,7 @@ package manufacturer
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
@@ -29,22 +30,24 @@ func (m *ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, hist
 		Description:        i.Details.Description,
 		Tags:               string(json),
 	}
-	result := m.DB.Create(&item)
-	if result.Error != nil {
-		return result.Error
+	if err := m.DB.Create(&item); err != nil {
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
 
 func (m *ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Update("history_item_id", history_item_id).Updates(i).Error; err != nil {
-		return err
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
 func (m *ManufacturerDB) DeleteItem(itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Delete(&utils.Item{}).Error; err != nil {
-		return err
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }

@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests user.IUserRequests, UserDB user.IUserDB) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IUserRequests, UserDB users.IUserDB) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	UserRouter.Use(userMiddleware(UserRequests, UserDB))

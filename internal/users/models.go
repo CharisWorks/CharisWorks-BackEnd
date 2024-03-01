@@ -1,9 +1,7 @@
-package user
+package users
 
 import (
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type User struct {
@@ -53,12 +51,12 @@ type HistoryUser struct {
 }
 
 type IUserRequests interface {
-	UserCreate(*gin.Context, IUserDB) error
-	UserGet(*gin.Context, IUserDB) (*User, error)
-	UserDelete(*gin.Context, IUserDB) error
-	UserProfileUpdate(*gin.Context, IUserDB) error
-	UserAddressRegister(*gin.Context, IUserDB) error
-	UserAddressUpdate(*gin.Context, IUserDB) error
+	UserCreate(userId string, UserDB IUserDB) error
+	UserGet(userId string, UserDB IUserDB) (*User, error)
+	UserDelete(userId string, UserDB IUserDB) error
+	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB) error
+	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserDB) error
+	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error
 }
 type IUserUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) error

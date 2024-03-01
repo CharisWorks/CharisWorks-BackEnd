@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRequests cart.ICartRequests, CartDB cart.ICartDB, UserRequests user.IUserRequests, CartUtils cart.ICartUtils, UserDB user.IUserDB) {
+func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, CartRequests cart.ICartRequests, CartDB cart.ICartDB, UserRequests users.IUserRequests, CartUtils cart.ICartUtils, UserDB users.IUserDB) {
 	CartRouter := h.Router.Group("/api/cart")
 	CartRouter.Use(firebaseMiddleware(firebaseApp))
 	{

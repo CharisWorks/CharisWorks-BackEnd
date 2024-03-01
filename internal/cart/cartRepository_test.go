@@ -6,7 +6,7 @@ import (
 
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
@@ -15,7 +15,7 @@ func Test_CartCRUD(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := user.UserDB{DB: db}
+	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := manufacturer.ManufacturerDB{DB: db}
 	CartDB := CartDB{DB: db}
 	Items := []manufacturer.ItemRegisterPayload{
@@ -190,7 +190,7 @@ func Test_GetItem(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := user.UserDB{DB: db}
+	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := manufacturer.ManufacturerDB{DB: db}
 	CartDB := CartDB{DB: db}
 	Cases := []struct {

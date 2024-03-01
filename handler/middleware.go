@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/cash"
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +23,7 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.HandlerFunc {
+func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserDB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		EmailVerified := ctx.MustGet("EmailVerified").(bool)
 		if !EmailVerified {
@@ -57,7 +57,7 @@ func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.Ha
 }
 func stripeMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		User := ctx.MustGet("User").(*user.User)
+		User := ctx.MustGet("User").(*users.User)
 
 		if User.UserProfile.StripeAccountId == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
@@ -72,7 +72,7 @@ func stripeMiddleware() gin.HandlerFunc {
 
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		User := ctx.MustGet("User").(*user.User)
+		User := ctx.MustGet("User").(*users.User)
 		if *&User.UserProfile.StripeAccountId == "" {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
 			ctx.Abort()
