@@ -25,11 +25,8 @@ func (r UserRequests) UserDelete(userId string, UserDB IUserDB) error {
 	return nil
 }
 func (r UserRequests) UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error {
-	updatePayload, err := UserUtils.InspectProfileUpdatePayload(userProfile)
-	if err != nil {
-		return err
-	}
-	err = UserDB.UpdateProfile(userId, updatePayload)
+	updatePayload := UserUtils.InspectProfileUpdatePayload(userProfile)
+	err := UserDB.UpdateProfile(userId, updatePayload)
 	if err != nil {
 		return err
 	}

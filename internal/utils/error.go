@@ -27,6 +27,7 @@ func Code(i InternalMessage) int {
 		InternalErrorAccountIsNotSatisfied:       400,
 		InternalErrorFromStripe:                  400,
 		InternalErrorUnAuthorized:                401,
+		InternalErrorIncident:                    500,
 	}
 	return statusCode[i]
 }
@@ -68,4 +69,8 @@ const (
 	InternalErrorManufacturerDoesNotHaveBank InternalMessage = "manufacturer does not have bank"
 	InternalErrorAccountIsNotSatisfied       InternalMessage = "account is not satisfied"
 	InternalErrorFromStripe                  InternalMessage = "error from stripe"
+)
+
+const (
+	InternalErrorIncident InternalMessage = "incident"
 )

@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		return
 	}
-	h.SetupRoutesForItem(items.ExampleItemRequests{}, items.ItemDB{DB: db}, items.ExampleItemUtils{})
+	h.SetupRoutesForItem(items.ItemRequests{}, items.ItemDB{DB: db}, items.ItemUtils{})
 	h.SetupRoutesForUser(app, users.UserRequests{}, users.UserDB{DB: db}, users.ExampleUserUtils{})
 	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.CartDB{}, users.UserRequests{}, cart.CartUtils{}, users.UserDB{})
 	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})

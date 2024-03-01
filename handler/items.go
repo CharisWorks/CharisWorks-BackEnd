@@ -10,8 +10,12 @@ func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemDB it
 	itemGroup := h.Router.Group("/api/item")
 	{
 		itemGroup.GET("/:item_id", func(ctx *gin.Context) {
-
-			Overview, err := ItemRequests.GetOverview(ItemDB, ctx)
+			itemId, err := utils.GetParams("item_id", ctx)
+			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			Overview, err := ItemRequests.GetOverview(*itemId, ItemDB)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -22,7 +26,7 @@ func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemDB it
 
 		itemGroup.GET("/", func(ctx *gin.Context) {
 
-			PreviewList, err := ItemRequests.GetSearchPreviewList(ItemDB, ItemUtils, ctx)
+			PreviewList, err := ItemRequests.GetSearchPreviewList(ctx, ItemDB, ItemUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

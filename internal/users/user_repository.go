@@ -75,8 +75,8 @@ func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayloa
 	Shipping.ZipCode = payload.ZipCode
 	Shipping.Address_1 = payload.Address1
 	Shipping.Address_2 = payload.Address2
-	if payload.Address3 != nil {
-		Shipping.Address_3 = *payload.Address3
+	if payload.Address3 != "" {
+		Shipping.Address_3 = payload.Address3
 	}
 	Shipping.PhoneNumber = payload.PhoneNumber
 	Shipping.FirstName = payload.FirstName

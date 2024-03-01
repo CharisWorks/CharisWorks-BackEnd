@@ -184,9 +184,9 @@ type ExampleUserUtils struct {
 func (r ExampleUserUtils) InspectAddressRegisterPayload(p UserAddressRegisterPayload) error {
 	return nil
 }
-func (r ExampleUserUtils) InspectAddressUpdatePayload(p UserAddress) (map[string]interface{}, error) {
-	return nil, nil
+func (r ExampleUserUtils) InspectAddressUpdatePayload(p UserAddress) map[string]interface{} {
+	return nil
 }
-func (r ExampleUserUtils) InspectProfileUpdatePayload(p UserProfile) (map[string]interface{}, error) {
-	return nil, nil
+func (r ExampleUserUtils) InspectProfileUpdatePayload(p UserProfile) map[string]interface{} {
+	return nil
 }

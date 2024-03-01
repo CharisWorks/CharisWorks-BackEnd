@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
-	"github.com/stripe/stripe-go/v76"
 )
 
 func Test_UserDB_Update_Profile(t *testing.T) {
@@ -102,7 +101,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				ZipCode:       "000-0000",
 				Address1:      "abc",
 				Address2:      "def",
-				Address3:      stripe.String("ghi"),
+				Address3:      "ghi",
 				PhoneNumber:   "000-0000-0000",
 				FirstName:     "適当",
 				FirstNameKana: "テキトウ",
@@ -148,7 +147,6 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				ZipCode:       "000-0000",
 				Address1:      "abc",
 				Address2:      "def",
-				Address3:      nil,
 				PhoneNumber:   "000-0000-0000",
 				FirstName:     "適当",
 				FirstNameKana: "テキトウ",
@@ -193,7 +191,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				ZipCode:       "000-0000",
 				Address1:      "abc",
 				Address2:      "def",
-				Address3:      stripe.String("ghi"),
+				Address3:      "ghi",
 				PhoneNumber:   "000-0000-0000",
 				FirstName:     "適当",
 				FirstNameKana: "テキトウ",
@@ -224,7 +222,6 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 					ZipCode:       "000-0000",
 					Address1:      "abc",
 					Address2:      "def",
-					Address3:      "",
 					PhoneNumber:   "000-0000-0000",
 					FirstName:     "適当",
 					FirstNameKana: "テキトウ",
