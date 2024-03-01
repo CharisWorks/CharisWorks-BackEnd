@@ -1,25 +1,71 @@
 package utils
 
+import "github.com/gin-gonic/gin"
+
 type InternalError struct {
-	Message InternalErrorMessage
+	Message InternalMessage `json:"message"`
 }
 
-func (e *InternalError) Error() string {
-	return string(e.Message)
+func (r *InternalError) Error() string {
+	return string(r.Message)
+}
+func Code(i InternalMessage) int {
+	statusCode := map[InternalMessage]int{
+		InternalErrorInvalidItem:                 400,
+		InternalErrorStockOver:                   400,
+		InternalErrorInvalidQuantity:             400,
+		InternalErrorNoStock:                     400,
+		InternalErrorInvalidPayload:              400,
+		InternalErrorInvalidQuery:                400,
+		InternalErrorInvalidParams:               400,
+		InternalErrorInvalidCart:                 400,
+		InternalErrorNotFound:                    404,
+		InternalErrorDB:                          500,
+		InternalErrorInvalidUserRequest:          400,
+		InternalErrorManufacturerAlreadyHasBank:  400,
+		InternalErrorManufacturerDoesNotHaveBank: 400,
+		InternalErrorAccountIsNotSatisfied:       400,
+		InternalErrorFromStripe:                  400,
+		InternalErrorUnAuthorized:                401,
+	}
+	return statusCode[i]
+}
+func ReturnErrorResponse(ctx *gin.Context, err error) {
+	internalError := err.(*InternalError)
+	ctx.JSON(Code(internalError.Message), gin.H{"message": internalError.Message})
 }
 
-type InternalErrorMessage string
+type InternalMessage string
 
+// 在庫管理系
 const (
-	InternalErrorInvalidItem        InternalErrorMessage = "invalid item"
-	InternalErrorStockOver          InternalErrorMessage = "stock over"
-	InternalErrorInvalidQuantity    InternalErrorMessage = "invalid quantity"
-	InternalErrorNoStock            InternalErrorMessage = "no stock"
-	InternalErrorInvalidPayload     InternalErrorMessage = "invaild payload"
-	InternalErrorInvalidQuery       InternalErrorMessage = "invalid Query"
-	InternalErrorInvalidParams      InternalErrorMessage = "invalid Params"
-	InternalErrorInvalidCart        InternalErrorMessage = "invalid cart"
-	InternalErrorNotFound           InternalErrorMessage = "not found"
-	InternalErrorDB                 InternalErrorMessage = "DB error"
-	InternalErrorInvalidUserRequest InternalErrorMessage = "invalid user request"
+	InternalErrorInvalidItem     InternalMessage = "invalid item"
+	InternalErrorStockOver       InternalMessage = "stock over"
+	InternalErrorInvalidQuantity InternalMessage = "invalid quantity"
+	InternalErrorNoStock         InternalMessage = "no stock"
+)
+
+// リクエスト系
+const (
+	InternalErrorInvalidPayload     InternalMessage = "The request payload is malformed or contains invalid data."
+	InternalErrorInvalidQuery       InternalMessage = "invalid Query"
+	InternalErrorInvalidParams      InternalMessage = "invalid Params"
+	InternalErrorInvalidCart        InternalMessage = "invalid cart"
+	InternalErrorInvalidUserRequest InternalMessage = "invalid user request"
+	InternalErrorUnAuthorized       InternalMessage = "unauthorized"
+	InternalErrorEmailIsNotVerified InternalMessage = "email is not verified"
+)
+
+// DB系
+const (
+	InternalErrorNotFound InternalMessage = "not found"
+	InternalErrorDB       InternalMessage = "DB error"
+)
+
+// ストライプ系
+const (
+	InternalErrorManufacturerAlreadyHasBank  InternalMessage = "manufacturer already has bank"
+	InternalErrorManufacturerDoesNotHaveBank InternalMessage = "manufacturer does not have bank"
+	InternalErrorAccountIsNotSatisfied       InternalMessage = "account is not satisfied"
+	InternalErrorFromStripe                  InternalMessage = "error from stripe"
 )

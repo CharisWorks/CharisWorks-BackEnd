@@ -2,6 +2,7 @@ package items
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
@@ -11,16 +12,16 @@ type ItemDB struct {
 	DB *gorm.DB
 }
 
-func (r *ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
+func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	ItemOverview := new(ItemOverview)
 	DBItem := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
-		return nil, err
+		log.Print("DB error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 
 	tags := new([]string)
 	json.Unmarshal([]byte(DBItem.Tags), &tags)
-
 	ItemOverview.Item_id = DBItem.Id
 	ItemOverview.Properties = ItemOverviewProperties{
 		Name:  DBItem.Name,
@@ -48,7 +49,8 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	}
 	err := query.Find(&items).Error
 	if err != nil {
-		return nil, err
+		log.Print("DB error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	for _, item := range *items {
 		preview := new(ItemPreview)
@@ -60,10 +62,10 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	}
 	return *previews, nil
 }
-func (r *ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error) {
+func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error) {
 	ItemPreview, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return nil, err
 	}
 	return &ItemPreview, nil
 }

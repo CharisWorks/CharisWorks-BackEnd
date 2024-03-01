@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/cash"
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
@@ -18,49 +19,63 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		ctx.Set("UserId", UserID)
+		ctx.Set(string(userId), UserID)
 
 		ctx.Next()
 	}
 }
-func userMiddleware(UserRequests user.IUserRequests, UserDB user.IUserDB) gin.HandlerFunc {
+func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserDB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		EmailVerified := ctx.MustGet("EmailVerified").(bool)
-		if !EmailVerified {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "email is not verified"})
+		EmailVerified, exist := ctx.Get(string(emailVerified))
+		if !exist {
+			err := utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 			ctx.Abort()
 			return
 		}
-
-		User, err := UserRequests.UserGet(ctx, UserDB)
-		if err != nil && err.Error() != "record not found" {
-			ctx.JSON(http.StatusInternalServerError, err)
+		if !EmailVerified.(bool) {
+			err := utils.InternalError{Message: utils.InternalErrorEmailIsNotVerified}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
+			ctx.Abort()
+			return
+		}
+		userId := ctx.GetString(string(userId))
+		User, err := UserRequests.UserGet(userId, UserDB)
+		if err != nil {
+			utils.ReturnErrorResponse(ctx, err)
 			ctx.Abort()
 			return
 		}
 		if User == nil {
 			log.Print("creating user for DB")
-			err := UserRequests.UserCreate(ctx, UserDB)
+			err := UserRequests.UserCreate(userId, UserDB)
 			if err != nil {
-				ctx.JSON(http.StatusInternalServerError, err)
+				utils.ReturnErrorResponse(ctx, err)
 				ctx.Abort()
 				return
 			}
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "creating user for DB"})
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 			ctx.Abort()
 			return
 		}
-		ctx.Set("User", User)
+		ctx.Set(string(user), User)
 		//内部の実行タイミング
 		ctx.Next()
 	}
 }
 func stripeMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		User := ctx.MustGet("User").(*user.User)
-
-		if User.UserProfile.StripeAccountId == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
+		User, exist := ctx.Get("User")
+		if !exist {
+			err := utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
+			ctx.Abort()
+			return
+		}
+		if User.(*users.User).UserProfile.StripeAccountId == "" {
+			err := utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 			ctx.Abort()
 			return
 		}
@@ -72,25 +87,26 @@ func stripeMiddleware() gin.HandlerFunc {
 
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		User := ctx.MustGet("User").(*user.User)
-		if *&User.UserProfile.StripeAccountId == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Account is not manufacturer"})
+		User := ctx.MustGet("User").(*users.User)
+		if User.UserProfile.StripeAccountId == "" {
+			err := utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 			ctx.Abort()
 			return
 		}
-		ctx.Set("Stripe_Account_Id", User.UserProfile.StripeAccountId)
-		Account, err := cash.GetAccount(ctx)
+		Account, err := cash.GetAccount(User.UserProfile.StripeAccountId)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "stripeのアカウントが取得できませんでした。"})
+			utils.ReturnErrorResponse(ctx, err)
 			ctx.Abort()
 			return
 		}
 		if !Account.PayoutsEnabled {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "口座が登録されていません。"})
+			err := utils.InternalError{Message: utils.InternalErrorManufacturerDoesNotHaveBank}
+			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 			ctx.Abort()
 			return
 		}
-		ctx.Set("User", User)
+		ctx.Set(string(user), User)
 		//内部の実行タイミング
 		ctx.Next()
 

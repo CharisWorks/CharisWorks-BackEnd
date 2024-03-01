@@ -56,7 +56,7 @@ type IItemRequests interface {
 
 type IItemDB interface {
 	GetItemOverview(itemId string) (*ItemOverview, error)
-	GetPreviewList(pageNum *int, pageSize *int, conditions map[string]interface{}) (*[]ItemPreview, error)
+	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error)
 }
 
 type IItemUtils interface {

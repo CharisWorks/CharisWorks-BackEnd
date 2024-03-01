@@ -1,53 +1,74 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests user.IUserRequests, UserDB user.IUserDB) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IUserRequests, UserDB users.IUserDB, UserUtils users.IUserUtils) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	UserRouter.Use(userMiddleware(UserRequests, UserDB))
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
-			User, err := UserRequests.UserGet(ctx, UserDB)
+			userId := ctx.GetString("userId")
+			User, err := UserRequests.UserGet(userId, UserDB)
 			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 			ctx.JSON(http.StatusOK, User)
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
-			err := UserRequests.UserDelete(ctx, UserDB)
-			log.Print(err)
+			userId := ctx.GetString("userId")
+			err := UserRequests.UserDelete(userId, UserDB)
 			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 			ctx.JSON(http.StatusOK, gin.H{"message": "User was successfully deleted"})
 		})
 
 		UserRouter.PATCH("/profile", func(ctx *gin.Context) {
-
-			err := UserRequests.UserProfileUpdate(ctx, UserDB)
+			profile, err := utils.GetPayloadFromBody(ctx, &users.UserProfile{})
 			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			userId := ctx.GetString("userId")
+			err = UserRequests.UserProfileUpdate(userId, *profile, UserDB)
+			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 		})
 		UserRouter.POST("/address", func(ctx *gin.Context) {
-
-			err := UserRequests.UserAddressRegister(ctx, UserDB)
+			payload, err := utils.GetPayloadFromBody(ctx, &users.UserAddressRegisterPayload{})
 			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			userId := ctx.GetString("userId")
+			err = UserRequests.UserAddressRegister(userId, *payload, UserDB)
+			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 		})
 		UserRouter.PATCH("/address", func(ctx *gin.Context) {
-
-			err := UserRequests.UserAddressUpdate(ctx, UserDB)
+			payload, err := utils.GetPayloadFromBody(ctx, &users.UserAddress{})
 			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			userId := ctx.GetString("userId")
+			err = UserRequests.UserAddressUpdate(userId, *payload, UserDB, UserUtils)
+			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 		})

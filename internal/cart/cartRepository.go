@@ -22,7 +22,8 @@ func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 		Joins("JOIN items ON carts.item_id = items.id").
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
-		return nil, err
+		log.Print("DB error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	for i, icart := range *InternalCarts {
 		cart := new(InternalCart)
@@ -37,7 +38,6 @@ func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 
 		*resultCart = append(*resultCart, *cart)
 	}
-	log.Print("InternalCarts: ", InternalCarts)
 	return resultCart, nil
 }
 
@@ -49,7 +49,8 @@ func (r CartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayloa
 	Cart.ItemId = CartRequestPayload.ItemId
 	Cart.Quantity = CartRequestPayload.Quantity
 	if err := r.DB.Create(Cart).Error; err != nil {
-		return err
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
@@ -57,7 +58,8 @@ func (r CartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload)
 	log.Print("UserId: ", UserId)
 	log.Print("historyUserId: ", CartRequestPayload)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", CartRequestPayload.ItemId).Update("quantity", CartRequestPayload.Quantity).Error; err != nil {
-		return err
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
@@ -65,14 +67,16 @@ func (r CartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload)
 func (r CartDB) DeleteCart(UserId string, itemId string) error {
 	log.Print("UserId: ", UserId)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
-		return err
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
 func (r CartDB) GetItem(itemId string) (*itemStatus, error) {
 	itemDB := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(itemDB).Error; err != nil {
-		return nil, err
+		log.Print("DB error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	itemStatus := new(itemStatus)
 	itemStatus.itemStock = itemDB.Stock

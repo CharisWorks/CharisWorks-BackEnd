@@ -1,9 +1,5 @@
 package cart
 
-import (
-	"github.com/charisworks/charisworks-backend/internal/utils"
-)
-
 /*
 	func ExampleCart() *[]Cart {
 		e := Cart{
@@ -48,7 +44,7 @@ type ExapleCartRequest struct {
 		return nil, nil
 	}
 */
-type ExampleCartDB struct {
+/* type ExampleCartDB struct {
 	ItemStatus      *itemStatus
 	InternalCarts   *[]InternalCart
 	ItemSelectError error
@@ -88,3 +84,4 @@ func (c ExampleCartDB) DeleteCart(UserId string, itemId string) error {
 	}
 	return nil
 }
+*/

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -12,32 +11,23 @@ func GetPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	bind := new(T)
 	err := ctx.BindJSON(&bind)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "The request payload is malformed or contains invalid data."})
 		return nil, &InternalError{Message: InternalErrorInvalidPayload}
 	}
 	return bind, nil
 }
 
-func GetQuery(params string, isRequired bool, ctx *gin.Context) (*string, error) {
+func GetQuery(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Query(params)
 	if itemId == "" {
-		if isRequired {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
-			return nil, &InternalError{Message: InternalErrorInvalidQuery}
-		}
 		return nil, &InternalError{Message: InternalErrorInvalidQuery}
 	}
 	return &itemId, nil
 }
 
-func GetParams(params string, isRequired bool, ctx *gin.Context) (*string, error) {
+func GetParams(params string, ctx *gin.Context) (*string, error) {
 	itemId := ctx.Param(params)
 	if itemId == "" {
-		if isRequired {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": "cannot get" + params})
-			return nil, &InternalError{Message: InternalErrorInvalidParams}
-		}
-		return nil, nil
+		return nil, &InternalError{Message: InternalErrorInvalidParams}
 	}
 	return &itemId, nil
 }

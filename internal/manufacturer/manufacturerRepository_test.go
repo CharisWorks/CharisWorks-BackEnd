@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
-	"github.com/charisworks/charisworks-backend/internal/user"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
@@ -15,7 +15,7 @@ func Test_ManufacturerDB(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := user.UserDB{DB: db}
+	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := ManufacturerDB{DB: db}
 	ItemDB := items.ItemDB{DB: db}
 	Cases := []struct {
@@ -80,6 +80,7 @@ func Test_ManufacturerDB(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
 			if err != nil {
+				log.Print("error", err.Error())
 				t.Errorf("error")
 			}
 			ItemOverview, err := ItemDB.GetItemOverview("test")
@@ -117,7 +118,7 @@ func Test_GetItemList(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := user.UserDB{DB: db}
+	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := ManufacturerDB{DB: db}
 	ItemDB := items.ItemDB{DB: db}
 	Items := []ItemRegisterPayload{

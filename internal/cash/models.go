@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/gin-gonic/gin"
 )
 
 type IStripeRequests interface {
-	GetClientSecret(*gin.Context, cart.ICartRequests, cart.ICartDB, cart.ICartUtils) (url *string, err error)
-	GetRegisterLink(*gin.Context) (url *string, err error)
-	GetStripeMypageLink(*gin.Context) (url *string, err error)
+	GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (url *string, err error)
+	GetRegisterLink(email string, user users.User, UserDB users.IUserDB) (url *string, err error)
+	GetStripeMypageLink(stripeAccountId string) (url *string, err error)
 }
 
 type TransactionPreview struct {
