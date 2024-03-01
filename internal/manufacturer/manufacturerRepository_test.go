@@ -212,7 +212,7 @@ func Test_GetItemList(t *testing.T) {
 				t.Errorf("error")
 			}
 			log.Print(*ItemOverview)
-			previews, err := ItemDB.GetPreviewList(1, 5, map[string]interface{}{}, []string{"aaa"})
+			previews, err := ItemDB.GetPreviewList(1, 5, map[string]interface{}{}, []string{"ccc", "ddd"})
 
 			log.Print("pre: ", *previews)
 			if err != nil {
