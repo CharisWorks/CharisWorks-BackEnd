@@ -42,8 +42,6 @@ func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 }
 
 func (r CartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayload) error {
-	log.Print("UserId: ", UserId)
-	log.Print("historyUserId: ", CartRequestPayload)
 	Cart := new(utils.Cart)
 	Cart.PurchaserUserId = UserId
 	Cart.ItemId = CartRequestPayload.ItemId
@@ -55,8 +53,6 @@ func (r CartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayloa
 	return nil
 }
 func (r CartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload) error {
-	log.Print("UserId: ", UserId)
-	log.Print("historyUserId: ", CartRequestPayload)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", CartRequestPayload.ItemId).Update("quantity", CartRequestPayload.Quantity).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}

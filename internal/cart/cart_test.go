@@ -1,7 +1,6 @@
 package cart
 
 import (
-	"log"
 	"reflect"
 	"testing"
 
@@ -96,6 +95,29 @@ func TestCartRequests(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "正常",
+			payload: []CartRequestPayload{
+				{
+					ItemId:   "test1",
+					Quantity: 2,
+				},
+				{
+					ItemId:   "test1",
+					Quantity: 1,
+				},
+			},
+			want: &[]Cart{
+				{
+					ItemId:   "test1",
+					Quantity: 1,
+					ItemProperties: CartItemPreviewProperties{
+						Name:  "test1",
+						Price: 2000,
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range Cases {
@@ -104,7 +126,6 @@ func TestCartRequests(t *testing.T) {
 				CartRequests.Register("aaa", p, CartDB, CartUtils)
 			}
 			result, err := CartRequests.Get("aaa", CartDB, CartUtils)
-			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
