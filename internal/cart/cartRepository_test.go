@@ -184,3 +184,63 @@ func Test_CartCRUD(t *testing.T) {
 		t.Errorf("error")
 	}
 }
+
+func Test_GetItem(t *testing.T) {
+	db, err := utils.DBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
+	UserDB := user.UserDB{DB: db}
+	ManufacturerDB := manufacturer.ManufacturerDB{DB: db}
+	CartDB := CartDB{DB: db}
+	Cases := []struct {
+		name    string
+		payload manufacturer.ItemRegisterPayload
+		want    itemStatus
+	}{
+		{
+			name: "正常",
+			payload: manufacturer.ItemRegisterPayload{
+				Name:  "abc",
+				Price: 2000,
+				Details: manufacturer.ItemRegisterDetailsPayload{
+					Stock:       2,
+					Size:        3,
+					Description: "test",
+					Tags:        []string{"aaa", "bbb"},
+				},
+			},
+			want: itemStatus{
+				itemStock: 2,
+				status:    items.ItemStatusReady,
+			},
+		},
+	}
+	if err = UserDB.CreateUser("aaa", 1); err != nil {
+		t.Errorf("error")
+	}
+	for _, tt := range Cases {
+		t.Run(tt.name, func(t *testing.T) {
+			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
+			if err != nil {
+				t.Errorf("error")
+			}
+			ItemStatus, err := CartDB.GetItem("test")
+			if err != nil {
+				t.Errorf("error")
+			}
+			if !reflect.DeepEqual(*ItemStatus, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, *ItemStatus, tt.want)
+			}
+			err = ManufacturerDB.DeleteItem("test")
+			if err != nil {
+				t.Errorf("error")
+			}
+
+		})
+	}
+	err = UserDB.DeleteUser("aaa")
+	if err != nil {
+		t.Errorf("error")
+	}
+}
