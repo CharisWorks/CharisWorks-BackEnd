@@ -1,22 +1,17 @@
 package cart
 
 import (
-	"encoding/json"
-	"io"
 	"log"
-	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
-	"github.com/gin-gonic/gin"
 )
 
-func TestCartRequests_Get(t *testing.T) {
+func TestCartRequests(t *testing.T) {
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -105,20 +100,10 @@ func TestCartRequests_Get(t *testing.T) {
 
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			req := httptest.NewRequest("POST", "/cart", nil)
-			body, err := json.Marshal(tt.payload)
-			if err != nil {
-				t.Errorf("error")
+			for _, p := range tt.payload {
+				CartRequests.Register("aaa", p, CartDB, CartUtils)
 			}
-
-			req.Body = io.NopCloser(strings.NewReader(string(body)))
-			log.Println(req.Body)
-			ctx.Request = req
-
-			result, err := CartRequests.Get("test", CartDB, CartUtils)
+			result, err := CartRequests.Get("aaa", CartDB, CartUtils)
 			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
@@ -128,6 +113,10 @@ func TestCartRequests_Get(t *testing.T) {
 					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
 				}
 			}
+			for _, p := range tt.payload {
+				CartRequests.Delete("aaa", p.ItemId, CartDB, CartUtils)
+			}
+
 		})
 	}
 	for _, item := range Items {

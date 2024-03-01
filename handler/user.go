@@ -40,7 +40,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserProfileUpdate(userId, *profile, UserDB)
+			err = UserRequests.UserProfileUpdate(userId, *profile, UserDB, UserUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

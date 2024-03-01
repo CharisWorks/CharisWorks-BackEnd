@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 	h.SetupRoutesForItem(items.ExampleItemRequests{}, items.ItemDB{DB: db}, items.ExampleItemUtils{})
-	h.SetupRoutesForUser(app, users.UserRequests{}, users.UserDB{DB: db})
+	h.SetupRoutesForUser(app, users.UserRequests{}, users.UserDB{DB: db}, users.ExampleUserUtils{})
 	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.CartDB{}, users.UserRequests{}, cart.CartUtils{}, users.UserDB{})
 	h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
 	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.CartDB{}, cart.CartUtils{}, items.ItemDB{}, cash.ExampleTransactionDBHistory{}, users.UserRequests{}, users.UserDB{DB: db})
