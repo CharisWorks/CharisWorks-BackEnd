@@ -15,21 +15,21 @@ type ItemRegisterDetailsPayload struct {
 }
 
 type ItemUpdatePayload struct {
-	ItemId                      *string                     `json:"item_id" binding:"required"`
+	ItemId                      string                      `json:"item_id" binding:"required"`
 	ItemUpdatePropertiesPayload ItemUpdatePropertiesPayload `json:"properties" binding:"required"`
 }
 type ItemUpdatePropertiesPayload struct {
-	Name    *string                   `json:"name"`
-	Price   *int                      `json:"price"`
-	Details *ItemUpdateDetailsPayload `json:"details"`
+	Name    string                   `json:"name"`
+	Price   int                      `json:"price"`
+	Details ItemUpdateDetailsPayload `json:"details"`
 }
 
 type ItemUpdateDetailsPayload struct {
-	Status      *string   `json:"status"`
-	Stock       *int      `json:"stock"`
-	Size        *int      `json:"size"`
-	Description *string   `json:"description" `
-	Tags        *[]string `json:"tags"`
+	Status      string   `json:"status"`
+	Stock       int      `json:"stock"`
+	Size        int      `json:"size"`
+	Description string   `json:"description" `
+	Tags        []string `json:"tags"`
 }
 
 type IManufacturerRequests interface {
@@ -40,7 +40,7 @@ type IManufacturerRequests interface {
 
 type IManufactuerUtils interface {
 	InspectRegisterPayload(ItemRegisterPayload) error
-	InspectUpdatePayload(ItemUpdatePayload) (*map[string]interface{}, error)
+	InspectUpdatePayload(map[string]interface{}) (*map[string]interface{}, error)
 }
 
 type IManufacturerDB interface {
