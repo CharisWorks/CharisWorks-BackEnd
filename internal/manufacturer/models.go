@@ -11,7 +11,7 @@ type ItemRegisterDetailsPayload struct {
 	Stock       int      `json:"stock" binding:"required"`
 	Size        int      `json:"size" binding:"required"`
 	Description string   `json:"description" binding:"required"`
-	Tags        []string `json:"tags" binding:"required"`
+	Tags        []string `json:"tags" binding:"required" `
 }
 
 type ItemUpdatePayload struct {

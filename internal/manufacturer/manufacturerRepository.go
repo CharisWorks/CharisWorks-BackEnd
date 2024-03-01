@@ -42,7 +42,7 @@ func (m *ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id in
 	}
 	return nil
 }
-func (m *ManufacturerDB) DeleteItem(itemId int) error {
+func (m *ManufacturerDB) DeleteItem(itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Delete(&utils.Item{}).Error; err != nil {
 		return err
 	}
