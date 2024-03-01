@@ -26,12 +26,12 @@ func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemDB it
 
 		itemGroup.GET("/", func(ctx *gin.Context) {
 
-			PreviewList, err := ItemRequests.GetSearchPreviewList(ctx, ItemDB, ItemUtils)
+			PreviewList, totalElements, err := ItemRequests.GetSearchPreviewList(ctx, ItemDB, ItemUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
-			ctx.JSON(200, PreviewList)
+			ctx.JSON(200, gin.H{"previewList": PreviewList, "totalElements": totalElements})
 		})
 	}
 }

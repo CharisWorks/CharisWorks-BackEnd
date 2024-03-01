@@ -194,12 +194,13 @@ func Test_GetItemList(t *testing.T) {
 		}
 	}
 	Cases := []struct {
-		name      string
-		pageNum   int
-		pageSize  int
-		condition map[string]interface{}
-		tags      []string
-		want      []items.ItemPreview
+		name          string
+		pageNum       int
+		pageSize      int
+		condition     map[string]interface{}
+		tags          []string
+		want          []items.ItemPreview
+		totalElements int
 	}{
 		{
 			name:      "タグのみで絞り込み",
@@ -247,6 +248,7 @@ func Test_GetItemList(t *testing.T) {
 					},
 				},
 			},
+			totalElements: 4,
 		},
 		{
 			name:      "条件のみで絞り込み",
@@ -266,6 +268,7 @@ func Test_GetItemList(t *testing.T) {
 					},
 				},
 			},
+			totalElements: 1,
 		},
 		{
 			name:      "条件とタグで絞り込み",
@@ -285,6 +288,7 @@ func Test_GetItemList(t *testing.T) {
 					},
 				},
 			},
+			totalElements: 1,
 		},
 		{
 			name:      "検索結果なし",
@@ -319,11 +323,13 @@ func Test_GetItemList(t *testing.T) {
 					},
 				},
 			},
+			totalElements: 6,
 		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			previews, err := ItemDB.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
+			previews, totalElements, err := ItemDB.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
+			log.Print("totalElements: ", totalElements)
 			log.Print("pre: ", *previews)
 			if err != nil {
 				t.Errorf("error")
@@ -331,6 +337,10 @@ func Test_GetItemList(t *testing.T) {
 			if !reflect.DeepEqual(*previews, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *previews, tt.want)
 			}
+			if totalElements != tt.totalElements {
+				t.Errorf("%v,got,%v,want%v", tt.name, totalElements, tt.totalElements)
+			}
+
 		})
 	}
 	for _, item := range Items {

@@ -51,12 +51,12 @@ const (
 
 type IItemRequests interface {
 	GetOverview(itemId string, ItemDB IItemDB) (*ItemOverview, error)
-	GetSearchPreviewList(ctx *gin.Context, ItemDB IItemDB, ItemUtils IItemUtils) (*[]ItemPreview, error)
+	GetSearchPreviewList(ctx *gin.Context, ItemDB IItemDB, ItemUtils IItemUtils) (*[]ItemPreview, int, error)
 }
 
 type IItemDB interface {
 	GetItemOverview(itemId string) (*ItemOverview, error)
-	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error)
+	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, int, error)
 }
 
 type IItemUtils interface {
