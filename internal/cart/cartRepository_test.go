@@ -108,9 +108,14 @@ func Test_CartCRUD(t *testing.T) {
 					ItemId:   "test1",
 					Quantity: 2,
 				},
+				{
+					ItemId:   "test2",
+					Quantity: 2,
+				},
 			},
 			want: []InternalCart{
 				{
+					Index: 0,
 					Cart: Cart{
 						ItemId:   "test1",
 						Quantity: 2,
@@ -123,6 +128,19 @@ func Test_CartCRUD(t *testing.T) {
 					ItemStock: 2,
 					Status:    items.ItemStatusAvailable,
 				},
+				{
+					Index: 1,
+					Cart: Cart{
+						ItemId:   "test2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test2",
+							Price: 3000,
+						},
+					},
+					ItemStock: 3,
+					Status:    items.ItemStatusAvailable,
+				},
 			},
 			updatePayload: CartRequestPayload{
 				ItemId:   "test1",
@@ -130,6 +148,7 @@ func Test_CartCRUD(t *testing.T) {
 			},
 			wantUpdated: []InternalCart{
 				{
+					Index: 0,
 					Cart: Cart{
 						ItemId:   "test1",
 						Quantity: 3,
@@ -140,6 +159,19 @@ func Test_CartCRUD(t *testing.T) {
 					},
 
 					ItemStock: 2,
+					Status:    items.ItemStatusAvailable,
+				},
+				{
+					Index: 1,
+					Cart: Cart{
+						ItemId:   "test2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test2",
+							Price: 3000,
+						},
+					},
+					ItemStock: 3,
 					Status:    items.ItemStatusAvailable,
 				},
 			},
@@ -160,13 +192,8 @@ func Test_CartCRUD(t *testing.T) {
 			if !reflect.DeepEqual(*Cart, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
-			for _, p := range tt.payload {
-				err := CartDB.DeleteCart("aaa", p.ItemId)
-				if err != nil {
-					t.Errorf(err.Error())
-				}
-			}
-			err = CartDB.RegisterCart("aaa", tt.updatePayload)
+
+			err = CartDB.UpdateCart("aaa", tt.updatePayload)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -176,6 +203,12 @@ func Test_CartCRUD(t *testing.T) {
 			}
 			if !reflect.DeepEqual(*Cart, tt.wantUpdated) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
+			}
+			for _, p := range tt.payload {
+				err := CartDB.DeleteCart("aaa", p.ItemId)
+				if err != nil {
+					t.Errorf(err.Error())
+				}
 			}
 
 		})
