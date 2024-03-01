@@ -36,21 +36,22 @@ func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	}
 	return ItemOverview, nil
 }
-func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}, tags []string) ([]ItemPreview, error) {
+func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}, tags []string) ([]ItemPreview, int, error) {
 	previews := new([]ItemPreview)
 	items := new([]utils.Item)
 	offset := (page - 1) * pageSize
-	query := db.Model(&utils.Item{}).Offset(offset).Limit(pageSize)
+	query := db.Model(&utils.Item{})
 	for key, value := range conditions {
 		query = query.Where(key, value)
 	}
 	for _, tag := range tags {
 		query = query.Where("tags LIKE ?", "%"+tag+"%")
 	}
-	err := query.Find(&items).Error
+	totalElements := query.Find(&items).RowsAffected
+	err := query.Offset(offset).Limit(pageSize).Find(&items).Error
 	if err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return nil, 0, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	for _, item := range *items {
 		preview := new(ItemPreview)
@@ -60,12 +61,12 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 		preview.Properties.Price = item.Price
 		*previews = append(*previews, *preview)
 	}
-	return *previews, nil
+	return *previews, int(totalElements), nil
 }
-func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, error) {
-	ItemPreview, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
+func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, int, error) {
+	ItemPreview, totalElements, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return &ItemPreview, nil
+	return &ItemPreview, totalElements, nil
 }

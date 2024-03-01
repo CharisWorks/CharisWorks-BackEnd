@@ -1,6 +1,6 @@
 package manufacturer
 
-import (
+/* import (
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,3 +18,4 @@ func (m ExampleManufacturerRequests) UpdateItem(ctx *gin.Context) error {
 func (m ExampleManufacturerRequests) DeleteItem(ctx *gin.Context) error {
 	return nil
 }
+*/

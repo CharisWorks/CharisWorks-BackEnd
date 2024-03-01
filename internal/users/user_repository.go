@@ -25,11 +25,11 @@ func (r UserDB) CreateUser(UserId string, historyUserId int) error {
 	}
 	return nil
 }
-func (r UserDB) GetUser(UserId string) (*User, error) {
+func (r UserDB) GetUser(UserId string) (*User, int, error) {
 	DBUser := new(utils.User)
 	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return nil, 0, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	user := new(User)
 	user.UserId = DBUser.Id
@@ -52,7 +52,7 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 		Address3:      Address.Address_3,
 		PhoneNumber:   Address.PhoneNumber,
 	}
-	return user, nil
+	return user, DBUser.HistoryUserId, nil
 }
 func (r UserDB) DeleteUser(UserId string) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Delete(utils.User{}).Error; err != nil {

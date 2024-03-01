@@ -53,7 +53,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressRegister(userId, *payload, UserDB)
+			err = UserRequests.UserAddressRegister(userId, *payload, UserDB, UserUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

@@ -11,7 +11,7 @@ func (r UserRequests) UserCreate(userId string, UserDB IUserDB) error {
 	return nil
 }
 func (r UserRequests) UserGet(userId string, UserDB IUserDB) (*User, error) {
-	User, err := UserDB.GetUser(userId)
+	User, _, err := UserDB.GetUser(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +32,12 @@ func (r UserRequests) UserProfileUpdate(userId string, userProfile UserProfile, 
 	}
 	return nil
 }
-func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, userDB IUserDB) error {
-	err := userDB.RegisterAddress(userId, userAddressRegisterPayload)
+func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, userDB IUserDB, UserUtils IUserUtils) error {
+	payload, err := UserUtils.InspectAddressRegisterPayload(userAddressRegisterPayload)
+	if err != nil {
+		return err
+	}
+	err = userDB.RegisterAddress(userId, payload)
 	if err != nil {
 		return err
 	}

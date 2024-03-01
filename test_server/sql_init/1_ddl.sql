@@ -122,8 +122,6 @@ CREATE TABLE `items` (
   `status` text DEFAULT NULL,
   `stock` int(11) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `tags` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `history_item_id` (`history_item_id`),
   KEY `items_users_FK` (`manufacturer_user_id`),
