@@ -178,7 +178,7 @@ type ExampleUserRequests struct {
 		return nil
 	}
 */
-type ExampleUserUtils struct {
+/* type ExampleUserUtils struct {
 }
 
 func (r ExampleUserUtils) InspectAddressRegisterPayload(p UserAddressRegisterPayload) error {
@@ -190,3 +190,4 @@ func (r ExampleUserUtils) InspectAddressUpdatePayload(p UserAddress) map[string]
 func (r ExampleUserUtils) InspectProfileUpdatePayload(p UserProfile) map[string]interface{} {
 	return nil
 }
+*/
