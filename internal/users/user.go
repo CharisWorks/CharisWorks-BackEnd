@@ -40,8 +40,11 @@ func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayl
 	return nil
 }
 func (r UserRequests) UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error {
-	updatePayload := UserUtils.InspectAddressUpdatePayload(userAddress)
-	err := UserDB.UpdateAddress(userId, updatePayload)
+	updatePayload, err := UserUtils.InspectAddressUpdatePayload(userAddress)
+	if err != nil {
+		return err
+	}
+	err = UserDB.UpdateAddress(userId, updatePayload)
 	if err != nil {
 		return err
 	}

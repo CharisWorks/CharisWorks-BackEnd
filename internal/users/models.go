@@ -31,15 +31,15 @@ type UserProfileRegisterPayload struct {
 	Description string `json:"description" binding:"required"`
 }
 type UserAddressRegisterPayload struct {
-	FirstName     string  `json:"first_name" binding:"required"`
-	FirstNameKana string  `json:"first_name_kana" binding:"required"`
-	LastName      string  `json:"last_name" binding:"required"`
-	LastNameKana  string  `json:"last_name_kana" binding:"required"`
-	ZipCode       string  `json:"zip_code" binding:"required"`
-	Address1      string  `json:"address_1" binding:"required"`
-	Address2      string  `json:"address_2" binding:"required"`
-	Address3      *string `json:"address_3"`
-	PhoneNumber   string  `json:"phone_number" binding:"required"`
+	FirstName     string `json:"first_name" binding:"required"`
+	FirstNameKana string `json:"first_name_kana" binding:"required"`
+	LastName      string `json:"last_name" binding:"required"`
+	LastNameKana  string `json:"last_name_kana" binding:"required"`
+	ZipCode       string `json:"zip_code" binding:"required"`
+	Address1      string `json:"address_1" binding:"required"`
+	Address2      string `json:"address_2" binding:"required"`
+	Address3      string `json:"address_3"`
+	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
 
 type HistoryUser struct {
@@ -59,9 +59,9 @@ type IUserRequests interface {
 	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error
 }
 type IUserUtils interface {
-	InspectAddressRegisterPayload(UserAddressRegisterPayload) error
+	InspectAddressRegisterPayload(UserAddressRegisterPayload) (UserAddressRegisterPayload, error)
 	InspectProfileUpdatePayload(UserProfile) map[string]interface{}
-	InspectAddressUpdatePayload(UserAddress) map[string]interface{}
+	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
 }
 type IUserDB interface {
 	CreateUser(UserId string, HistoryUserId int) error

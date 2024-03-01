@@ -30,7 +30,7 @@ func (u UserUtils) InspectAddressUpdatePayload(address UserAddress) (map[string]
 		if IsKatakana(address.FirstNameKana) {
 			conditions["first_name_kana"] = address.FirstNameKana
 		} else {
-			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
+			return conditions, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 		}
 	}
 	if len(address.LastName) > 1 {
@@ -40,14 +40,15 @@ func (u UserUtils) InspectAddressUpdatePayload(address UserAddress) (map[string]
 		if IsKatakana(address.LastNameKana) {
 			conditions["last_name_kana"] = address.LastNameKana
 		} else {
-			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
+			return conditions, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 		}
 	}
 	if len(address.ZipCode) > 1 {
-		if IsValidPostalCode(address.ZipCode) {
-			conditions["zip_code"] = address.ZipCode
+		valid, code := IsValidPostalCode(address.ZipCode)
+		if valid {
+			conditions["zip_code"] = code
 		} else {
-			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
+			return conditions, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 		}
 	}
 	if len(address.Address1) > 1 {
@@ -64,7 +65,7 @@ func (u UserUtils) InspectAddressUpdatePayload(address UserAddress) (map[string]
 		if isValid {
 			conditions["phone_number"] = phoneNumber
 		} else {
-			return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
+			return conditions, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 		}
 	}
 	return conditions, nil
@@ -91,18 +92,18 @@ func (u UserUtils) InspectAddressRegisterPayload(address UserAddressRegisterPayl
 	if len(address.ZipCode) < 1 {
 		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
-	if !IsValidPostalCode(address.ZipCode) {
+	valid, code := IsValidPostalCode(address.ZipCode)
+	if !valid {
 		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
+	address.ZipCode = code
 	if len(address.Address1) < 1 {
 		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
 	if len(address.Address2) < 1 {
 		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
-	if len(*address.Address3) < 1 {
-		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-	}
+
 	if len(address.PhoneNumber) < 1 {
 		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
@@ -123,16 +124,24 @@ func IsKatakana(str string) bool {
 	return true
 }
 
-func IsValidPostalCode(postalCode string) bool {
+func IsValidPostalCode(postalCode string) (bool, string) {
 	// 正規表現パターン
 	pattern := `^\d{3}-?\d{4}$`
 	// 郵便番号の形式にマッチするかどうかを確認
 	match, _ := regexp.MatchString(pattern, postalCode)
-	return match
+	if match {
+		// 2番目の形式の場合は3番目の形式に変換して返す
+		if postalCode[3] == '-' {
+			return true, postalCode
+		}
+		// 3番目の形式の場合は2番目の形式に変換して返す
+		return true, postalCode[:3] + "-" + postalCode[3:]
+	}
+	return false, postalCode
 }
 func ConvertPhoneNumber(phoneNumber string) (bool, string) {
 	// 正規表現パターン
-	pattern := `^\d{3}-\d{4}-\d{4}$`
+	pattern := `^\d{3}-\d{4}-\d{4}$|^0[-\d]{10}$`
 	// 電話番号の形式にマッチするかどうかを確認
 	match, _ := regexp.MatchString(pattern, phoneNumber)
 	if match {
@@ -141,7 +150,7 @@ func ConvertPhoneNumber(phoneNumber string) (bool, string) {
 			return true, phoneNumber
 		}
 		// 3番目の形式の場合は2番目の形式に変換して返す
-		return true, phoneNumber[:3] + "-" + phoneNumber[4:8] + "-" + phoneNumber[9:]
+		return true, phoneNumber[:3] + "-" + phoneNumber[3:7] + "-" + phoneNumber[7:]
 	}
 	// 有効な形式でない場合はそのまま返す
 	return false, phoneNumber
