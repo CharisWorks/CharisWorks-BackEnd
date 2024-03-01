@@ -1,6 +1,8 @@
 package cart
 
 import (
+	"log"
+
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
@@ -8,16 +10,18 @@ type CartRequests struct {
 }
 
 func (c CartRequests) Get(userId string, CartDB ICartDB, CartUtils ICartUtils) (cart *[]Cart, err error) {
-
+	log.Print("userId: ", userId)
 	internalCart, err := CartDB.GetCart(userId)
 	if err != nil {
 		return nil, err
 	}
+	log.Print("internalCart: ", internalCart)
 	inspectedCart, err := CartUtils.InspectCart(*internalCart)
 	resultCart := CartUtils.ConvertCart(inspectedCart)
 	if err != nil {
 		return &resultCart, err
 	}
+	log.Print("resultCart: ", resultCart)
 	return &resultCart, nil
 }
 
