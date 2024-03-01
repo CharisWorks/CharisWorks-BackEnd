@@ -12,6 +12,7 @@ import (
 	"github.com/stripe/stripe-go/v76/accountlink"
 	"github.com/stripe/stripe-go/v76/loginlink"
 	"github.com/stripe/stripe-go/v76/paymentintent"
+	"github.com/ttacon/libphonenumber"
 )
 
 type StripeRequests struct {
@@ -29,6 +30,12 @@ func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.Us
 	if &user.UserAddress == new(users.UserAddress) {
 		return nil, &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
 	}
+	pnum, err := libphonenumber.Parse(user.UserAddress.PhoneNumber, "JP")
+	e164Number := new(string)
+	if err != nil {
+		return nil, &utils.InternalError{Message: utils.InternalErrorIncident}
+	}
+	*e164Number = libphonenumber.Format(pnum, libphonenumber.E164)
 	params := &stripe.AccountParams{
 		Capabilities: &stripe.AccountCapabilitiesParams{
 			Transfers: &stripe.AccountCapabilitiesTransfersParams{
@@ -48,7 +55,7 @@ func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.Us
 			LastNameKanji:  stripe.String(user.UserAddress.LastName),
 			LastNameKana:   stripe.String(user.UserAddress.LastNameKana),
 			Email:          stripe.String(email),
-			Phone:          stripe.String(user.UserAddress.PhoneNumber),
+			Phone:          stripe.String(*e164Number),
 		},
 		BusinessProfile: &stripe.AccountBusinessProfileParams{
 			MCC:                stripe.String("5699"),

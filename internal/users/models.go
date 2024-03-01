@@ -60,8 +60,8 @@ type IUserRequests interface {
 }
 type IUserUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) error
-	InspectProfileUpdatePayload(UserProfile) (map[string]interface{}, error)
-	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
+	InspectProfileUpdatePayload(UserProfile) map[string]interface{}
+	InspectAddressUpdatePayload(UserAddress) map[string]interface{}
 }
 type IUserDB interface {
 	CreateUser(UserId string, HistoryUserId int) error

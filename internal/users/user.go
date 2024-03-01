@@ -25,11 +25,8 @@ func (r UserRequests) UserDelete(userId string, UserDB IUserDB) error {
 	return nil
 }
 func (r UserRequests) UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error {
-	updatePayload, err := UserUtils.InspectProfileUpdatePayload(userProfile)
-	if err != nil {
-		return err
-	}
-	err = UserDB.UpdateProfile(userId, updatePayload)
+	updatePayload := UserUtils.InspectProfileUpdatePayload(userProfile)
+	err := UserDB.UpdateProfile(userId, updatePayload)
 	if err != nil {
 		return err
 	}
@@ -43,11 +40,8 @@ func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayl
 	return nil
 }
 func (r UserRequests) UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error {
-	updatePayload, err := UserUtils.InspectAddressUpdatePayload(userAddress)
-	if err != nil {
-		return err
-	}
-	err = UserDB.UpdateAddress(userId, updatePayload)
+	updatePayload := UserUtils.InspectAddressUpdatePayload(userAddress)
+	err := UserDB.UpdateAddress(userId, updatePayload)
 	if err != nil {
 		return err
 	}
