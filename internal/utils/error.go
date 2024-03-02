@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type InternalError struct {
 	Message InternalMessage `json:"message"`
@@ -11,23 +15,23 @@ func (r *InternalError) Error() string {
 }
 func Code(i InternalMessage) int {
 	statusCode := map[InternalMessage]int{
-		InternalErrorInvalidItem:                 400,
-		InternalErrorStockOver:                   400,
-		InternalErrorInvalidQuantity:             400,
-		InternalErrorNoStock:                     400,
-		InternalErrorInvalidPayload:              400,
-		InternalErrorInvalidQuery:                400,
-		InternalErrorInvalidParams:               400,
-		InternalErrorInvalidCart:                 400,
-		InternalErrorNotFound:                    404,
-		InternalErrorDB:                          500,
-		InternalErrorInvalidUserRequest:          400,
-		InternalErrorManufacturerAlreadyHasBank:  400,
-		InternalErrorManufacturerDoesNotHaveBank: 400,
-		InternalErrorAccountIsNotSatisfied:       400,
-		InternalErrorFromStripe:                  400,
-		InternalErrorUnAuthorized:                401,
-		InternalErrorIncident:                    500,
+		InternalErrorInvalidItem:                 http.StatusBadRequest,
+		InternalErrorStockOver:                   http.StatusBadRequest,
+		InternalErrorInvalidQuantity:             http.StatusBadRequest,
+		InternalErrorNoStock:                     http.StatusBadRequest,
+		InternalErrorInvalidPayload:              http.StatusBadRequest,
+		InternalErrorInvalidQuery:                http.StatusBadRequest,
+		InternalErrorInvalidParams:               http.StatusBadRequest,
+		InternalErrorInvalidCart:                 http.StatusBadRequest,
+		InternalErrorNotFound:                    http.StatusNotFound,
+		InternalErrorDB:                          http.StatusInternalServerError,
+		InternalErrorInvalidUserRequest:          http.StatusBadRequest,
+		InternalErrorManufacturerAlreadyHasBank:  http.StatusBadRequest,
+		InternalErrorManufacturerDoesNotHaveBank: http.StatusBadRequest,
+		InternalErrorAccountIsNotSatisfied:       http.StatusBadRequest,
+		InternalErrorFromStripe:                  http.StatusBadRequest,
+		InternalErrorUnAuthorized:                http.StatusUnauthorized,
+		InternalErrorIncident:                    http.StatusInternalServerError,
 	}
 	return statusCode[i]
 }
