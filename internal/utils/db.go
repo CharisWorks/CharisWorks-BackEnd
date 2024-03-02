@@ -80,3 +80,32 @@ type Shipping struct {
 	LastName      string `gorm:"last_name"`
 	LastNameKana  string `gorm:"last_name_kana"`
 }
+
+type Transaction struct {
+	Id                  int       `gorm:"id"`
+	PurchaserUserId     string    `gorm:"purchaser_user_id"`
+	TrackingId          string    `gorm:"tracking_id"`
+	CreatedAt           time.Time `gorm:"created_at"`
+	ZipCode             string    `gorm:"zip_code"`
+	Address             string    `gorm:"address"`
+	PhoneNumber         string    `gorm:"phone_number"`
+	RealName            string    `gorm:"real_name"`
+	Status              string    `gorm:"status"`
+	StripeTransactionId string    `gorm:"stripe_transaction_id"`
+	TotalPrice          int       `gorm:"total_price"`
+	TotalAmount         int       `gorm:"total_amount"`
+}
+
+type TransactionItem struct {
+	Id                      int    `gorm:"id"`
+	TransactionId           int    `gorm:"transaction_id"`
+	ItemId                  string `gorm:"item_id"`
+	Name                    string `gorm:"name"`
+	Price                   int    `gorm:"price"`
+	Quantity                int    `gorm:"quantity"`
+	Description             string `gorm:"description"`
+	Tags                    string `gorm:"tags"`
+	ManufacturerUserId      string `gorm:"manufacturer_user_id"`
+	ManufacturerName        string `gorm:"manufacturer_name"`
+	ManufacturerDescription string `gorm:"manufacturer_description"`
+}

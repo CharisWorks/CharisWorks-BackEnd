@@ -45,68 +45,6 @@ LOCK TABLES `carts` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `history_items`
---
-
-DROP TABLE IF EXISTS `history_items`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `history_items` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `item_id` varchar(100) NOT NULL,
-  `manufacturer_user_id` varchar(100) DEFAULT NULL,
-  `name` varchar(100) NOT NULL,
-  `price` int(11) NOT NULL,
-  `status` varchar(100) NOT NULL,
-  `size` int(11) DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `tags` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `history_items_unique` (`item_id`),
-  KEY `history_items_items_FK` (`item_id`),
-  KEY `history_items_history_users_FK_1` (`manufacturer_user_id`),
-  CONSTRAINT `history_items_history_users_FK` FOREIGN KEY (`id`) REFERENCES `history_users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `history_items`
---
-
-LOCK TABLES `history_items` WRITE;
-/*!40000 ALTER TABLE `history_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `history_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `history_users`
---
-
-DROP TABLE IF EXISTS `history_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `history_users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` varchar(100) NOT NULL,
-  `display_name` text DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `history_users_unique` (`user_id`),
-  KEY `history_users_users_FK` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `history_users`
---
-
-LOCK TABLES `history_users` WRITE;
-/*!40000 ALTER TABLE `history_users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `history_users` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `items`
 --
 
@@ -181,7 +119,15 @@ CREATE TABLE `transaction_items` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `transaction_id` int(11) NOT NULL,
   `item_id` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `price` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `tags` varchar(100) NOT NULL,
+  `manufacturer_user_id` varchar(100) NOT NULL,
+  `manufacturer_name` varchar(100) NOT NULL,
+  `manufacturer_description` text NOT NULL,
+
   PRIMARY KEY (`id`),
   UNIQUE KEY `transaction_items_unique` (`transaction_id`),
   KEY `transaction_items_history_items_FK` (`item_id`),
@@ -217,6 +163,8 @@ CREATE TABLE `transactions` (
   `real_name` varchar(100) NOT NULL,
   `status` text NOT NULL,
   `stripe_transaction_id` text NOT NULL,
+  `total_price` int(11) NOT NULL,
+  `total_quantity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `transactions_unique` (`purchaser_user_id`),
   KEY `transactions_users_FK_1` (`purchaser_user_id`),
