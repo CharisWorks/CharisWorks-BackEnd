@@ -12,8 +12,8 @@ type ItemDB struct {
 	DB *gorm.DB
 }
 
-func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
-	ItemOverview := new(ItemOverview)
+func (r ItemDB) GetItemOverview(itemId string) (*Overview, error) {
+	ItemOverview := new(Overview)
 	DBItem := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -23,11 +23,11 @@ func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	tags := new([]string)
 	json.Unmarshal([]byte(DBItem.Tags), &tags)
 	ItemOverview.Item_id = DBItem.Id
-	ItemOverview.Properties = ItemOverviewProperties{
+	ItemOverview.Properties = OverviewProperties{
 		Name:  DBItem.Name,
 		Price: DBItem.Price,
-		Details: ItemOverviewDetails{
-			Status:      ItemStatus(DBItem.Status),
+		Details: OverviewDetails{
+			Status:      Status(DBItem.Status),
 			Stock:       DBItem.Stock,
 			Size:        DBItem.Size,
 			Description: DBItem.Description,
@@ -36,8 +36,8 @@ func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 	}
 	return ItemOverview, nil
 }
-func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}, tags []string) ([]ItemPreview, int, error) {
-	previews := new([]ItemPreview)
+func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}, tags []string) ([]Preview, int, error) {
+	previews := new([]Preview)
 	items := new([]utils.Item)
 	offset := (page - 1) * pageSize
 	query := db.Model(&utils.Item{})
@@ -54,16 +54,16 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 		return nil, 0, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	for _, item := range *items {
-		preview := new(ItemPreview)
+		preview := new(Preview)
 		preview.Item_id = item.Id
-		preview.Properties.Details.Status = ItemStatus(item.Status)
+		preview.Properties.Details.Status = Status(item.Status)
 		preview.Properties.Name = item.Name
 		preview.Properties.Price = item.Price
 		*previews = append(*previews, *preview)
 	}
 	return *previews, int(totalElements), nil
 }
-func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, int, error) {
+func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error) {
 	ItemPreview, totalElements, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
 		return nil, 0, err

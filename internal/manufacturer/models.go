@@ -2,7 +2,6 @@ package manufacturer
 
 import (
 	"github.com/charisworks/charisworks-backend/internal/utils"
-	"github.com/gin-gonic/gin"
 )
 
 type ItemRegisterPayload struct {
@@ -35,26 +34,26 @@ type ItemUpdateDetailsPayload struct {
 	Tags        []string `json:"tags"`
 }
 
-type IManufacturerRequests interface {
-	RegisterItem(itemRegisterPayload ItemRegisterPayload, historyItemId int, userId string, manufacturerDB IManufacturerDB, manufacturerUtils IManufactuerUtils) error
-	UpdateItem(map[string]interface{}, IManufacturerDB, IManufactuerUtils) error
-	DeleteItem(*gin.Context) error
+type IItemRequests interface {
+	Register(itemRegisterPayload ItemRegisterPayload, userId string, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error
+	Update(query map[string]interface{}, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error
+	Delete(itemId string, manufacturerDB IItemRepository) error
 }
 
-type IManufactuerUtils interface {
-	InspectRegisterPayload(ItemRegisterPayload) error
-	InspectUpdatePayload(map[string]interface{}) (*map[string]interface{}, error)
+type IInspectPayloadUtils interface {
+	Register(ItemRegisterPayload) error
+	Update(map[string]interface{}) (*map[string]interface{}, error)
 }
 
-type IManufacturerDB interface {
-	RegisterItem(i ItemRegisterPayload, userId string) error
-	UpdateItem(i map[string]interface{}, history_item_id int) error
-	DeleteItem(itemId string) error
+type IItemRepository interface {
+	Register(itemId string, i ItemRegisterPayload, userId string) error
+	Update(i map[string]interface{}, itemId string) error
+	Delete(itemId string) error
 }
-type IManufactuerHistoryDB interface {
-	HistoryItemRegister(i utils.Item) (history_item_id int, err error)
-	HistoryItemGet(itemId string) (utils.Item, error)
+type IHistoryRepository interface {
+	Register(i utils.Item) (err error)
+	Get(itemId string) (utils.Item, error)
 }
-type IManufactuerHistoryUtils interface {
+type IHistoryUtils interface {
 	HistoryItemUpdate(i utils.Item, payload map[string]interface{}) (utils.Item, error)
 }

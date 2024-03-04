@@ -10,11 +10,11 @@ import (
 
 // ICartDB is an interface for cart database
 
-type CartDB struct {
+type CartRepository struct {
 	DB *gorm.DB
 }
 
-func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
+func (r CartRepository) Get(UserId string) (*[]InternalCart, error) {
 	InternalCarts := new([]utils.InternalCart)
 	resultCart := new([]InternalCart)
 	if err := r.DB.Table("carts").
@@ -29,7 +29,7 @@ func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 		cart := new(InternalCart)
 		cart.Index = i
 		cart.ItemStock = icart.Item.Stock
-		cart.Status = items.ItemStatus(icart.Item.Status)
+		cart.Status = items.Status(icart.Item.Status)
 
 		cart.Cart.ItemId = icart.Cart.ItemId
 		cart.Cart.Quantity = icart.Cart.Quantity
@@ -41,7 +41,7 @@ func (r CartDB) GetCart(UserId string) (*[]InternalCart, error) {
 	return resultCart, nil
 }
 
-func (r CartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayload) error {
+func (r CartRepository) Register(UserId string, CartRequestPayload CartRequestPayload) error {
 	Cart := new(utils.Cart)
 	Cart.PurchaserUserId = UserId
 	Cart.ItemId = CartRequestPayload.ItemId
@@ -52,7 +52,7 @@ func (r CartDB) RegisterCart(UserId string, CartRequestPayload CartRequestPayloa
 	}
 	return nil
 }
-func (r CartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload) error {
+func (r CartRepository) Update(UserId string, CartRequestPayload CartRequestPayload) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", CartRequestPayload.ItemId).Update("quantity", CartRequestPayload.Quantity).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -60,7 +60,7 @@ func (r CartDB) UpdateCart(UserId string, CartRequestPayload CartRequestPayload)
 	return nil
 }
 
-func (r CartDB) DeleteCart(UserId string, itemId string) error {
+func (r CartRepository) Delete(UserId string, itemId string) error {
 	log.Print("UserId: ", UserId)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -68,7 +68,7 @@ func (r CartDB) DeleteCart(UserId string, itemId string) error {
 	}
 	return nil
 }
-func (r CartDB) GetItem(itemId string) (*itemStatus, error) {
+func (r CartRepository) GetItem(itemId string) (*itemStatus, error) {
 	itemDB := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(itemDB).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -76,6 +76,6 @@ func (r CartDB) GetItem(itemId string) (*itemStatus, error) {
 	}
 	itemStatus := new(itemStatus)
 	itemStatus.itemStock = itemDB.Stock
-	itemStatus.status = items.ItemStatus(itemDB.Status)
+	itemStatus.status = items.Status(itemDB.Status)
 	return itemStatus, nil
 }

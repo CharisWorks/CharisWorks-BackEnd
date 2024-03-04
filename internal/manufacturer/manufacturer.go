@@ -1,37 +1,34 @@
 package manufacturer
 
-type ManufacturerRequests struct {
+type Requests struct {
 }
 
-func (m ManufacturerRequests) RegisterItem(itemRegisterPayload ItemRegisterPayload, userId string, manufacturerDB IManufacturerDB, manufacturerUtils IManufactuerUtils, manufacturerDBHistoy IManufactuerHistoryDB) error {
-	err := manufacturerUtils.InspectRegisterPayload(itemRegisterPayload)
+func (m Requests) Register(itemRegisterPayload ItemRegisterPayload, userId string, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error {
+	err := manufacturerUtils.Register(itemRegisterPayload)
 	if err != nil {
 		return err
 	}
 
-	if err != nil {
-		return err
-	}
-	err = manufacturerDB.RegisterItem(itemRegisterPayload, userId)
+	err = manufacturerDB.Register("", itemRegisterPayload, userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (m ManufacturerRequests) UpdateItem(query map[string]interface{}, manufacturerDB IManufacturerDB, manufacturerUtils IManufactuerUtils, manufacturerDBHistoy IManufactuerHistoryDB) error {
-	updatepayload, err := manufacturerUtils.InspectUpdatePayload(query)
+func (m Requests) Update(query map[string]interface{}, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error {
+	updatepayload, err := manufacturerUtils.Update(query)
 	if err != nil {
 		return err
 	}
 
-	err = manufacturerDB.UpdateItem(*updatepayload, 1)
+	err = manufacturerDB.Update(*updatepayload, "")
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (m ManufacturerRequests) DeleteItem(itemId string, manufacturerDB IManufacturerDB) error {
-	err := manufacturerDB.DeleteItem(itemId)
+func (m Requests) Delete(itemId string, manufacturerDB IItemRepository) error {
+	err := manufacturerDB.Delete(itemId)
 	if err != nil {
 		return err
 	}

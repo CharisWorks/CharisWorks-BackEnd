@@ -8,32 +8,32 @@ import (
 type ExampleTransactionRequests struct {
 }
 
-func (r ExampleTransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error) {
+func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error) {
 	return nil, nil
 }
-func (r ExampleTransactionRequests) GetTransactionDetails(ctx *gin.Context) (*TransactionDetails, error) {
+func (r ExampleTransactionRequests) GetDetails(ctx *gin.Context) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionRequests) CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) error {
+func (r ExampleTransactionRequests) Create(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) error {
 	return nil
 }
 
 type ExampleTransactionDBHistory struct {
 }
 
-func (r ExampleTransactionDBHistory) CreateTransaction(TransactionDetails TransactionDetails) error {
+func (r ExampleTransactionDBHistory) Create(TransactionDetails TransactionDetails) error {
 	return nil
 }
-func (r ExampleTransactionDBHistory) GetTransactionList(UserId string) (*[]TransactionPreview, error) {
+func (r ExampleTransactionDBHistory) GetList(UserId string) (*[]TransactionPreview, error) {
 	return nil, nil
 }
-func (r ExampleTransactionDBHistory) GetTransactionDetails(TransactionId string) (*TransactionDetails, error) {
+func (r ExampleTransactionDBHistory) GetDetails(TransactionId string) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionDBHistory) RegisterTransaction(UserId string, TransactionDetails TransactionDetails) (*string, error) {
+func (r ExampleTransactionDBHistory) Register(UserId string, TransactionDetails TransactionDetails) (*string, error) {
 	return nil, nil
 }
-func (r ExampleTransactionDBHistory) TransactionStatusUpdate(TransactionId string, Status TransactionStatus) error {
+func (r ExampleTransactionDBHistory) StatusUpdate(TransactionId string, Status TransactionStatus) error {
 	return nil
 }
 

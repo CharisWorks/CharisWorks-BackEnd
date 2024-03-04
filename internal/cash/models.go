@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/gin-gonic/gin"
 )
 
 type IStripeRequests interface {
-	GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (url *string, err error)
+	GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) (url *string, err error)
 	GetRegisterLink(email string, user users.User, UserDB users.IUserDB) (url *string, err error)
 	GetStripeMypageLink(stripeAccountId string) (url *string, err error)
 }
@@ -31,11 +32,11 @@ type TransactionDetails struct {
 type TransactionStatus string
 
 const (
-	TransactionStatusPending  TransactionStatus = "Pending"
-	TransactionStatusComplete TransactionStatus = "Complete"
-	TransactionStatusCancel   TransactionStatus = "Cancel"
-	TransactionStatusFail     TransactionStatus = "Fail"
-	TransactionStatusRefund   TransactionStatus = "Refund"
+	Pending  TransactionStatus = "Pending"
+	Complete TransactionStatus = "Complete"
+	Cancel   TransactionStatus = "Cancel"
+	Fail     TransactionStatus = "Fail"
+	Refund   TransactionStatus = "Refund"
 )
 
 type TransactionAddress struct {
@@ -50,9 +51,9 @@ type TransactionItems struct {
 	Quantity      int    `json:"quantity"`
 }
 type ITransactionRequests interface {
-	GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error)
-	GetTransactionDetails(ctx *gin.Context) (*TransactionDetails, error)
-	CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) error
+	GetList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error)
+	GetDetails(ctx *gin.Context) (*TransactionDetails, error)
+	Create(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) error
 }
 
 type ITransactionStripeUtils interface {
@@ -64,11 +65,12 @@ type ITransactionStripeUtils interface {
 
 type ITransactionDB interface {
 	ReduceStock(itemId string, Quantity int) error
+	ChangeState(itemId string, State items.Status)
 }
 
 type ITransactionDBHistory interface {
-	GetTransactionList(UserId string) (*[]TransactionPreview, error)
-	GetTransactionDetails(TransactionId string) (*TransactionDetails, error)
-	RegisterTransaction(UserId string, transactionDetails TransactionDetails) (*string, error)
-	TransactionStatusUpdate(string, TransactionStatus) error
+	GetList(UserId string) (*[]TransactionPreview, error)
+	GetDetails(TransactionId string) (*TransactionDetails, error)
+	Register(UserId string, transactionDetails TransactionDetails) (*string, error)
+	StatusUpdate(string, TransactionStatus) error
 }

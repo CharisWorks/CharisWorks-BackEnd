@@ -13,7 +13,7 @@ import (
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartDB, cartUtils cart.ICartUtils, ItemDB items.IItemDB, TransactionDBHistory cash.ITransactionDBHistory, UserRequests users.IUserRequests, UserDB users.IUserDB) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartRepository, cartUtils cart.ICartUtils, ItemDB items.IItemDB, TransactionDBHistory cash.ITransactionDBHistory, UserRequests users.IUserRequests, UserDB users.IUserDB) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
@@ -30,7 +30,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 
 		})
 		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
-			TransactionList, err := transactionRequests.GetTransactionList(ctx, TransactionDBHistory)
+			TransactionList, err := transactionRequests.GetList(ctx, TransactionDBHistory)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -38,7 +38,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 			ctx.JSON(http.StatusOK, TransactionList)
 		})
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
-			TransactionDetails, err := transactionRequests.GetTransactionDetails(ctx)
+			TransactionDetails, err := transactionRequests.GetDetails(ctx)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
