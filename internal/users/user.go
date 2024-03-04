@@ -4,14 +4,14 @@ type UserRequests struct {
 }
 
 func (r UserRequests) UserCreate(userId string, UserDB IUserDB) error {
-	err := UserDB.CreateUser(userId, 1)
+	err := UserDB.CreateUser(userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (r UserRequests) UserGet(userId string, UserDB IUserDB) (*User, error) {
-	User, _, err := UserDB.GetUser(userId)
+	User, err := UserDB.GetUser(userId)
 	if err != nil {
 		return nil, err
 	}

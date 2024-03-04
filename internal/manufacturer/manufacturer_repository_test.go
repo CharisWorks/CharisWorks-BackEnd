@@ -70,7 +70,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{"stripe_account_id": "acct_abcd"}); err != nil {
@@ -78,7 +78,7 @@ func Test_ManufacturerDB(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
+			err = ManufacturerDB.RegisterItem("test", tt.payload, "aaa")
 			if err != nil {
 				log.Print("error", err.Error())
 				t.Errorf("error")
@@ -90,7 +90,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			if !reflect.DeepEqual(*ItemOverview, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.want)
 			}
-			err = ManufacturerDB.UpdateItem(tt.updatePayload, 1, "test")
+			err = ManufacturerDB.UpdateItem(tt.updatePayload, "test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -184,11 +184,11 @@ func Test_GetItemList(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.RegisterItem(item.Name, item, 1, "aaa")
+		err = ManufacturerDB.RegisterItem(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}

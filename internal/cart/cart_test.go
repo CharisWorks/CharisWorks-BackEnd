@@ -41,15 +41,15 @@ func TestCartRequests(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.RegisterItem(item.Name, item, 1, "aaa")
+		err = ManufacturerDB.RegisterItem(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}
-		err = ManufacturerDB.UpdateItem(map[string]interface{}{"status": items.ItemStatusAvailable}, 2, item.Name)
+		err = ManufacturerDB.UpdateItem(map[string]interface{}{"status": items.ItemStatusAvailable}, item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}
