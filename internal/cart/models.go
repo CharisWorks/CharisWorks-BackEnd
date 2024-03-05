@@ -42,9 +42,9 @@ type itemStatus struct {
 	status    items.Status
 }
 type ICartRequests interface {
-	Get(userId string, CartDB ICartRepository, CartUtils ICartUtils) (*[]Cart, error)
-	Register(userId string, cartRequestPayload CartRequestPayload, CartDB ICartRepository, CartUtils ICartUtils) error
-	Delete(userId string, itemId string, CartDB ICartRepository, CartUtils ICartUtils) error
+	Get(userId string, cartRepository ICartRepository, CartUtils ICartUtils) (*[]Cart, error)
+	Register(userId string, cartRequestPayload CartRequestPayload, cartRepository ICartRepository, CartUtils ICartUtils) error
+	Delete(userId string, itemId string, cartRepository ICartRepository, CartUtils ICartUtils) error
 }
 type ICartRepository interface {
 	Get(UserId string) (*[]InternalCart, error)

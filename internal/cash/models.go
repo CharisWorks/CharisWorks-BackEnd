@@ -10,8 +10,8 @@ import (
 )
 
 type IStripeRequests interface {
-	GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) (url *string, err error)
-	GetRegisterLink(email string, user users.User, UserDB users.IUserDB) (url *string, err error)
+	GetClientSecret(userId string, CartRequests cart.ICartRequests, cartRepository cart.ICartRepository, CartUtils cart.ICartUtils) (url *string, err error)
+	GetRegisterLink(email string, user users.User, UserDB users.IUserRepository) (url *string, err error)
 	GetStripeMypageLink(stripeAccountId string) (url *string, err error)
 }
 
@@ -53,7 +53,7 @@ type TransactionItems struct {
 type ITransactionRequests interface {
 	GetList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error)
 	GetDetails(ctx *gin.Context) (*TransactionDetails, error)
-	Create(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) error
+	Create(ctx *gin.Context, CartRequests cart.ICartRequests, cartRepository cart.ICartRepository, CartUtils cart.ICartUtils) error
 }
 
 type ITransactionStripeUtils interface {

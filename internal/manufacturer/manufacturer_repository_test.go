@@ -17,7 +17,7 @@ func Test_ManufacturerDB(t *testing.T) {
 	}
 	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := Repository{DB: db}
-	ItemDB := items.ItemDB{DB: db}
+	ItemRepository := items.ItemRepository{DB: db}
 	Cases := []struct {
 		name          string
 		payload       ItemRegisterPayload
@@ -83,7 +83,7 @@ func Test_ManufacturerDB(t *testing.T) {
 				log.Print("error", err.Error())
 				t.Errorf("error")
 			}
-			ItemOverview, err := ItemDB.GetItemOverview("test")
+			ItemOverview, err := ItemRepository.GetItemOverview("test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -94,7 +94,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemOverview, err = ItemDB.GetItemOverview("test")
+			ItemOverview, err = ItemRepository.GetItemOverview("test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -120,7 +120,7 @@ func Test_GetItemList(t *testing.T) {
 	}
 	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := Repository{DB: db}
-	ItemDB := items.ItemDB{DB: db}
+	ItemRepository := items.ItemRepository{DB: db}
 	Items := []ItemRegisterPayload{
 		{
 			Name:  "test1",
@@ -328,7 +328,7 @@ func Test_GetItemList(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			previews, totalElements, err := ItemDB.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
+			previews, totalElements, err := ItemRepository.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
 			log.Print("totalElements: ", totalElements)
 			log.Print("pre: ", *previews)
 			if err != nil {

@@ -7,8 +7,8 @@ import (
 type CartRequests struct {
 }
 
-func (c CartRequests) Get(userId string, CartDB ICartRepository, CartUtils ICartUtils) (cart *[]Cart, err error) {
-	internalCart, err := CartDB.Get(userId)
+func (c CartRequests) Get(userId string, cartRepository ICartRepository, CartUtils ICartUtils) (cart *[]Cart, err error) {
+	internalCart, err := cartRepository.Get(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -20,15 +20,15 @@ func (c CartRequests) Get(userId string, CartDB ICartRepository, CartUtils ICart
 	return &resultCart, nil
 }
 
-func (c CartRequests) Register(userId string, cartRequestPayload CartRequestPayload, CartDB ICartRepository, CartUtils ICartUtils) error {
-	internalCart, err := CartDB.Get(userId)
+func (c CartRequests) Register(userId string, cartRequestPayload CartRequestPayload, cartRepository ICartRepository, CartUtils ICartUtils) error {
+	internalCart, err := cartRepository.Get(userId)
 	if err != nil {
 		return err
 	}
 
 	inspectedCart, _ := CartUtils.Inspect(*internalCart)
 	_, exist := inspectedCart[cartRequestPayload.ItemId]
-	itemStatus, err := CartDB.GetItem(cartRequestPayload.ItemId)
+	itemStatus, err := cartRepository.GetItem(cartRequestPayload.ItemId)
 	if err != nil {
 		return err
 	}
@@ -37,12 +37,12 @@ func (c CartRequests) Register(userId string, cartRequestPayload CartRequestPayl
 		return err
 	}
 	if exist {
-		err = CartDB.Update(userId, *InspectedCartRequestPayload)
+		err = cartRepository.Update(userId, *InspectedCartRequestPayload)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = CartDB.Register(userId, *InspectedCartRequestPayload)
+		err = cartRepository.Register(userId, *InspectedCartRequestPayload)
 		if err != nil {
 			return err
 		}
@@ -50,8 +50,8 @@ func (c CartRequests) Register(userId string, cartRequestPayload CartRequestPayl
 	return nil
 }
 
-func (c CartRequests) Delete(userId string, itemId string, CartDB ICartRepository, CartUtils ICartUtils) error {
-	internalCart, err := CartDB.Get(userId)
+func (c CartRequests) Delete(userId string, itemId string, cartRepository ICartRepository, CartUtils ICartUtils) error {
+	internalCart, err := cartRepository.Get(userId)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (c CartRequests) Delete(userId string, itemId string, CartDB ICartRepositor
 	if !exist {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
 	}
-	err = CartDB.Delete(userId, itemId)
+	err = cartRepository.Delete(userId, itemId)
 	if err != nil {
 		return err
 	}

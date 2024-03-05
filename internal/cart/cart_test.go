@@ -17,7 +17,7 @@ func TestCartRequests(t *testing.T) {
 	}
 	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	CartDB := CartRepository{DB: db}
+	cartRepository := CartRepository{DB: db}
 	Items := []manufacturer.ItemRegisterPayload{
 		{
 			Name:  "test1",
@@ -123,9 +123,9 @@ func TestCartRequests(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				CartRequests.Register("aaa", p, CartDB, CartUtils)
+				CartRequests.Register("aaa", p, cartRepository, CartUtils)
 			}
-			result, err := CartRequests.Get("aaa", CartDB, CartUtils)
+			result, err := CartRequests.Get("aaa", cartRepository, CartUtils)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
@@ -135,7 +135,7 @@ func TestCartRequests(t *testing.T) {
 				}
 			}
 			for _, p := range tt.payload {
-				CartRequests.Delete("aaa", p.ItemId, CartDB, CartUtils)
+				CartRequests.Delete("aaa", p.ItemId, cartRepository, CartUtils)
 			}
 
 		})

@@ -123,7 +123,7 @@ import (
 type ExampleUserRequests struct {
 }
 
-	func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context, UserDB IUserDB) (*User, error) {
+	func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context, UserDB IUserRepository) (*User, error) {
 		log.Println("UserId: ", UserId)
 		if UserId == "zbGHo5B74BNcnzEYFDIqmmtdtF82" {
 			log.Print("hoge")

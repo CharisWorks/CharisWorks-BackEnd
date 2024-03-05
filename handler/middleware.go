@@ -24,7 +24,7 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserDB) gin.HandlerFunc {
+func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		EmailVerified, exist := ctx.Get(string(emailVerified))
 		if !exist {

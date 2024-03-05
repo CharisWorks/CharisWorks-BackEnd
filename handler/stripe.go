@@ -13,7 +13,7 @@ import (
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartRepository, cartUtils cart.ICartUtils, ItemDB items.IItemDB, TransactionDBHistory cash.ITransactionDBHistory, UserRequests users.IUserRequests, UserDB users.IUserDB) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartRepository cart.ICartRepository, cartUtils cart.ICartUtils, ItemRepository items.IItemRepository, TransactionDBHistory cash.ITransactionDBHistory, UserRequests users.IUserRequests, UserDB users.IUserRepository) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
@@ -21,7 +21,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
 			userId := ctx.GetString("userId")
-			ClientSecret, err := StripeRequests.GetClientSecret(userId, CartRequests, cartDB, cartUtils)
+			ClientSecret, err := StripeRequests.GetClientSecret(userId, CartRequests, cartRepository, cartUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

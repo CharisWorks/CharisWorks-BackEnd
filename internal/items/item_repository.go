@@ -8,11 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type ItemDB struct {
+type ItemRepository struct {
 	DB *gorm.DB
 }
 
-func (r ItemDB) GetItemOverview(itemId string) (*Overview, error) {
+func (r ItemRepository) GetItemOverview(itemId string) (*Overview, error) {
 	ItemOverview := new(Overview)
 	DBItem := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
@@ -63,7 +63,7 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	}
 	return *previews, int(totalElements), nil
 }
-func (r ItemDB) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error) {
+func (r ItemRepository) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error) {
 	ItemPreview, totalElements, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
 		return nil, 0, err

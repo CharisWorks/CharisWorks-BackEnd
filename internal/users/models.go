@@ -53,19 +53,19 @@ type HistoryUser struct {
 }
 
 type IUserRequests interface {
-	UserCreate(userId string, UserDB IUserDB) error
-	UserGet(userId string, UserDB IUserDB) (*User, error)
-	UserDelete(userId string, UserDB IUserDB) error
-	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error
-	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserDB, UserUtils IUserUtils) error
-	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error
+	UserCreate(userId string, UserDB IUserRepository) error
+	UserGet(userId string, UserDB IUserRepository) (*User, error)
+	UserDelete(userId string, UserDB IUserRepository) error
+	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserRepository, UserUtils IUserUtils) error
+	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserRepository, UserUtils IUserUtils) error
+	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserRepository, UserUtils IUserUtils) error
 }
 type IUserUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) (UserAddressRegisterPayload, error)
 	InspectProfileUpdatePayload(UserProfile) map[string]interface{}
 	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
 }
-type IUserDB interface {
+type IUserRepository interface {
 	CreateUser(UserId string) error
 	GetUser(UserId string) (user *User, err error)
 	DeleteUser(UserId string) error
@@ -73,7 +73,7 @@ type IUserDB interface {
 	RegisterAddress(string, UserAddressRegisterPayload) error
 	UpdateAddress(string, map[string]interface{}) error
 }
-type IUserDBHistory interface {
+type IUserRepositoryHistory interface {
 	GetUser(itemId string) (*utils.User, error)
 	RegisterUserProfile(UserProfile utils.User) error
 }

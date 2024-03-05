@@ -26,10 +26,10 @@ func main() {
 	if err != nil {
 		return
 	}
-	h.SetupRoutesForItem(items.ItemRequests{}, items.ItemDB{DB: db}, items.ItemUtils{})
+	h.SetupRoutesForItem(items.ItemRequests{}, items.ItemRepository{DB: db}, items.ItemUtils{})
 	h.SetupRoutesForUser(app, users.UserRequests{}, users.UserDB{DB: db}, users.UserUtils{})
 	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.CartRepository{}, users.UserRequests{}, cart.CartUtils{}, users.UserDB{})
 	h.SetupRoutesForManufacturer(app, manufacturer.Requests{}, manufacturer.Repository{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.CartRepository{}, cart.CartUtils{}, items.ItemDB{}, cash.ExampleTransactionDBHistory{}, users.UserRequests{}, users.UserDB{DB: db})
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.CartRepository{}, cart.CartUtils{}, items.ItemRepository{}, cash.ExampleTransactionDBHistory{}, users.UserRequests{}, users.UserDB{DB: db})
 	h.Router.Run("localhost:8080")
 }

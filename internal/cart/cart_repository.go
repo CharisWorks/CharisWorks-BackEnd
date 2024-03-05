@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// ICartDB is an interface for cart database
+// IcartRepository is an interface for cart database
 
 type CartRepository struct {
 	DB *gorm.DB
@@ -69,13 +69,13 @@ func (r CartRepository) Delete(UserId string, itemId string) error {
 	return nil
 }
 func (r CartRepository) GetItem(itemId string) (*itemStatus, error) {
-	itemDB := new(utils.Item)
-	if err := r.DB.Table("items").Where("id = ?", itemId).First(itemDB).Error; err != nil {
+	ItemRepository := new(utils.Item)
+	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
 		log.Print("DB error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	itemStatus := new(itemStatus)
-	itemStatus.itemStock = itemDB.Stock
-	itemStatus.status = items.Status(itemDB.Status)
+	itemStatus.itemStock = ItemRepository.Stock
+	itemStatus.status = items.Status(ItemRepository.Status)
 	return itemStatus, nil
 }

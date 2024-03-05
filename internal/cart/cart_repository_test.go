@@ -17,7 +17,7 @@ func Test_CartCRUD(t *testing.T) {
 	}
 	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	CartDB := CartRepository{DB: db}
+	cartRepository := CartRepository{DB: db}
 	Items := []manufacturer.ItemRegisterPayload{
 		{
 			Name:  "test1",
@@ -140,12 +140,12 @@ func Test_CartCRUD(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				err := CartDB.Register("aaa", p)
+				err := cartRepository.Register("aaa", p)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
 			}
-			Cart, err := CartDB.Get("aaa")
+			Cart, err := cartRepository.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -153,11 +153,11 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
 
-			err = CartDB.Update("aaa", tt.updatePayload)
+			err = cartRepository.Update("aaa", tt.updatePayload)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			Cart, err = CartDB.Get("aaa")
+			Cart, err = cartRepository.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -165,7 +165,7 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
 			}
 			for _, p := range tt.payload {
-				err := CartDB.Delete("aaa", p.ItemId)
+				err := cartRepository.Delete("aaa", p.ItemId)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
@@ -192,7 +192,7 @@ func Test_GetItem(t *testing.T) {
 	}
 	UserDB := users.UserDB{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	CartDB := CartRepository{DB: db}
+	cartRepository := CartRepository{DB: db}
 	Cases := []struct {
 		name    string
 		payload manufacturer.ItemRegisterPayload
@@ -225,7 +225,7 @@ func Test_GetItem(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemStatus, err := CartDB.GetItem("test")
+			ItemStatus, err := cartRepository.GetItem("test")
 			if err != nil {
 				t.Errorf("error")
 			}

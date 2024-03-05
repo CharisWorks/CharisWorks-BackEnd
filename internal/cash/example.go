@@ -14,7 +14,7 @@ func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHisto
 func (r ExampleTransactionRequests) GetDetails(ctx *gin.Context) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionRequests) Create(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) error {
+func (r ExampleTransactionRequests) Create(ctx *gin.Context, CartRequests cart.ICartRequests, cartRepository cart.ICartRepository, CartUtils cart.ICartUtils) error {
 	return nil
 }
 
@@ -40,7 +40,7 @@ func (r ExampleTransactionDBHistory) StatusUpdate(TransactionId string, Status T
 /* type ExampleStripeRequests struct {
 }
 
-func (r ExampleStripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils, UserId string) (url *string, err error) {
+func (r ExampleStripeRequests) GetClientSecret(ctx *gin.Context, CartRequests cart.ICartRequests, cartRepository cart.IcartRepository, CartUtils cart.ICartUtils, UserId string) (url *string, err error) {
 	return nil, nil
 }
 func (r ExampleStripeRequests) GetRegisterLink(ctx *gin.Context) (url *string, err error) {

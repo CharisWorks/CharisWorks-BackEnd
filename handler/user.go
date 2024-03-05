@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IUserRequests, UserDB users.IUserDB, UserUtils users.IUserUtils) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IUserRequests, UserDB users.IUserRepository, UserUtils users.IUserUtils) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	UserRouter.Use(userMiddleware(UserRequests, UserDB))
