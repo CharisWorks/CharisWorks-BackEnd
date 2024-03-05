@@ -16,15 +16,15 @@ type CartItemPreviewProperties struct {
 }
 
 type CartItemPreviewDetails struct {
-	Status CartItemStatus `json:"status"`
+	Status ItemStatus `json:"status"`
 }
-type CartItemStatus string
+type ItemStatus string
 
 const (
-	CartItemStatusAvailable   CartItemStatus = "Available"
-	CartItemStatusStockOver   CartItemStatus = "Stock over"
-	CartItemStatusNoStock     CartItemStatus = "No stock"
-	CartItemStatusInvalidItem CartItemStatus = "Invalid item"
+	Available   ItemStatus = "Available"
+	StockOver   ItemStatus = "Stock over"
+	NoStock     ItemStatus = "No stock"
+	InvalidItem ItemStatus = "Invalid item"
 )
 
 type CartRequestPayload struct {
@@ -35,27 +35,27 @@ type InternalCart struct {
 	Index     int
 	Cart      Cart
 	ItemStock int
-	Status    items.ItemStatus
+	Status    items.Status
 }
 type itemStatus struct {
 	itemStock int
-	status    items.ItemStatus
+	status    items.Status
 }
 type ICartRequests interface {
-	Get(userId string, CartDB ICartDB, CartUtils ICartUtils) (*[]Cart, error)
-	Register(userId string, cartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils) error
-	Delete(userId string, itemId string, CartDB ICartDB, CartUtils ICartUtils) error
+	Get(userId string, CartDB ICartRepository, CartUtils ICartUtils) (*[]Cart, error)
+	Register(userId string, cartRequestPayload CartRequestPayload, CartDB ICartRepository, CartUtils ICartUtils) error
+	Delete(userId string, itemId string, CartDB ICartRepository, CartUtils ICartUtils) error
 }
-type ICartDB interface {
-	GetCart(UserId string) (*[]InternalCart, error)
-	RegisterCart(UserId string, c CartRequestPayload) error
-	UpdateCart(UserId string, c CartRequestPayload) error
-	DeleteCart(UserId string, itemId string) error
+type ICartRepository interface {
+	Get(UserId string) (*[]InternalCart, error)
+	Register(UserId string, c CartRequestPayload) error
+	Update(UserId string, c CartRequestPayload) error
+	Delete(UserId string, itemId string) error
 	GetItem(itemId string) (*itemStatus, error)
 }
 type ICartUtils interface {
-	InspectCart([]InternalCart) (map[string]InternalCart, error)
-	ConvertCart(map[string]InternalCart) []Cart
+	Inspect([]InternalCart) (map[string]InternalCart, error)
+	Convert(map[string]InternalCart) []Cart
 	GetTotalAmount(map[string]InternalCart) int
 	InspectPayload(c CartRequestPayload, itemStatus itemStatus) (*CartRequestPayload, error)
 }

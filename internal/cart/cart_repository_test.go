@@ -16,8 +16,8 @@ func Test_CartCRUD(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserDB{DB: db}
-	ManufacturerDB := manufacturer.ManufacturerDB{DB: db}
-	CartDB := CartDB{DB: db}
+	ManufacturerDB := manufacturer.Repository{DB: db}
+	CartDB := CartRepository{DB: db}
 	Items := []manufacturer.ItemRegisterPayload{
 		{
 			Name:  "test1",
@@ -41,15 +41,15 @@ func Test_CartCRUD(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.RegisterItem(item.Name, item, 1, "aaa")
+		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}
-		err = ManufacturerDB.UpdateItem(map[string]interface{}{"status": items.ItemStatusAvailable}, 2, item.Name)
+		err = ManufacturerDB.Update(map[string]interface{}{"status": items.Available}, item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}
@@ -86,7 +86,7 @@ func Test_CartCRUD(t *testing.T) {
 					},
 
 					ItemStock: 2,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 				{
 					Index: 1,
@@ -99,7 +99,7 @@ func Test_CartCRUD(t *testing.T) {
 						},
 					},
 					ItemStock: 3,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 			},
 			updatePayload: CartRequestPayload{
@@ -119,7 +119,7 @@ func Test_CartCRUD(t *testing.T) {
 					},
 
 					ItemStock: 2,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 				{
 					Index: 1,
@@ -132,7 +132,7 @@ func Test_CartCRUD(t *testing.T) {
 						},
 					},
 					ItemStock: 3,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 			},
 		},
@@ -140,12 +140,12 @@ func Test_CartCRUD(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				err := CartDB.RegisterCart("aaa", p)
+				err := CartDB.Register("aaa", p)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
 			}
-			Cart, err := CartDB.GetCart("aaa")
+			Cart, err := CartDB.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -153,11 +153,11 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
 
-			err = CartDB.UpdateCart("aaa", tt.updatePayload)
+			err = CartDB.Update("aaa", tt.updatePayload)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			Cart, err = CartDB.GetCart("aaa")
+			Cart, err = CartDB.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -165,7 +165,7 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
 			}
 			for _, p := range tt.payload {
-				err := CartDB.DeleteCart("aaa", p.ItemId)
+				err := CartDB.Delete("aaa", p.ItemId)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
@@ -174,7 +174,7 @@ func Test_CartCRUD(t *testing.T) {
 		})
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.DeleteItem(item.Name)
+		err = ManufacturerDB.Delete(item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}
@@ -191,8 +191,8 @@ func Test_GetItem(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserDB{DB: db}
-	ManufacturerDB := manufacturer.ManufacturerDB{DB: db}
-	CartDB := CartDB{DB: db}
+	ManufacturerDB := manufacturer.Repository{DB: db}
+	CartDB := CartRepository{DB: db}
 	Cases := []struct {
 		name    string
 		payload manufacturer.ItemRegisterPayload
@@ -212,16 +212,16 @@ func Test_GetItem(t *testing.T) {
 			},
 			want: itemStatus{
 				itemStock: 2,
-				status:    items.ItemStatusReady,
+				status:    items.Ready,
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
+			err = ManufacturerDB.Register("test", tt.payload, "aaa")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -232,7 +232,7 @@ func Test_GetItem(t *testing.T) {
 			if !reflect.DeepEqual(*ItemStatus, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *ItemStatus, tt.want)
 			}
-			err = ManufacturerDB.DeleteItem("test")
+			err = ManufacturerDB.Delete("test")
 			if err != nil {
 				t.Errorf("error")
 			}

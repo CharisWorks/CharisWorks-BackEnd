@@ -11,19 +11,19 @@ import (
 type CartUtils struct {
 }
 
-func (CartUtils CartUtils) InspectCart(internalCarts []InternalCart) (result map[string]InternalCart, err error) {
+func (CartUtils CartUtils) Inspect(internalCarts []InternalCart) (result map[string]InternalCart, err error) {
 	cartMap := map[string]InternalCart{}
 	for _, internalCart := range internalCarts {
 		if internalCart.ItemStock < internalCart.Cart.Quantity {
-			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusStockOver
+			internalCart.Cart.ItemProperties.Details.Status = StockOver
 			err = &utils.InternalError{Message: utils.InternalErrorStockOver}
 		}
 		if internalCart.ItemStock == 0 {
-			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusNoStock
+			internalCart.Cart.ItemProperties.Details.Status = NoStock
 			err = &utils.InternalError{Message: utils.InternalErrorNoStock}
 		}
-		if internalCart.Status != items.ItemStatusAvailable {
-			internalCart.Cart.ItemProperties.Details.Status = CartItemStatusInvalidItem
+		if internalCart.Status != items.Available {
+			internalCart.Cart.ItemProperties.Details.Status = InvalidItem
 			err = &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 		}
 		cartMap[internalCart.Cart.ItemId] = internalCart
@@ -34,7 +34,7 @@ func (CartUtils CartUtils) InspectCart(internalCarts []InternalCart) (result map
 	return cartMap, nil
 }
 
-func (CartUtils CartUtils) ConvertCart(internalCarts map[string]InternalCart) (result []Cart) {
+func (CartUtils CartUtils) Convert(internalCarts map[string]InternalCart) (result []Cart) {
 	sortedCart := []InternalCart{}
 	for _, inteinternalCart := range internalCarts {
 		sortedCart = append(sortedCart, inteinternalCart)
@@ -60,7 +60,7 @@ func (CartUtils CartUtils) InspectPayload(CartRequestPayload CartRequestPayload,
 	if CartRequestPayload.Quantity <= 0 {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
-	if itemStatus.status != items.ItemStatusAvailable {
+	if itemStatus.status != items.Available {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 	}
 	if itemStatus.itemStock == 0 {

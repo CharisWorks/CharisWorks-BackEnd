@@ -127,14 +127,14 @@ func GetAccount(stripeAccountId string) (*stripe.Account, error) {
 
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartRepository, CartUtils cart.ICartUtils) (*string, error) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
-	Carts, err := CartDB.GetCart(userId)
+	Carts, err := CartDB.Get(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	InspectedCart, err := CartUtils.InspectCart(*Carts)
+	InspectedCart, err := CartUtils.Inspect(*Carts)
 	if err != nil {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
 	}

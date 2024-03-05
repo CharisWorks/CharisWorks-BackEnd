@@ -16,14 +16,14 @@ func Test_ManufacturerDB(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserDB{DB: db}
-	ManufacturerDB := ManufacturerDB{DB: db}
+	ManufacturerDB := Repository{DB: db}
 	ItemDB := items.ItemDB{DB: db}
 	Cases := []struct {
 		name          string
 		payload       ItemRegisterPayload
-		want          items.ItemOverview
+		want          items.Overview
 		updatePayload map[string]interface{}
-		wantUpdated   items.ItemOverview
+		wantUpdated   items.Overview
 	}{
 		{
 			name: "正常",
@@ -37,13 +37,13 @@ func Test_ManufacturerDB(t *testing.T) {
 					Tags:        []string{"aaa", "bbb"},
 				},
 			},
-			want: items.ItemOverview{
+			want: items.Overview{
 				Item_id: "test",
-				Properties: items.ItemOverviewProperties{
+				Properties: items.OverviewProperties{
 					Name:  "abc",
 					Price: 2000,
-					Details: items.ItemOverviewDetails{
-						Status:      items.ItemStatusReady,
+					Details: items.OverviewDetails{
+						Status:      items.Ready,
 						Stock:       2,
 						Size:        3,
 						Description: "test",
@@ -54,13 +54,13 @@ func Test_ManufacturerDB(t *testing.T) {
 			updatePayload: map[string]interface{}{
 				"stock": 4,
 			},
-			wantUpdated: items.ItemOverview{
+			wantUpdated: items.Overview{
 				Item_id: "test",
-				Properties: items.ItemOverviewProperties{
+				Properties: items.OverviewProperties{
 					Name:  "abc",
 					Price: 2000,
-					Details: items.ItemOverviewDetails{
-						Status:      items.ItemStatusReady,
+					Details: items.OverviewDetails{
+						Status:      items.Ready,
 						Stock:       4,
 						Size:        3,
 						Description: "test",
@@ -70,7 +70,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{"stripe_account_id": "acct_abcd"}); err != nil {
@@ -78,7 +78,7 @@ func Test_ManufacturerDB(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err = ManufacturerDB.RegisterItem("test", tt.payload, 1, "aaa")
+			err = ManufacturerDB.Register("test", tt.payload, "aaa")
 			if err != nil {
 				log.Print("error", err.Error())
 				t.Errorf("error")
@@ -90,7 +90,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			if !reflect.DeepEqual(*ItemOverview, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.want)
 			}
-			err = ManufacturerDB.UpdateItem(tt.updatePayload, 1, "test")
+			err = ManufacturerDB.Update(tt.updatePayload, "test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -101,7 +101,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			if !reflect.DeepEqual(*ItemOverview, tt.wantUpdated) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.wantUpdated)
 			}
-			err = ManufacturerDB.DeleteItem("test")
+			err = ManufacturerDB.Delete("test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -119,7 +119,7 @@ func Test_GetItemList(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserDB{DB: db}
-	ManufacturerDB := ManufacturerDB{DB: db}
+	ManufacturerDB := Repository{DB: db}
 	ItemDB := items.ItemDB{DB: db}
 	Items := []ItemRegisterPayload{
 		{
@@ -184,11 +184,11 @@ func Test_GetItemList(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.RegisterItem(item.Name, item, 1, "aaa")
+		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}
@@ -199,7 +199,7 @@ func Test_GetItemList(t *testing.T) {
 		pageSize      int
 		condition     map[string]interface{}
 		tags          []string
-		want          []items.ItemPreview
+		want          []items.Preview
 		totalElements int
 	}{
 		{
@@ -208,42 +208,42 @@ func Test_GetItemList(t *testing.T) {
 			pageSize:  5,
 			condition: map[string]interface{}{},
 			tags:      []string{"ddd"},
-			want: []items.ItemPreview{
+			want: []items.Preview{
 				{
 					Item_id: "test3",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test3",
 						Price: 4000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				},
 				{
 					Item_id: "test4",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test4",
 						Price: 4000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				}, {
 					Item_id: "test5",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test5",
 						Price: 4000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				}, {
 					Item_id: "test6",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test6",
 						Price: 5000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				},
@@ -256,14 +256,14 @@ func Test_GetItemList(t *testing.T) {
 			pageSize:  5,
 			condition: map[string]interface{}{"price > ?": 4000},
 			tags:      []string{},
-			want: []items.ItemPreview{
+			want: []items.Preview{
 				{
 					Item_id: "test6",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test6",
 						Price: 5000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				},
@@ -276,14 +276,14 @@ func Test_GetItemList(t *testing.T) {
 			pageSize:  5,
 			condition: map[string]interface{}{"price > ?": 3000},
 			tags:      []string{"eee"},
-			want: []items.ItemPreview{
+			want: []items.Preview{
 				{
 					Item_id: "test4",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test4",
 						Price: 4000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				},
@@ -301,24 +301,24 @@ func Test_GetItemList(t *testing.T) {
 			name:     "ページング",
 			pageNum:  2,
 			pageSize: 2,
-			want: []items.ItemPreview{
+			want: []items.Preview{
 				{
 					Item_id: "test3",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test3",
 						Price: 4000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				},
 				{
 					Item_id: "test4",
-					Properties: items.ItemPreviewProperties{
+					Properties: items.PreviewProperties{
 						Name:  "test4",
 						Price: 4000,
-						Details: items.ItemPreviewDetails{
-							Status: items.ItemStatusReady,
+						Details: items.PreviewDetails{
+							Status: items.Ready,
 						},
 					},
 				},
@@ -344,7 +344,7 @@ func Test_GetItemList(t *testing.T) {
 		})
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.DeleteItem(item.Name)
+		err = ManufacturerDB.Delete(item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}

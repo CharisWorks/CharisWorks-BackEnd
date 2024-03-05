@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp, ManufacturerRequests manufacturer.IManufacturerRequests) {
+func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp, ManufacturerRequests manufacturer.IItemRequests, manufacturerRepository manufacturer.IItemRepository) {
 	UserRouter := h.Router.Group("/api/products")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
@@ -32,7 +32,12 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
 			UserRouter.DELETE("/", func(ctx *gin.Context) {
-				err := ManufacturerRequests.DeleteItem(ctx)
+				itemId, err := utils.GetQuery("item_id", ctx)
+				if err != nil {
+					utils.ReturnErrorResponse(ctx, err)
+					return
+				}
+				err = ManufacturerRequests.Delete(*itemId, manufacturerRepository)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

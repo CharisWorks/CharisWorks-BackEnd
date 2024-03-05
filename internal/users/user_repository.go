@@ -13,10 +13,9 @@ type UserDB struct {
 }
 
 // firstorinitをそのうち使うかもしれない
-func (r UserDB) CreateUser(UserId string, historyUserId int) error {
+func (r UserDB) CreateUser(UserId string) error {
 	DBUser := new(utils.User)
 	DBUser.Id = UserId
-	DBUser.HistoryUserId = historyUserId
 	DBUser.CreatedAt = time.Now()
 	result := r.DB.Create(DBUser)
 	if err := result.Error; err != nil {
@@ -25,11 +24,11 @@ func (r UserDB) CreateUser(UserId string, historyUserId int) error {
 	}
 	return nil
 }
-func (r UserDB) GetUser(UserId string) (*User, int, error) {
+func (r UserDB) GetUser(UserId string) (*User, error) {
 	DBUser := new(utils.User)
 	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, 0, &utils.InternalError{Message: utils.InternalErrorDB}
+		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	user := new(User)
 	user.UserId = DBUser.Id
@@ -52,7 +51,7 @@ func (r UserDB) GetUser(UserId string) (*User, int, error) {
 		Address3:      Address.Address_3,
 		PhoneNumber:   Address.PhoneNumber,
 	}
-	return user, DBUser.HistoryUserId, nil
+	return user, nil
 }
 func (r UserDB) DeleteUser(UserId string) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Delete(utils.User{}).Error; err != nil {

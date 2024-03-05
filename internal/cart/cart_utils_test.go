@@ -26,12 +26,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 4,
-				Status:    items.ItemStatusAvailable,
+				Status:    items.Available,
 			}},
 			want: map[string]InternalCart{
 				"test": {
@@ -42,12 +42,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
+								Status: Available,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				}},
 		},
 		{
@@ -60,12 +60,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 1,
-				Status:    items.ItemStatusAvailable,
+				Status:    items.Available,
 			}},
 			want: map[string]InternalCart{
 				"test": {
@@ -76,12 +76,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusStockOver,
+								Status: StockOver,
 							},
 						},
 					},
 					ItemStock: 1,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
@@ -95,12 +95,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 0,
-				Status:    items.ItemStatusAvailable,
+				Status:    items.Available,
 			}},
 			want: map[string]InternalCart{
 				"test": {
@@ -111,12 +111,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusNoStock,
+								Status: NoStock,
 							},
 						},
 					},
 					ItemStock: 0,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
@@ -130,12 +130,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 4,
-				Status:    items.ItemStatusExpired,
+				Status:    items.Expired,
 			}},
 			want: map[string]InternalCart{
 				"test": {
@@ -146,12 +146,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusInvalidItem,
+								Status: InvalidItem,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusExpired,
+					Status:    items.Expired,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
@@ -165,12 +165,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 0,
-				Status:    items.ItemStatusExpired,
+				Status:    items.Expired,
 			}},
 			want: map[string]InternalCart{
 				"test": {
@@ -181,12 +181,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusInvalidItem,
+								Status: InvalidItem,
 							},
 						},
 					},
 					ItemStock: 0,
-					Status:    items.ItemStatusExpired,
+					Status:    items.Expired,
 				}},
 			err: utils.InternalErrorInvalidCart,
 		},
@@ -200,12 +200,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 7, //上書きされる
-				Status:    items.ItemStatusAvailable,
+				Status:    items.Available,
 			}, {
 				Cart: Cart{
 					ItemId:   "test",
@@ -214,12 +214,12 @@ func TestCartUtils_InspectCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
 				ItemStock: 4,
-				Status:    items.ItemStatusAvailable,
+				Status:    items.Available,
 			}},
 			want: map[string]InternalCart{
 				"test": {
@@ -230,19 +230,19 @@ func TestCartUtils_InspectCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
+								Status: Available,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				}},
 		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			internalCart := tt.cart
-			inspectedCart, err := CartUtils.InspectCart(internalCart)
+			inspectedCart, err := CartUtils.Inspect(internalCart)
 			for internalCart := range tt.want {
 				if inspectedCart[internalCart] != tt.want[internalCart] {
 					t.Errorf("%v,got,%v,want%v", tt.name, inspectedCart[internalCart], tt.want[internalCart])
@@ -277,7 +277,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 3,
-				status:    items.ItemStatusAvailable,
+				status:    items.Available,
 			},
 			want: &CartRequestPayload{
 				ItemId:   "test",
@@ -291,7 +291,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 1,
-				status:    items.ItemStatusAvailable,
+				status:    items.Available,
 			},
 			want: nil,
 			err:  utils.InternalErrorStockOver,
@@ -303,7 +303,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 0,
-				status:    items.ItemStatusAvailable,
+				status:    items.Available,
 			},
 			want: nil,
 			err:  utils.InternalErrorNoStock,
@@ -315,7 +315,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 4,
-				status:    items.ItemStatusExpired,
+				status:    items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidItem,
@@ -327,7 +327,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 0,
-				status:    items.ItemStatusExpired,
+				status:    items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidItem,
@@ -339,7 +339,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 4,
-				status:    items.ItemStatusExpired,
+				status:    items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidPayload,
@@ -351,7 +351,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 			},
 			Status: itemStatus{
 				itemStock: 4,
-				status:    items.ItemStatusExpired,
+				status:    items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidPayload,
@@ -390,12 +390,12 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
+								Status: Available,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 			},
 			want: []Cart{
@@ -406,7 +406,7 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 						Name:  "test",
 						Price: 2000,
 						Details: CartItemPreviewDetails{
-							Status: CartItemStatusAvailable,
+							Status: Available,
 						},
 					},
 				},
@@ -415,7 +415,7 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			Cart := CartUtils.ConvertCart(tt.inspectedCart)
+			Cart := CartUtils.Convert(tt.inspectedCart)
 			if !reflect.DeepEqual(Cart, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.want)
 
@@ -443,12 +443,12 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
+								Status: Available,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 			},
 			want: 4000,
@@ -464,12 +464,12 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 							Name:  "test",
 							Price: 2000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
+								Status: Available,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 				"2": {
 					Cart: Cart{
@@ -479,12 +479,12 @@ func TestCartUtils_GetTotalAmount(t *testing.T) {
 							Name:  "test",
 							Price: 5000,
 							Details: CartItemPreviewDetails{
-								Status: CartItemStatusAvailable,
+								Status: Available,
 							},
 						},
 					},
 					ItemStock: 4,
-					Status:    items.ItemStatusAvailable,
+					Status:    items.Available,
 				},
 			},
 			want: 9000,

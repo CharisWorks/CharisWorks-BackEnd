@@ -11,7 +11,7 @@ import (
 
 func DBInit() (db *gorm.DB, err error) {
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := os.Getenv("MYSQL_USER") + ":" + os.Getenv("MYSQL_PASS") + "@tcp(" + os.Getenv("MYSQL_HOST") + ":" + os.Getenv("MYSQL_HOST_PORT") + ")/" + os.Getenv("MYSQL_DB") + "?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := os.Getenv("MYSQL_USER") + ":" + os.Getenv("MYSQL_PASS") + "@tcp(" + os.Getenv("MYSQL_HOST") + ":" + os.Getenv("MYSQL_HOST_PORT") + ")/" + os.Getenv("MYSQL_DB") + "?parseTime=True"
 	log.Print("connect to ", dsn)
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -53,13 +53,11 @@ type User struct {
 	DisplayName     string    `gorm:"display_name"`
 	Description     string    `gorm:"description"`
 	StripeAccountId string    `gorm:"stripe_account_id"`
-	HistoryUserId   int       `gorm:"history_user_id"`
 	CreatedAt       time.Time `gorm:"created_at"`
 }
 type Item struct {
 	Id                 string `gorm:"id"`
 	ManufacturerUserId string `gorm:"manufacturer_user_id;type:varchar(100)"`
-	HistoryItemId      int    `gorm:"history_item_id"`
 	Name               string `gorm:"name"`
 	Price              int    `gorm:"price"`
 	Status             string `gorm:"status"`
@@ -79,4 +77,33 @@ type Shipping struct {
 	FirstNameKana string `gorm:"first_name_kana"`
 	LastName      string `gorm:"last_name"`
 	LastNameKana  string `gorm:"last_name_kana"`
+}
+
+type Transaction struct {
+	Id                  int       `gorm:"id"`
+	PurchaserUserId     string    `gorm:"purchaser_user_id"`
+	TrackingId          string    `gorm:"tracking_id"`
+	CreatedAt           time.Time `gorm:"created_at"`
+	ZipCode             string    `gorm:"zip_code"`
+	Address             string    `gorm:"address"`
+	PhoneNumber         string    `gorm:"phone_number"`
+	RealName            string    `gorm:"real_name"`
+	Status              string    `gorm:"status"`
+	StripeTransactionId string    `gorm:"stripe_transaction_id"`
+	TotalPrice          int       `gorm:"total_price"`
+	TotalAmount         int       `gorm:"total_amount"`
+}
+
+type TransactionItem struct {
+	Id                      int    `gorm:"id"`
+	TransactionId           int    `gorm:"transaction_id"`
+	ItemId                  string `gorm:"item_id"`
+	Name                    string `gorm:"name"`
+	Price                   int    `gorm:"price"`
+	Quantity                int    `gorm:"quantity"`
+	Description             string `gorm:"description"`
+	Tags                    string `gorm:"tags"`
+	ManufacturerUserId      string `gorm:"manufacturer_user_id"`
+	ManufacturerName        string `gorm:"manufacturer_name"`
+	ManufacturerDescription string `gorm:"manufacturer_description"`
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 
@@ -27,8 +28,8 @@ func main() {
 	}
 	h.SetupRoutesForItem(items.ItemRequests{}, items.ItemDB{DB: db}, items.ItemUtils{})
 	h.SetupRoutesForUser(app, users.UserRequests{}, users.UserDB{DB: db}, users.UserUtils{})
-	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.CartDB{}, users.UserRequests{}, cart.CartUtils{}, users.UserDB{})
-	//h.SetupRoutesForManufacturer(app, manufacturer.ExampleManufacturerRequests{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.CartDB{}, cart.CartUtils{}, items.ItemDB{}, cash.ExampleTransactionDBHistory{}, users.UserRequests{}, users.UserDB{DB: db})
+	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.CartRepository{}, users.UserRequests{}, cart.CartUtils{}, users.UserDB{})
+	h.SetupRoutesForManufacturer(app, manufacturer.Requests{}, manufacturer.Repository{})
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.CartRepository{}, cart.CartUtils{}, items.ItemDB{}, cash.ExampleTransactionDBHistory{}, users.UserRequests{}, users.UserDB{DB: db})
 	h.Router.Run("localhost:8080")
 }

@@ -2,25 +2,25 @@ package items
 
 import "github.com/gin-gonic/gin"
 
-type ItemPreview struct {
-	Item_id    string                `json:"item_id"`
-	Properties ItemPreviewProperties `json:"properties"`
+type Preview struct {
+	Item_id    string            `json:"item_id"`
+	Properties PreviewProperties `json:"properties"`
 }
 
-type ItemPreviewProperties struct {
-	Name    string             `json:"name"`
-	Price   int                `json:"price"`
-	Details ItemPreviewDetails `json:"details"`
+type PreviewProperties struct {
+	Name    string         `json:"name"`
+	Price   int            `json:"price"`
+	Details PreviewDetails `json:"details"`
 }
 
-type ItemPreviewDetails struct {
-	Status ItemStatus `json:"status"`
+type PreviewDetails struct {
+	Status Status `json:"status"`
 }
 
-type ItemOverview struct {
-	Item_id      string                 `json:"item_id"`
-	Properties   ItemOverviewProperties `json:"properties"`
-	Manufacturer ManufacturerDetails    `json:"manufacturer"`
+type Overview struct {
+	Item_id      string              `json:"item_id"`
+	Properties   OverviewProperties  `json:"properties"`
+	Manufacturer ManufacturerDetails `json:"manufacturer"`
 }
 
 type ManufacturerDetails struct {
@@ -28,35 +28,35 @@ type ManufacturerDetails struct {
 	Description string `json:"description"`
 }
 
-type ItemOverviewProperties struct {
-	Name    string              `json:"name"`
-	Price   int                 `json:"price"`
-	Details ItemOverviewDetails `json:"details"`
+type OverviewProperties struct {
+	Name    string          `json:"name"`
+	Price   int             `json:"price"`
+	Details OverviewDetails `json:"details"`
 }
 
-type ItemOverviewDetails struct {
-	Status      ItemStatus `json:"status"`
-	Stock       int        `json:"stock"`
-	Size        int        `json:"size"`
-	Description string     `json:"description"`
-	Tags        []string   `json:"tags"`
+type OverviewDetails struct {
+	Status      Status   `json:"status"`
+	Stock       int      `json:"stock"`
+	Size        int      `json:"size"`
+	Description string   `json:"description"`
+	Tags        []string `json:"tags"`
 }
-type ItemStatus string
+type Status string
 
 const (
-	ItemStatusAvailable ItemStatus = "Available"
-	ItemStatusExpired   ItemStatus = "Expired"
-	ItemStatusReady     ItemStatus = "Ready"
+	Available Status = "Available"
+	Expired   Status = "Expired"
+	Ready     Status = "Ready"
 )
 
 type IItemRequests interface {
-	GetOverview(itemId string, ItemDB IItemDB) (*ItemOverview, error)
-	GetSearchPreviewList(ctx *gin.Context, ItemDB IItemDB, ItemUtils IItemUtils) (*[]ItemPreview, int, error)
+	GetOverview(itemId string, ItemDB IItemDB) (*Overview, error)
+	GetSearchPreviewList(ctx *gin.Context, ItemDB IItemDB, ItemUtils IItemUtils) (*[]Preview, int, error)
 }
 
 type IItemDB interface {
-	GetItemOverview(itemId string) (*ItemOverview, error)
-	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, int, error)
+	GetItemOverview(itemId string) (*Overview, error)
+	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error)
 }
 
 type IItemUtils interface {

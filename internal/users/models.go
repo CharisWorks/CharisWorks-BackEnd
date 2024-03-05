@@ -66,8 +66,8 @@ type IUserUtils interface {
 	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
 }
 type IUserDB interface {
-	CreateUser(UserId string, historyUserId int) error
-	GetUser(UserId string) (user *User, historyUserId int, err error)
+	CreateUser(UserId string) error
+	GetUser(UserId string) (user *User, err error)
 	DeleteUser(UserId string) error
 	UpdateProfile(string, map[string]interface{}) error
 	RegisterAddress(string, UserAddressRegisterPayload) error
@@ -75,7 +75,7 @@ type IUserDB interface {
 }
 type IUserDBHistory interface {
 	GetUser(itemId string) (*utils.User, error)
-	RegisterUserProfile(UserProfile utils.User) (int, error)
+	RegisterUserProfile(UserProfile utils.User) error
 }
 type IUserHistoryUtils interface {
 	HistoryUserUpdate(utils.User, map[string]interface{}) (utils.User, error)

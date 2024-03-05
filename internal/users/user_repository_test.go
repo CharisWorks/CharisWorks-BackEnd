@@ -43,11 +43,11 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err := UserDB.CreateUser(tt.userId, 1)
+			err := UserDB.CreateUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			User, _, err := UserDB.GetUser(tt.userId)
+			User, err := UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -61,7 +61,7 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			User, _, err = UserDB.GetUser(tt.userId)
+			User, err = UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -233,7 +233,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err := UserDB.CreateUser(tt.userId, 1)
+			err := UserDB.CreateUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -242,7 +242,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				t.Errorf(err.Error())
 
 			}
-			User, _, err := UserDB.GetUser(tt.userId)
+			User, err := UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -254,7 +254,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				t.Errorf(err.Error())
 
 			}
-			User, _, err = UserDB.GetUser(tt.userId)
+			User, err = UserDB.GetUser(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}

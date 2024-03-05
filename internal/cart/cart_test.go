@@ -16,8 +16,8 @@ func TestCartRequests(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserDB{DB: db}
-	ManufacturerDB := manufacturer.ManufacturerDB{DB: db}
-	CartDB := CartDB{DB: db}
+	ManufacturerDB := manufacturer.Repository{DB: db}
+	CartDB := CartRepository{DB: db}
 	Items := []manufacturer.ItemRegisterPayload{
 		{
 			Name:  "test1",
@@ -41,15 +41,15 @@ func TestCartRequests(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa", 1); err != nil {
+	if err = UserDB.CreateUser("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.RegisterItem(item.Name, item, 1, "aaa")
+		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}
-		err = ManufacturerDB.UpdateItem(map[string]interface{}{"status": items.ItemStatusAvailable}, 2, item.Name)
+		err = ManufacturerDB.Update(map[string]interface{}{"status": items.Available}, item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}
@@ -141,7 +141,7 @@ func TestCartRequests(t *testing.T) {
 		})
 	}
 	for _, item := range Items {
-		err = ManufacturerDB.DeleteItem(item.Name)
+		err = ManufacturerDB.Delete(item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}

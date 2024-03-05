@@ -9,11 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type ManufacturerDB struct {
+type Repository struct {
 	DB *gorm.DB
 }
 
-func (m ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, history_item_id int, userId string) error {
+func (m Repository) Register(itemId string, i ItemRegisterPayload, userId string) error {
 	json, err := json.Marshal(i.Details.Tags)
 	if err != nil {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
@@ -21,10 +21,9 @@ func (m ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, histo
 	item := utils.Item{
 		Id:                 itemId,
 		ManufacturerUserId: userId,
-		HistoryItemId:      history_item_id,
 		Name:               i.Name,
 		Price:              i.Price,
-		Status:             string(items.ItemStatusReady),
+		Status:             string(items.Ready),
 		Stock:              i.Details.Stock,
 		Size:               i.Details.Size,
 		Description:        i.Details.Description,
@@ -37,14 +36,14 @@ func (m ManufacturerDB) RegisterItem(itemId string, i ItemRegisterPayload, histo
 	return nil
 }
 
-func (m ManufacturerDB) UpdateItem(i map[string]interface{}, history_item_id int, itemId string) error {
-	if err := m.DB.Table("items").Where("id = ?", itemId).Update("history_item_id", history_item_id).Updates(i).Error; err != nil {
+func (m Repository) Update(i map[string]interface{}, itemId string) error {
+	if err := m.DB.Table("items").Where("id = ?", itemId).Updates(i).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
-func (m ManufacturerDB) DeleteItem(itemId string) error {
+func (m Repository) Delete(itemId string) error {
 	if err := m.DB.Table("items").Where("id = ?", itemId).Delete(&utils.Item{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
