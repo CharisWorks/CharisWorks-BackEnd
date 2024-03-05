@@ -18,7 +18,7 @@ import (
 type StripeRequests struct {
 }
 
-func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.User, UserDB users.IUserDB) (*string, error) {
+func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.User, UserDB users.IRepository) (*string, error) {
 	log.Print(email)
 	Account, err := GetAccount(user.UserProfile.StripeAccountId)
 	if err != nil {
@@ -127,9 +127,9 @@ func GetAccount(stripeAccountId string) (*stripe.Account, error) {
 
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (*string, error) {
+func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests cart.IRequests, CartDB cart.IRepository, CartUtils cart.IUtils) (*string, error) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
-	Carts, err := CartDB.GetCart(userId)
+	Carts, err := CartDB.Get(userId)
 	if err != nil {
 		return nil, err
 	}

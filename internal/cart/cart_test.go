@@ -55,8 +55,8 @@ func TestCartRequests(t *testing.T) {
 		}
 	}
 
-	CartRequests := new(CartRequests)
-	CartUtils := new(CartUtils)
+	CartRequests := new(Requests)
+	CartUtils := new(Utils)
 
 	Cases := []struct {
 		name    string

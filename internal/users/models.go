@@ -52,30 +52,30 @@ type HistoryUser struct {
 	CreatedAt     time.Time `json:"crated_at"`
 }
 
-type IUserRequests interface {
-	UserCreate(userId string, UserDB IUserDB) error
-	UserGet(userId string, UserDB IUserDB) (*User, error)
-	UserDelete(userId string, UserDB IUserDB) error
-	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error
-	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserDB, UserUtils IUserUtils) error
-	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error
+type IRequests interface {
+	UserCreate(userId string, userRepository IRepository) error
+	UserGet(userId string, userRepository IRepository) (*User, error)
+	UserDelete(userId string, userRepository IRepository) error
+	UserProfileUpdate(userId string, userProfile UserProfile, userRepository IRepository, userUtils IUtils) error
+	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, userRepository IRepository, userUtils IUtils) error
+	UserAddressUpdate(userId string, userAddress UserAddress, userRepository IRepository, userUtils IUtils) error
 }
-type IUserUtils interface {
+type IUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) (UserAddressRegisterPayload, error)
 	InspectProfileUpdatePayload(UserProfile) map[string]interface{}
 	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
 }
-type IUserDB interface {
-	CreateUser(UserId string, historyUserId int) error
-	GetUser(UserId string) (user *User, historyUserId int, err error)
-	DeleteUser(UserId string) error
+type IRepository interface {
+	CreateUser(userId string, historyUserId int) error
+	GetUser(userId string) (user *User, historyUserId int, err error)
+	DeleteUser(userId string) error
 	UpdateProfile(string, map[string]interface{}) error
 	RegisterAddress(string, UserAddressRegisterPayload) error
 	UpdateAddress(string, map[string]interface{}) error
 }
 type IUserDBHistory interface {
 	GetUser(itemId string) (*utils.User, error)
-	RegisterUserProfile(UserProfile utils.User) (int, error)
+	RegisterUserProfile(userProfile utils.User) (int, error)
 }
 type IUserHistoryUtils interface {
 	HistoryUserUpdate(utils.User, map[string]interface{}) (utils.User, error)

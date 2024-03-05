@@ -35,26 +35,26 @@ type ItemUpdateDetailsPayload struct {
 	Tags        []string `json:"tags"`
 }
 
-type IManufacturerRequests interface {
-	RegisterItem(itemRegisterPayload ItemRegisterPayload, historyItemId int, userId string, manufacturerDB IManufacturerDB, manufacturerUtils IManufactuerUtils) error
-	UpdateItem(map[string]interface{}, IManufacturerDB, IManufactuerUtils) error
+type IRequests interface {
+	RegisterItem(itemRegisterPayload ItemRegisterPayload, historyItemId int, userId string, manufacturerDB IRepository, manufacturerUtils IUtils) error
+	UpdateItem(map[string]interface{}, IRepository, IUtils) error
 	DeleteItem(*gin.Context) error
 }
 
-type IManufactuerUtils interface {
+type IUtils interface {
 	InspectRegisterPayload(ItemRegisterPayload) error
 	InspectUpdatePayload(map[string]interface{}) (*map[string]interface{}, error)
 }
 
-type IManufacturerDB interface {
+type IRepository interface {
 	RegisterItem(i ItemRegisterPayload, userId string) error
 	UpdateItem(i map[string]interface{}, history_item_id int) error
 	DeleteItem(itemId string) error
 }
-type IManufactuerHistoryDB interface {
+type IHistoryRepository interface {
 	HistoryItemRegister(i utils.Item) (history_item_id int, err error)
 	HistoryItemGet(itemId string) (utils.Item, error)
 }
-type IManufactuerHistoryUtils interface {
+type IHistoryUtils interface {
 	HistoryItemUpdate(i utils.Item, payload map[string]interface{}) (utils.Item, error)
 }

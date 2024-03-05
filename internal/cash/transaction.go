@@ -7,7 +7,7 @@ import (
 type TransactionRequests struct {
 }
 
-func (r TransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory, UserId string) (*[]TransactionPreview, error) {
+func (r TransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionHistoryRepository, UserId string) (*[]TransactionPreview, error) {
 
 	return nil, nil
 }

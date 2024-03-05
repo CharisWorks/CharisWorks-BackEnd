@@ -35,25 +35,25 @@ type InternalCart struct {
 	Index     int
 	Cart      Cart
 	ItemStock int
-	Status    items.ItemStatus
+	Status    items.Status
 }
 type itemStatus struct {
 	itemStock int
-	status    items.ItemStatus
+	status    items.Status
 }
-type ICartRequests interface {
-	Get(userId string, CartDB ICartDB, CartUtils ICartUtils) (*[]Cart, error)
-	Register(userId string, cartRequestPayload CartRequestPayload, CartDB ICartDB, CartUtils ICartUtils) error
-	Delete(userId string, itemId string, CartDB ICartDB, CartUtils ICartUtils) error
+type IRequests interface {
+	Get(userId string, cartRepository IRepository, cartUtils IUtils) (*[]Cart, error)
+	Register(userId string, cartRequestPayload CartRequestPayload, cartRepository IRepository, cartUtils IUtils) error
+	Delete(userId string, itemId string, cartRepository IRepository, cartUtils IUtils) error
 }
-type ICartDB interface {
-	GetCart(UserId string) (*[]InternalCart, error)
-	RegisterCart(UserId string, c CartRequestPayload) error
-	UpdateCart(UserId string, c CartRequestPayload) error
-	DeleteCart(UserId string, itemId string) error
+type IRepository interface {
+	Get(userId string) (*[]InternalCart, error)
+	Register(userId string, c CartRequestPayload) error
+	Update(userId string, c CartRequestPayload) error
+	Delete(userId string, itemId string) error
 	GetItem(itemId string) (*itemStatus, error)
 }
-type ICartUtils interface {
+type IUtils interface {
 	InspectCart([]InternalCart) (map[string]InternalCart, error)
 	ConvertCart(map[string]InternalCart) []Cart
 	GetTotalAmount(map[string]InternalCart) int

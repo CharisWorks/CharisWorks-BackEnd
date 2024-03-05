@@ -9,8 +9,8 @@ import (
 )
 
 type IStripeRequests interface {
-	GetClientSecret(userId string, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) (url *string, err error)
-	GetRegisterLink(email string, user users.User, UserDB users.IUserDB) (url *string, err error)
+	GetClientSecret(userId string, cartRequests cart.IRequests, cartRepository cart.IRepository, cartUtils cart.IUtils) (url *string, err error)
+	GetRegisterLink(email string, user users.User, userRepository users.IRepository) (url *string, err error)
 	GetStripeMypageLink(stripeAccountId string) (url *string, err error)
 }
 
@@ -50,25 +50,25 @@ type TransactionItems struct {
 	Quantity      int    `json:"quantity"`
 }
 type ITransactionRequests interface {
-	GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error)
+	GetTransactionList(ctx *gin.Context, transactionHistoryRepository ITransactionHistoryRepository) (*[]TransactionPreview, error)
 	GetTransactionDetails(ctx *gin.Context) (*TransactionDetails, error)
-	CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) error
+	CreateTransaction(ctx *gin.Context, cartRequests cart.IRequests, cartRepository cart.IRepository, cartUtils cart.IUtils) error
 }
 
 type ITransactionStripeUtils interface {
-	PurchaseComplete(StipeTransactionId string) error
-	PurchaseCancel(StipeTransactionId string) error
-	PurchaseFail(StipeTransactionId string) error
-	PurchaseRefund(StipeTransactionId string) error
+	PurchaseComplete(stipeTransactionId string) error
+	PurchaseCancel(stipeTransactionId string) error
+	PurchaseFail(stipeTransactionId string) error
+	PurchaseRefund(stipeTransactionId string) error
 }
 
 type ITransactionDB interface {
-	ReduceStock(itemId string, Quantity int) error
+	ReduceStock(itemId string, quantity int) error
 }
 
-type ITransactionDBHistory interface {
-	GetTransactionList(UserId string) (*[]TransactionPreview, error)
-	GetTransactionDetails(TransactionId string) (*TransactionDetails, error)
-	RegisterTransaction(UserId string, transactionDetails TransactionDetails) (*string, error)
+type ITransactionHistoryRepository interface {
+	GetTransactionList(userId string) (*[]TransactionPreview, error)
+	GetTransactionDetails(transactionId string) (*TransactionDetails, error)
+	RegisterTransaction(userId string, transactionDetails TransactionDetails) (*string, error)
 	TransactionStatusUpdate(string, TransactionStatus) error
 }

@@ -9,14 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IUserRequests, UserDB users.IUserDB, UserUtils users.IUserUtils) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, userRequests users.IRequests, userRepository users.IRepository, userUtils users.IUtils) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
-	UserRouter.Use(userMiddleware(UserRequests, UserDB))
+	UserRouter.Use(userMiddleware(userRequests, userRepository))
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
 			userId := ctx.GetString("userId")
-			User, err := UserRequests.UserGet(userId, UserDB)
+			User, err := userRequests.UserGet(userId, userRepository)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -25,7 +25,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
 			userId := ctx.GetString("userId")
-			err := UserRequests.UserDelete(userId, UserDB)
+			err := userRequests.UserDelete(userId, userRepository)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -40,7 +40,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserProfileUpdate(userId, *profile, UserDB, UserUtils)
+			err = userRequests.UserProfileUpdate(userId, *profile, userRepository, userUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -53,7 +53,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressRegister(userId, *payload, UserDB, UserUtils)
+			err = userRequests.UserAddressRegister(userId, *payload, userRepository, userUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -66,7 +66,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressUpdate(userId, *payload, UserDB, UserUtils)
+			err = userRequests.UserAddressUpdate(userId, *payload, userRepository, userUtils)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

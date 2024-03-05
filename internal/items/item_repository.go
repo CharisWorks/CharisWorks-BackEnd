@@ -27,7 +27,7 @@ func (r ItemDB) GetItemOverview(itemId string) (*ItemOverview, error) {
 		Name:  DBItem.Name,
 		Price: DBItem.Price,
 		Details: ItemOverviewDetails{
-			Status:      ItemStatus(DBItem.Status),
+			Status:      Status(DBItem.Status),
 			Stock:       DBItem.Stock,
 			Size:        DBItem.Size,
 			Description: DBItem.Description,
@@ -56,7 +56,7 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	for _, item := range *items {
 		preview := new(ItemPreview)
 		preview.Item_id = item.Id
-		preview.Properties.Details.Status = ItemStatus(item.Status)
+		preview.Properties.Details.Status = Status(item.Status)
 		preview.Properties.Name = item.Name
 		preview.Properties.Price = item.Price
 		*previews = append(*previews, *preview)

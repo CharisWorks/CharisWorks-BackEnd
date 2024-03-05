@@ -14,7 +14,7 @@ type ItemPreviewProperties struct {
 }
 
 type ItemPreviewDetails struct {
-	Status ItemStatus `json:"status"`
+	Status Status `json:"status"`
 }
 
 type ItemOverview struct {
@@ -35,30 +35,30 @@ type ItemOverviewProperties struct {
 }
 
 type ItemOverviewDetails struct {
-	Status      ItemStatus `json:"status"`
-	Stock       int        `json:"stock"`
-	Size        int        `json:"size"`
-	Description string     `json:"description"`
-	Tags        []string   `json:"tags"`
+	Status      Status   `json:"status"`
+	Stock       int      `json:"stock"`
+	Size        int      `json:"size"`
+	Description string   `json:"description"`
+	Tags        []string `json:"tags"`
 }
-type ItemStatus string
+type Status string
 
 const (
-	ItemStatusAvailable ItemStatus = "Available"
-	ItemStatusExpired   ItemStatus = "Expired"
-	ItemStatusReady     ItemStatus = "Ready"
+	ItemStatusAvailable Status = "Available"
+	ItemStatusExpired   Status = "Expired"
+	ItemStatusReady     Status = "Ready"
 )
 
-type IItemRequests interface {
-	GetOverview(itemId string, ItemDB IItemDB) (*ItemOverview, error)
-	GetSearchPreviewList(ctx *gin.Context, ItemDB IItemDB, ItemUtils IItemUtils) (*[]ItemPreview, int, error)
+type IRequests interface {
+	GetOverview(itemId string, itemRepository IRepository) (*ItemOverview, error)
+	GetSearchPreviewList(ctx *gin.Context, itemRepository IRepository, itemUtils IUtils) (*[]ItemPreview, int, error)
 }
 
-type IItemDB interface {
+type IRepository interface {
 	GetItemOverview(itemId string) (*ItemOverview, error)
 	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]ItemPreview, int, error)
 }
 
-type IItemUtils interface {
+type IUtils interface {
 	InspectSearchConditions(ctx *gin.Context) (pageNum int, pageSize int, conditions map[string]interface{}, tags []string, err error)
 }

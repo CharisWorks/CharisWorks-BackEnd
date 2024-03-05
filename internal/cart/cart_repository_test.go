@@ -140,12 +140,12 @@ func Test_CartCRUD(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				err := CartDB.RegisterCart("aaa", p)
+				err := CartDB.Register("aaa", p)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
 			}
-			Cart, err := CartDB.GetCart("aaa")
+			Cart, err := CartDB.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -153,11 +153,11 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
 
-			err = CartDB.UpdateCart("aaa", tt.updatePayload)
+			err = CartDB.Update("aaa", tt.updatePayload)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			Cart, err = CartDB.GetCart("aaa")
+			Cart, err = CartDB.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -165,7 +165,7 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
 			}
 			for _, p := range tt.payload {
-				err := CartDB.DeleteCart("aaa", p.ItemId)
+				err := CartDB.Delete("aaa", p.ItemId)
 				if err != nil {
 					t.Errorf(err.Error())
 				}

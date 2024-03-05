@@ -8,13 +8,13 @@ import (
 type ExampleTransactionRequests struct {
 }
 
-func (r ExampleTransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error) {
+func (r ExampleTransactionRequests) GetTransactionList(ctx *gin.Context, TransactionDBHistory ITransactionHistoryRepository) (*[]TransactionPreview, error) {
 	return nil, nil
 }
 func (r ExampleTransactionRequests) GetTransactionDetails(ctx *gin.Context) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionRequests) CreateTransaction(ctx *gin.Context, CartRequests cart.ICartRequests, CartDB cart.ICartDB, CartUtils cart.ICartUtils) error {
+func (r ExampleTransactionRequests) CreateTransaction(ctx *gin.Context, CartRequests cart.IRequests, CartDB cart.IRepository, CartUtils cart.IUtils) error {
 	return nil
 }
 
