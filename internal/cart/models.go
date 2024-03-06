@@ -41,19 +41,19 @@ type itemStatus struct {
 	itemStock int
 	status    items.Status
 }
-type ICartRequests interface {
-	Get(userId string, cartRepository ICartRepository, CartUtils ICartUtils) (*[]Cart, error)
-	Register(userId string, cartRequestPayload CartRequestPayload, cartRepository ICartRepository, CartUtils ICartUtils) error
-	Delete(userId string, itemId string, cartRepository ICartRepository, CartUtils ICartUtils) error
+type IRequests interface {
+	Get(userId string) (*[]Cart, error)
+	Register(userId string, cartRequestPayload CartRequestPayload) error
+	Delete(userId string, itemId string) error
 }
-type ICartRepository interface {
+type IRepository interface {
 	Get(UserId string) (*[]InternalCart, error)
 	Register(UserId string, c CartRequestPayload) error
 	Update(UserId string, c CartRequestPayload) error
 	Delete(UserId string, itemId string) error
 	GetItem(itemId string) (*itemStatus, error)
 }
-type ICartUtils interface {
+type IUtils interface {
 	Inspect([]InternalCart) (map[string]InternalCart, error)
 	Convert(map[string]InternalCart) []Cart
 	GetTotalAmount(map[string]InternalCart) int

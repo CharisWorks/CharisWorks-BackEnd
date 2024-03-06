@@ -9,14 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IUserRequests, UserDB users.IUserRepository, UserUtils users.IUserUtils) {
+func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRequests users.IRequests) {
 	UserRouter := h.Router.Group("/api")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
-	UserRouter.Use(userMiddleware(UserRequests, UserDB))
+	UserRouter.Use(userMiddleware(UserRequests))
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
 			userId := ctx.GetString("userId")
-			User, err := UserRequests.UserGet(userId, UserDB)
+			User, err := UserRequests.UserGet(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -25,7 +25,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
 			userId := ctx.GetString("userId")
-			err := UserRequests.UserDelete(userId, UserDB)
+			err := UserRequests.UserDelete(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -40,7 +40,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserProfileUpdate(userId, *profile, UserDB, UserUtils)
+			err = UserRequests.UserProfileUpdate(userId, *profile)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -53,7 +53,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressRegister(userId, *payload, UserDB, UserUtils)
+			err = UserRequests.UserAddressRegister(userId, *payload)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -66,7 +66,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressUpdate(userId, *payload, UserDB, UserUtils)
+			err = UserRequests.UserAddressUpdate(userId, *payload)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

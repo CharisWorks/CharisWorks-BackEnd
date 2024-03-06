@@ -26,10 +26,15 @@ func main() {
 	if err != nil {
 		return
 	}
-	h.SetupRoutesForItem(items.ItemRequests{}, items.ItemRepository{DB: db}, items.ItemUtils{})
-	h.SetupRoutesForUser(app, users.UserRequests{}, users.UserDB{DB: db}, users.UserUtils{})
-	h.SetupRoutesForCart(app, cart.CartRequests{}, cart.CartRepository{}, users.UserRequests{}, cart.CartUtils{}, users.UserDB{})
-	h.SetupRoutesForManufacturer(app, manufacturer.Requests{}, manufacturer.Repository{})
-	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cart.CartRequests{}, cart.CartRepository{}, cart.CartUtils{}, items.ItemRepository{}, cash.ExampleTransactionDBHistory{}, users.UserRequests{}, users.UserDB{DB: db})
+
+	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}}
+	itemRequests := items.Requests{ItemRepository: items.ItemRepository{DB: db}, ItemUtils: items.ItemUtils{}}
+	userRequests := users.Requests{UserUtils: users.UserUtils{}, UserRepository: users.UserRepository{DB: db}}
+	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}}
+	h.SetupRoutesForItem(itemRequests)
+	h.SetupRoutesForUser(app, userRequests)
+	h.SetupRoutesForCart(app, cartRequests, userRequests)
+	h.SetupRoutesForManufacturer(app, manufacturerRequests)
+	h.SetupRoutesForStripe(app, cash.ExampleTransactionRequests{}, cash.StripeRequests{}, cartRequests, cart.Repository{}, cart.Utils{}, items.ItemRepository{}, cash.ExampleTransactionDBHistory{}, users.Requests{}, users.UserRepository{DB: db})
 	h.Router.Run("localhost:8080")
 }

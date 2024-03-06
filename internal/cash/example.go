@@ -14,7 +14,7 @@ func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHisto
 func (r ExampleTransactionRequests) GetDetails(ctx *gin.Context) (*TransactionDetails, error) {
 	return new(TransactionDetails), nil
 }
-func (r ExampleTransactionRequests) Create(ctx *gin.Context, CartRequests cart.ICartRequests, cartRepository cart.ICartRepository, CartUtils cart.ICartUtils) error {
+func (r ExampleTransactionRequests) Create(ctx *gin.Context, CartRequests cart.IRequests, cartRepository cart.IRepository, CartUtils cart.IUtils) error {
 	return nil
 }
 

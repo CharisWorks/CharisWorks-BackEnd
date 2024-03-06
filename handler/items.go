@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemRepository items.IItemRepository, ItemUtils items.IItemUtils) {
+func (h *Handler) SetupRoutesForItem(itemRequests items.IRequests) {
 	itemGroup := h.Router.Group("/api/item")
 	{
 		itemGroup.GET("/:item_id", func(ctx *gin.Context) {
@@ -15,7 +15,7 @@ func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemRepos
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
-			Overview, err := ItemRequests.GetOverview(*itemId, ItemRepository)
+			Overview, err := itemRequests.GetOverview(*itemId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -26,7 +26,7 @@ func (h *Handler) SetupRoutesForItem(ItemRequests items.IItemRequests, ItemRepos
 
 		itemGroup.GET("/", func(ctx *gin.Context) {
 
-			PreviewList, totalElements, err := ItemRequests.GetSearchPreviewList(ctx, ItemRepository, ItemUtils)
+			PreviewList, totalElements, err := itemRequests.GetSearchPreviewList(ctx)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

@@ -9,7 +9,7 @@ import (
 )
 
 func TestCartUtils_InspectCart(t *testing.T) {
-	CartUtils := new(CartUtils)
+	CartUtils := new(Utils)
 	Cases := []struct {
 		name string
 		cart []InternalCart
@@ -261,7 +261,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 }
 
 func TestCartUtils_InspectPayload(t *testing.T) {
-	e := new(CartUtils)
+	e := new(Utils)
 	Cases := []struct {
 		name    string
 		Payload CartRequestPayload
@@ -373,7 +373,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 }
 
 func TestCartUtils_ConvertCart(t *testing.T) {
-	CartUtils := new(CartUtils)
+	CartUtils := new(Utils)
 	Cases := []struct {
 		name          string
 		inspectedCart map[string]InternalCart
@@ -426,7 +426,7 @@ func TestCartUtils_ConvertCart(t *testing.T) {
 
 }
 func TestCartUtils_GetTotalAmount(t *testing.T) {
-	CartUtils := new(CartUtils)
+	CartUtils := new(Utils)
 	Cases := []struct {
 		name          string
 		inspectedCart map[string]InternalCart

@@ -15,9 +15,9 @@ func Test_CartCRUD(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	cartRepository := CartRepository{DB: db}
+	cartRepository := Repository{DB: db}
 	Items := []manufacturer.ItemRegisterPayload{
 		{
 			Name:  "test1",
@@ -190,9 +190,9 @@ func Test_GetItem(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	cartRepository := CartRepository{DB: db}
+	cartRepository := Repository{DB: db}
 	Cases := []struct {
 		name    string
 		payload manufacturer.ItemRegisterPayload

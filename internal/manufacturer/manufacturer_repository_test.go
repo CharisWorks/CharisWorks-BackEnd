@@ -15,7 +15,7 @@ func Test_ManufacturerDB(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := Repository{DB: db}
 	ItemRepository := items.ItemRepository{DB: db}
 	Cases := []struct {
@@ -118,7 +118,7 @@ func Test_GetItemList(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := Repository{DB: db}
 	ItemRepository := items.ItemRepository{DB: db}
 	Items := []ItemRegisterPayload{

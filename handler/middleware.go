@@ -24,7 +24,7 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
-func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserRepository) gin.HandlerFunc {
+func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		EmailVerified, exist := ctx.Get(string(emailVerified))
 		if !exist {
@@ -40,7 +40,7 @@ func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserReposito
 			return
 		}
 		userId := ctx.GetString(string(userId))
-		User, err := UserRequests.UserGet(userId, UserDB)
+		User, err := UserRequests.UserGet(userId)
 		if err != nil {
 			utils.ReturnErrorResponse(ctx, err)
 			ctx.Abort()
@@ -48,7 +48,7 @@ func userMiddleware(UserRequests users.IUserRequests, UserDB users.IUserReposito
 		}
 		if User == nil {
 			log.Print("creating user for DB")
-			err := UserRequests.UserCreate(userId, UserDB)
+			err := UserRequests.UserCreate(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				ctx.Abort()

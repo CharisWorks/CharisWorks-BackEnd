@@ -35,9 +35,9 @@ type ItemUpdateDetailsPayload struct {
 }
 
 type IItemRequests interface {
-	Register(itemRegisterPayload ItemRegisterPayload, userId string, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error
-	Update(query map[string]interface{}, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error
-	Delete(itemId string, manufacturerDB IItemRepository) error
+	Register(itemRegisterPayload ItemRegisterPayload, userId string) error
+	Update(query map[string]interface{}) error
+	Delete(itemId string) error
 }
 
 type IInspectPayloadUtils interface {

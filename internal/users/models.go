@@ -52,20 +52,20 @@ type HistoryUser struct {
 	CreatedAt     time.Time `json:"crated_at"`
 }
 
-type IUserRequests interface {
-	UserCreate(userId string, UserDB IUserRepository) error
-	UserGet(userId string, UserDB IUserRepository) (*User, error)
-	UserDelete(userId string, UserDB IUserRepository) error
-	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserRepository, UserUtils IUserUtils) error
-	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserRepository, UserUtils IUserUtils) error
-	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserRepository, UserUtils IUserUtils) error
+type IRequests interface {
+	UserCreate(userId string) error
+	UserGet(userId string) (*User, error)
+	UserDelete(userId string) error
+	UserProfileUpdate(userId string, userProfile UserProfile) error
+	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload) error
+	UserAddressUpdate(userId string, userAddress UserAddress) error
 }
-type IUserUtils interface {
+type IUtils interface {
 	InspectAddressRegisterPayload(UserAddressRegisterPayload) (UserAddressRegisterPayload, error)
 	InspectProfileUpdatePayload(UserProfile) map[string]interface{}
 	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
 }
-type IUserRepository interface {
+type IRepository interface {
 	CreateUser(UserId string) error
 	GetUser(UserId string) (user *User, err error)
 	DeleteUser(UserId string) error

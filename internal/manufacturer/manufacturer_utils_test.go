@@ -101,7 +101,7 @@ func TestInspectedRegisterPayload(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ManufacturerUtils.InspectRegisterPayload(tt.payload)
+			err := ManufacturerUtils.Register(tt.payload)
 			if err != nil {
 				log.Print(err.Error())
 				if err.Error() != tt.err.Error() {
@@ -178,7 +178,7 @@ func TestInspectedUpdatePayload(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := ManufacturerUtils.InspectUpdatePayload(tt.payload)
+			_, err := ManufacturerUtils.Update(tt.payload)
 			if err != nil {
 				log.Print(err.Error())
 				if err.Error() != tt.err.Error() {

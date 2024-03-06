@@ -49,16 +49,16 @@ const (
 	Ready     Status = "Ready"
 )
 
-type IItemRequests interface {
-	GetOverview(itemId string, ItemRepository IItemRepository) (*Overview, error)
-	GetSearchPreviewList(ctx *gin.Context, ItemRepository IItemRepository, ItemUtils IItemUtils) (*[]Preview, int, error)
+type IRequests interface {
+	GetOverview(itemId string) (*Overview, error)
+	GetSearchPreviewList(ctx *gin.Context) (*[]Preview, int, error)
 }
 
-type IItemRepository interface {
+type IRepository interface {
 	GetItemOverview(itemId string) (*Overview, error)
 	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error)
 }
 
-type IItemUtils interface {
+type IUtils interface {
 	InspectSearchConditions(ctx *gin.Context) (pageNum int, pageSize int, conditions map[string]interface{}, tags []string, err error)
 }

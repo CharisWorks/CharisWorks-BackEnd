@@ -10,11 +10,11 @@ import (
 
 // IcartRepository is an interface for cart database
 
-type CartRepository struct {
+type Repository struct {
 	DB *gorm.DB
 }
 
-func (r CartRepository) Get(UserId string) (*[]InternalCart, error) {
+func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 	InternalCarts := new([]utils.InternalCart)
 	resultCart := new([]InternalCart)
 	if err := r.DB.Table("carts").
@@ -41,7 +41,7 @@ func (r CartRepository) Get(UserId string) (*[]InternalCart, error) {
 	return resultCart, nil
 }
 
-func (r CartRepository) Register(UserId string, CartRequestPayload CartRequestPayload) error {
+func (r Repository) Register(UserId string, CartRequestPayload CartRequestPayload) error {
 	Cart := new(utils.Cart)
 	Cart.PurchaserUserId = UserId
 	Cart.ItemId = CartRequestPayload.ItemId
@@ -52,7 +52,7 @@ func (r CartRepository) Register(UserId string, CartRequestPayload CartRequestPa
 	}
 	return nil
 }
-func (r CartRepository) Update(UserId string, CartRequestPayload CartRequestPayload) error {
+func (r Repository) Update(UserId string, CartRequestPayload CartRequestPayload) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", CartRequestPayload.ItemId).Update("quantity", CartRequestPayload.Quantity).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -60,7 +60,7 @@ func (r CartRepository) Update(UserId string, CartRequestPayload CartRequestPayl
 	return nil
 }
 
-func (r CartRepository) Delete(UserId string, itemId string) error {
+func (r Repository) Delete(UserId string, itemId string) error {
 	log.Print("UserId: ", UserId)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -68,7 +68,7 @@ func (r CartRepository) Delete(UserId string, itemId string) error {
 	}
 	return nil
 }
-func (r CartRepository) GetItem(itemId string) (*itemStatus, error) {
+func (r Repository) GetItem(itemId string) (*itemStatus, error) {
 	ItemRepository := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
 		log.Print("DB error: ", err)

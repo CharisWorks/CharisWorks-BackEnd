@@ -14,7 +14,7 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 		t.Errorf(err.Error())
 
 	}
-	UserDB := UserDB{DB: db}
+	UserDB := UserRepository{DB: db}
 	Cases := []struct {
 		name        string
 		userId      string
@@ -85,7 +85,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	UserDB := UserDB{DB: db}
+	UserDB := UserRepository{DB: db}
 	Cases := []struct {
 		name          string
 		userId        string

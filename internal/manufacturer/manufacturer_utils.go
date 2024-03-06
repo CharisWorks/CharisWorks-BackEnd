@@ -7,7 +7,7 @@ import (
 type ManufacturerUtils struct {
 }
 
-func (m ManufacturerUtils) InspectRegisterPayload(i ItemRegisterPayload) error {
+func (m ManufacturerUtils) Register(i ItemRegisterPayload) error {
 	if i.Price <= 0 {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
@@ -26,7 +26,7 @@ func (m ManufacturerUtils) InspectRegisterPayload(i ItemRegisterPayload) error {
 
 	return nil
 }
-func (m ManufacturerUtils) InspectUpdatePayload(i map[string]interface{}) (*map[string]interface{}, error) {
+func (m ManufacturerUtils) Update(i map[string]interface{}) (*map[string]interface{}, error) {
 	updatepayload := make(map[string]interface{})
 	for k, v := range i {
 		if k == "Price" {
