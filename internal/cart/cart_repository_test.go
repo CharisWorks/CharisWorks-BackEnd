@@ -41,7 +41,7 @@ func Test_CartCRUD(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
@@ -179,7 +179,7 @@ func Test_CartCRUD(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}
@@ -196,7 +196,7 @@ func Test_GetItem(t *testing.T) {
 	Cases := []struct {
 		name    string
 		payload manufacturer.RegisterPayload
-		want    itemStatus
+		want    items.ItemStatus
 	}{
 		{
 			name: "正常",
@@ -210,13 +210,13 @@ func Test_GetItem(t *testing.T) {
 					Tags:        []string{"aaa", "bbb"},
 				},
 			},
-			want: itemStatus{
-				itemStock: 2,
-				status:    items.Ready,
+			want: items.ItemStatus{
+				Stock:  2,
+				Status: items.Ready,
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, tt := range Cases {
@@ -225,7 +225,7 @@ func Test_GetItem(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemStatus, err := cartRepository.GetItem("test")
+			ItemStatus, err := cartRepository.Get("test")
 			if err != nil {
 				t.Errorf("error")
 			}
@@ -239,7 +239,7 @@ func Test_GetItem(t *testing.T) {
 
 		})
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}

@@ -70,7 +70,7 @@ func Test_ManufacturerDB(t *testing.T) {
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{"stripe_account_id": "acct_abcd"}); err != nil {
@@ -108,7 +108,7 @@ func Test_ManufacturerDB(t *testing.T) {
 
 		})
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}
@@ -184,7 +184,7 @@ func Test_GetItemList(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
@@ -349,7 +349,7 @@ func Test_GetItemList(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}

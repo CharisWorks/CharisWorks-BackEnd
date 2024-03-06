@@ -70,7 +70,7 @@ func (u UserUtils) InspectAddressUpdatePayload(address UserAddress) (map[string]
 	}
 	return conditions, nil
 }
-func (u UserUtils) InspectAddressRegisterPayload(address UserAddressRegisterPayload) (UserAddressRegisterPayload, error) {
+func (u UserUtils) InspectAddressRegisterPayload(address AddressRegisterPayload) (AddressRegisterPayload, error) {
 	if len(address.FirstName) < 1 {
 		return address, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}

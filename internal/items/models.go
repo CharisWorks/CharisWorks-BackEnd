@@ -41,6 +41,10 @@ type OverviewDetails struct {
 	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
 }
+type ItemStatus struct {
+	Stock  int
+	Status Status
+}
 type Status string
 
 const (
@@ -59,6 +63,13 @@ type IRepository interface {
 	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error)
 }
 
+type IUpdater interface {
+	ReduceStock(itemId string, Quantity int) error
+	StatusUpdate(itemId string, State Status)
+}
+type IGetStatus interface {
+	GetItemStatus(itemId string) (*ItemStatus, error)
+}
 type IUtils interface {
 	InspectSearchConditions(ctx *gin.Context) (pageNum int, pageSize int, conditions map[string]interface{}, tags []string, err error)
 }

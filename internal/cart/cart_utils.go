@@ -56,17 +56,17 @@ func (r Utils) GetTotalAmount(internalCarts map[string]InternalCart) int {
 	}
 	return totalAmount
 }
-func (r Utils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus itemStatus) (result *CartRequestPayload, err error) {
+func (r Utils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus items.ItemStatus) (result *CartRequestPayload, err error) {
 	if CartRequestPayload.Quantity <= 0 {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
-	if itemStatus.status != items.Available {
+	if itemStatus.Status != items.Available {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 	}
-	if itemStatus.itemStock == 0 {
+	if itemStatus.Stock == 0 {
 		return nil, &utils.InternalError{Message: utils.InternalErrorNoStock}
 	}
-	if CartRequestPayload.Quantity > itemStatus.itemStock {
+	if CartRequestPayload.Quantity > itemStatus.Stock {
 		return nil, &utils.InternalError{Message: utils.InternalErrorStockOver}
 	}
 

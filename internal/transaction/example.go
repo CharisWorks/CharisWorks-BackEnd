@@ -1,4 +1,4 @@
-package cash
+package transaction
 
 import (
 	"github.com/charisworks/charisworks-backend/internal/cart"
@@ -8,7 +8,7 @@ import (
 type ExampleTransactionRequests struct {
 }
 
-func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHistory ITransactionDBHistory) (*[]TransactionPreview, error) {
+func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHistory ITransactionHistoryRepository) (*[]TransactionPreview, error) {
 	return nil, nil
 }
 func (r ExampleTransactionRequests) GetDetails(ctx *gin.Context) (*TransactionDetails, error) {

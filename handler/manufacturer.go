@@ -16,19 +16,31 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 		UserRouter.Use(manufacturerMiddleware())
 		{
 			UserRouter.POST("/", func(ctx *gin.Context) {
-				/* err := ManufacturerRequests.RegisterItem(ctx)
+				payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.RegisterPayload{})
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
-				} */
+				}
+				userId := ctx.GetString("userId")
+				err = manufacturerRequests.Register(*payload, userId)
+				if err != nil {
+					utils.ReturnErrorResponse(ctx, err)
+					return
+				}
 				ctx.JSON(http.StatusOK, "Item was successfuly registered")
 			})
 			UserRouter.PATCH("/", func(ctx *gin.Context) {
-				/* 	err := ManufacturerRequests.UpdateItem(ctx)
+				payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.UpdatePayload{})
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
-				} */
+				}
+				userId := ctx.GetString("userId")
+				err = manufacturerRequests.Update(*payload, userId)
+				if err != nil {
+					utils.ReturnErrorResponse(ctx, err)
+					return
+				}
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
 			UserRouter.DELETE("/", func(ctx *gin.Context) {
@@ -37,7 +49,8 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
-				err = manufacturerRequests.Delete(*itemId)
+				userId := ctx.GetString("userId")
+				err = manufacturerRequests.Delete(*itemId, userId)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

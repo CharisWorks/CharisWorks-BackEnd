@@ -265,7 +265,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 	Cases := []struct {
 		name    string
 		Payload CartRequestPayload
-		Status  itemStatus
+		Status  items.ItemStatus
 		want    *CartRequestPayload
 		err     utils.InternalMessage
 	}{
@@ -275,9 +275,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: 2,
 			},
-			Status: itemStatus{
-				itemStock: 3,
-				status:    items.Available,
+			Status: items.ItemStatus{
+				Stock:  3,
+				Status: items.Available,
 			},
 			want: &CartRequestPayload{
 				ItemId:   "test",
@@ -289,9 +289,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: 2,
 			},
-			Status: itemStatus{
-				itemStock: 1,
-				status:    items.Available,
+			Status: items.ItemStatus{
+				Stock:  1,
+				Status: items.Available,
 			},
 			want: nil,
 			err:  utils.InternalErrorStockOver,
@@ -301,9 +301,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: 2,
 			},
-			Status: itemStatus{
-				itemStock: 0,
-				status:    items.Available,
+			Status: items.ItemStatus{
+				Stock:  0,
+				Status: items.Available,
 			},
 			want: nil,
 			err:  utils.InternalErrorNoStock,
@@ -313,9 +313,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: 2,
 			},
-			Status: itemStatus{
-				itemStock: 4,
-				status:    items.Expired,
+			Status: items.ItemStatus{
+				Stock:  4,
+				Status: items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidItem,
@@ -325,9 +325,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: 2,
 			},
-			Status: itemStatus{
-				itemStock: 0,
-				status:    items.Expired,
+			Status: items.ItemStatus{
+				Stock:  0,
+				Status: items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidItem,
@@ -337,9 +337,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: 0,
 			},
-			Status: itemStatus{
-				itemStock: 4,
-				status:    items.Expired,
+			Status: items.ItemStatus{
+				Stock:  4,
+				Status: items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidPayload,
@@ -349,9 +349,9 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				ItemId:   "test",
 				Quantity: -3,
 			},
-			Status: itemStatus{
-				itemStock: 4,
-				status:    items.Expired,
+			Status: items.ItemStatus{
+				Stock:  4,
+				Status: items.Expired,
 			},
 			want: nil,
 			err:  utils.InternalErrorInvalidPayload,

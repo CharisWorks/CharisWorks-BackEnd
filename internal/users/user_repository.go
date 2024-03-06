@@ -13,7 +13,7 @@ type UserRepository struct {
 }
 
 // firstorinitをそのうち使うかもしれない
-func (r UserRepository) CreateUser(UserId string) error {
+func (r UserRepository) Create(UserId string) error {
 	DBUser := new(utils.User)
 	DBUser.Id = UserId
 	DBUser.CreatedAt = time.Now()
@@ -24,7 +24,7 @@ func (r UserRepository) CreateUser(UserId string) error {
 	}
 	return nil
 }
-func (r UserRepository) GetUser(UserId string) (*User, error) {
+func (r UserRepository) Get(UserId string) (*User, error) {
 	DBUser := new(utils.User)
 	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -53,7 +53,7 @@ func (r UserRepository) GetUser(UserId string) (*User, error) {
 	}
 	return user, nil
 }
-func (r UserRepository) DeleteUser(UserId string) error {
+func (r UserRepository) Delete(UserId string) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Delete(utils.User{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -68,7 +68,7 @@ func (r UserRepository) UpdateProfile(UserId string, payload map[string]interfac
 	}
 	return nil
 }
-func (r UserRepository) RegisterAddress(UserId string, payload UserAddressRegisterPayload) error {
+func (r UserRepository) RegisterAddress(UserId string, payload AddressRegisterPayload) error {
 	Shipping := new(utils.Shipping)
 	Shipping.Id = UserId
 	Shipping.ZipCode = payload.ZipCode

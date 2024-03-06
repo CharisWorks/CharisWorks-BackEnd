@@ -40,7 +40,7 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 			return
 		}
 		userId := ctx.GetString(string(userId))
-		User, err := UserRequests.UserGet(userId)
+		User, err := UserRequests.Get(userId)
 		if err != nil {
 			utils.ReturnErrorResponse(ctx, err)
 			ctx.Abort()
@@ -48,7 +48,7 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 		}
 		if User == nil {
 			log.Print("creating user for DB")
-			err := UserRequests.UserCreate(userId)
+			err := UserRequests.Create(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				ctx.Abort()

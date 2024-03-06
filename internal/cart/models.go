@@ -37,10 +37,7 @@ type InternalCart struct {
 	ItemStock int
 	Status    items.Status
 }
-type itemStatus struct {
-	itemStock int
-	status    items.Status
-}
+
 type IRequests interface {
 	Get(userId string) (*[]Cart, error)
 	Register(userId string, cartRequestPayload CartRequestPayload) error
@@ -51,11 +48,10 @@ type IRepository interface {
 	Register(UserId string, c CartRequestPayload) error
 	Update(UserId string, c CartRequestPayload) error
 	Delete(UserId string, itemId string) error
-	GetItem(itemId string) (*itemStatus, error)
 }
 type IUtils interface {
 	Inspect([]InternalCart) (map[string]InternalCart, error)
 	Convert(map[string]InternalCart) []Cart
 	GetTotalAmount(map[string]InternalCart) int
-	InspectPayload(c CartRequestPayload, itemStatus itemStatus) (*CartRequestPayload, error)
+	InspectPayload(c CartRequestPayload, itemStatus items.ItemStatus) (*CartRequestPayload, error)
 }

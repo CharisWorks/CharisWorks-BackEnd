@@ -5,28 +5,28 @@ type Requests struct {
 	UserUtils      IUtils
 }
 
-func (r Requests) UserCreate(userId string) error {
-	err := r.UserRepository.CreateUser(userId)
+func (r Requests) Create(userId string) error {
+	err := r.UserRepository.Create(userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (r Requests) UserGet(userId string) (*User, error) {
-	User, err := r.UserRepository.GetUser(userId)
+func (r Requests) Get(userId string) (*User, error) {
+	User, err := r.UserRepository.Get(userId)
 	if err != nil {
 		return nil, err
 	}
 	return User, nil
 }
-func (r Requests) UserDelete(userId string) error {
-	err := r.UserRepository.DeleteUser(userId)
+func (r Requests) Delete(userId string) error {
+	err := r.UserRepository.Delete(userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (r Requests) UserProfileUpdate(userId string, userProfile UserProfile) error {
+func (r Requests) ProfileUpdate(userId string, userProfile UserProfile) error {
 	updatePayload := r.UserUtils.InspectProfileUpdatePayload(userProfile)
 	err := r.UserRepository.UpdateProfile(userId, updatePayload)
 	if err != nil {
@@ -34,8 +34,8 @@ func (r Requests) UserProfileUpdate(userId string, userProfile UserProfile) erro
 	}
 	return nil
 }
-func (r Requests) UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload) error {
-	payload, err := r.UserUtils.InspectAddressRegisterPayload(userAddressRegisterPayload)
+func (r Requests) AddressRegister(userId string, AddressRegisterPayload AddressRegisterPayload) error {
+	payload, err := r.UserUtils.InspectAddressRegisterPayload(AddressRegisterPayload)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (r Requests) UserAddressRegister(userId string, userAddressRegisterPayload 
 	}
 	return nil
 }
-func (r Requests) UserAddressUpdate(userId string, userAddress UserAddress) error {
+func (r Requests) AddressUpdate(userId string, userAddress UserAddress) error {
 	updatePayload, err := r.UserUtils.InspectAddressUpdatePayload(userAddress)
 	if err != nil {
 		return err

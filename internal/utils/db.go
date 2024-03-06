@@ -33,6 +33,18 @@ func DBInitTest() (db *gorm.DB, err error) {
 
 	return
 }
+func HistoryDBInitTest() (db *gorm.DB, err error) {
+	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
+	dsn := "root:password@tcp(127.0.0.1:3306)/CharisWorks?parseTime=true"
+	log.Print("connect to ", dsn)
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	db.AutoMigrate(&Transaction{}, &TransactionItem{})
+
+	return
+}
 
 type IDBUtils interface {
 }
@@ -78,7 +90,10 @@ type Shipping struct {
 	LastName      string `gorm:"last_name"`
 	LastNameKana  string `gorm:"last_name_kana"`
 }
-
+type InternalTransaction struct {
+	Transaction      Transaction     `gorm:"embedded"`
+	TransactionItems TransactionItem `gorm:"embedded"`
+}
 type Transaction struct {
 	Id                  int       `gorm:"id"`
 	PurchaserUserId     string    `gorm:"purchaser_user_id"`

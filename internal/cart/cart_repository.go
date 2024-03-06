@@ -68,14 +68,3 @@ func (r Repository) Delete(UserId string, itemId string) error {
 	}
 	return nil
 }
-func (r Repository) GetItem(itemId string) (*itemStatus, error) {
-	ItemRepository := new(utils.Item)
-	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
-		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
-	}
-	itemStatus := new(itemStatus)
-	itemStatus.itemStock = ItemRepository.Stock
-	itemStatus.status = items.Status(ItemRepository.Status)
-	return itemStatus, nil
-}

@@ -43,11 +43,11 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err := UserDB.CreateUser(tt.userId)
+			err := UserDB.Create(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			User, err := UserDB.GetUser(tt.userId)
+			User, err := UserDB.Get(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -61,7 +61,7 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			User, err = UserDB.GetUser(tt.userId)
+			User, err = UserDB.Get(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -71,7 +71,7 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 			if CompareUser(*User, tt.wantUpdated) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.wantUpdated)
 			}
-			err = UserDB.DeleteUser(tt.userId)
+			err = UserDB.Delete(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -89,7 +89,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 	Cases := []struct {
 		name          string
 		userId        string
-		shippings     UserAddressRegisterPayload
+		shippings     AddressRegisterPayload
 		updatePayload map[string]interface{}
 		want          User
 		wantUpdated   User
@@ -97,7 +97,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 		{
 			name:   "正常",
 			userId: "aaa",
-			shippings: UserAddressRegisterPayload{
+			shippings: AddressRegisterPayload{
 				ZipCode:       "000-0000",
 				Address1:      "abc",
 				Address2:      "def",
@@ -143,7 +143,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 		{
 			name:   "address3の挙動のテスト(アドレスが新たに登録された)",
 			userId: "aaa",
-			shippings: UserAddressRegisterPayload{
+			shippings: AddressRegisterPayload{
 				ZipCode:       "000-0000",
 				Address1:      "abc",
 				Address2:      "def",
@@ -187,7 +187,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 		{
 			name:   "address3の挙動のテスト(アドレスが削除された)",
 			userId: "aaa",
-			shippings: UserAddressRegisterPayload{
+			shippings: AddressRegisterPayload{
 				ZipCode:       "000-0000",
 				Address1:      "abc",
 				Address2:      "def",
@@ -233,7 +233,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			err := UserDB.CreateUser(tt.userId)
+			err := UserDB.Create(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -242,7 +242,7 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				t.Errorf(err.Error())
 
 			}
-			User, err := UserDB.GetUser(tt.userId)
+			User, err := UserDB.Get(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -254,14 +254,14 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 				t.Errorf(err.Error())
 
 			}
-			User, err = UserDB.GetUser(tt.userId)
+			User, err = UserDB.Get(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
 			if CompareUser(*User, tt.wantUpdated) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.wantUpdated)
 			}
-			err = UserDB.DeleteUser(tt.userId)
+			err = UserDB.Delete(tt.userId)
 			if err != nil {
 				t.Errorf(err.Error())
 			}

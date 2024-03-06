@@ -16,7 +16,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 	{
 		UserRouter.GET("/user", func(ctx *gin.Context) {
 			userId := ctx.GetString("userId")
-			User, err := UserRequests.UserGet(userId)
+			User, err := UserRequests.Get(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -25,7 +25,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 		})
 		UserRouter.DELETE("/user", func(ctx *gin.Context) {
 			userId := ctx.GetString("userId")
-			err := UserRequests.UserDelete(userId)
+			err := UserRequests.Delete(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -40,20 +40,20 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserProfileUpdate(userId, *profile)
+			err = UserRequests.ProfileUpdate(userId, *profile)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 		})
 		UserRouter.POST("/address", func(ctx *gin.Context) {
-			payload, err := utils.GetPayloadFromBody(ctx, &users.UserAddressRegisterPayload{})
+			payload, err := utils.GetPayloadFromBody(ctx, &users.AddressRegisterPayload{})
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressRegister(userId, *payload)
+			err = UserRequests.AddressRegister(userId, *payload)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -66,7 +66,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.UserAddressUpdate(userId, *payload)
+			err = UserRequests.AddressUpdate(userId, *payload)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

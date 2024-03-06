@@ -1,12 +1,14 @@
 package cart
 
 import (
+	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
 type Requests struct {
 	CartRepository IRepository
 	CartUtils      IUtils
+	ItemGetStatus  items.IGetStatus
 }
 
 func (r Requests) Get(userId string) (cart *[]Cart, err error) {
@@ -30,7 +32,7 @@ func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload)
 
 	inspectedCart, _ := r.CartUtils.Inspect(*internalCart)
 	_, exist := inspectedCart[cartRequestPayload.ItemId]
-	itemStatus, err := r.CartRepository.GetItem(cartRequestPayload.ItemId)
+	itemStatus, err := r.ItemGetStatus.GetItemStatus(cartRequestPayload.ItemId)
 	if err != nil {
 		return err
 	}

@@ -1,8 +1,13 @@
 package manufacturer
 
+import (
+	"github.com/charisworks/charisworks-backend/internal/items"
+)
+
 type Requests struct {
 	ManufacturerItemRepository      IItemRepository
 	ManufacturerInspectPayloadUtils IInspectPayloadUtils
+	ItemRepository                  items.IRepository
 }
 
 func (r Requests) Register(itemRegisterPayload RegisterPayload, userId string) error {
@@ -17,7 +22,7 @@ func (r Requests) Register(itemRegisterPayload RegisterPayload, userId string) e
 	}
 	return nil
 }
-func (r Requests) Update(updatePayload UpdatePayload) error {
+func (r Requests) Update(updatePayload UpdatePayload, userId string) error {
 	updatepayload, err := r.ManufacturerInspectPayloadUtils.Update(updatePayload)
 	if err != nil {
 		return err
@@ -29,7 +34,7 @@ func (r Requests) Update(updatePayload UpdatePayload) error {
 	}
 	return nil
 }
-func (r Requests) Delete(itemId string) error {
+func (r Requests) Delete(itemId string, userId string) error {
 	err := r.ManufacturerItemRepository.Delete(itemId)
 	if err != nil {
 		return err

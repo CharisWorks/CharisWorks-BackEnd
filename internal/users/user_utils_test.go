@@ -277,13 +277,13 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 	UserUtils := UserUtils{}
 	Cases := []struct {
 		name    string
-		payload UserAddressRegisterPayload
-		want    UserAddressRegisterPayload
+		payload AddressRegisterPayload
+		want    AddressRegisterPayload
 		err     error
 	}{
 		{
 			name: "正常",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -293,7 +293,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -306,7 +306,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "カタカナじゃない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "test",
 				LastName:      "test",
@@ -316,7 +316,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -330,7 +330,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "カタカナじゃない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -340,7 +340,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -354,7 +354,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstNameKana: "テスト",
 				LastName:      "test",
 				LastNameKana:  "テスト",
@@ -363,7 +363,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -377,7 +377,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -386,7 +386,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -400,7 +400,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:    "test",
 				LastName:     "test",
 				LastNameKana: "テスト",
@@ -409,7 +409,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:     "test",
 				PhoneNumber:  "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -423,7 +423,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastNameKana:  "テスト",
@@ -432,7 +432,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -445,7 +445,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -454,7 +454,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -467,7 +467,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -476,7 +476,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -489,7 +489,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -498,7 +498,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address1:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -511,7 +511,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "なにかない",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -520,7 +520,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address1:      "test",
 				Address2:      "test",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -533,7 +533,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "電話番号エラー",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -543,7 +543,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "0000000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -556,7 +556,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "郵便番号エラー",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -566,7 +566,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "000-0000-0000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -579,7 +579,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
 		}, {
 			name: "電話番号・郵便番号が変換されるか",
-			payload: UserAddressRegisterPayload{
+			payload: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",
@@ -589,7 +589,7 @@ func TestInspectAddressRegisterPayload(t *testing.T) {
 				Address2:      "test",
 				PhoneNumber:   "00000000000",
 			},
-			want: UserAddressRegisterPayload{
+			want: AddressRegisterPayload{
 				FirstName:     "test",
 				FirstNameKana: "テスト",
 				LastName:      "test",

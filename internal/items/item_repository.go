@@ -70,3 +70,19 @@ func (r ItemRepository) GetPreviewList(pageNum int, pageSize int, conditions map
 	}
 	return &ItemPreview, totalElements, nil
 }
+
+type GetStatus struct {
+	DB *gorm.DB
+}
+
+func (r GetStatus) GetItem(itemId string) (*ItemStatus, error) {
+	ItemRepository := new(utils.Item)
+	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
+		log.Print("DB error: ", err)
+		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+	}
+	itemStatus := new(ItemStatus)
+	itemStatus.Stock = ItemRepository.Stock
+	itemStatus.Status = Status(ItemRepository.Status)
+	return itemStatus, nil
+}

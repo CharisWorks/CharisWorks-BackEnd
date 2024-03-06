@@ -40,7 +40,7 @@ func TestCartRequests(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
@@ -144,7 +144,7 @@ func TestCartRequests(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}
