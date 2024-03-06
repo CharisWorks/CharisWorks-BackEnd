@@ -17,7 +17,7 @@ func TestCartRequests(t *testing.T) {
 	}
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	Items := []manufacturer.ItemRegisterPayload{
+	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
 			Price: 2000,

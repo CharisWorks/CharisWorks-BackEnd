@@ -7,7 +7,7 @@ import (
 type ManufacturerUtils struct {
 }
 
-func (m ManufacturerUtils) Register(i ItemRegisterPayload) error {
+func (m ManufacturerUtils) Register(i RegisterPayload) error {
 	if i.Price <= 0 {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
@@ -26,47 +26,28 @@ func (m ManufacturerUtils) Register(i ItemRegisterPayload) error {
 
 	return nil
 }
-func (m ManufacturerUtils) Update(i map[string]interface{}) (*map[string]interface{}, error) {
-	updatepayload := make(map[string]interface{})
-	for k, v := range i {
-		if k == "Price" {
-			if v.(int) <= 0 {
-				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-			}
-			updatepayload[k] = v.(int)
-		}
-		if k == "Name" {
-			if v.(string) == "" {
-				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-			}
-			updatepayload[k] = v.(string)
-		}
-		if k == "Stock" {
-			if v.(int) <= 0 {
-				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-			}
-			updatepayload[k] = v.(int)
-		}
-		if k == "Size" {
-			if v.(int) <= 0 {
-				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-			}
-			updatepayload[k] = v.(int)
-		}
-		if k == "Description" {
-			if v.(string) == "" {
-				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-			}
-			updatepayload[k] = v.(string)
-		}
-		if k == "Tags" {
-			if len(v.([]string)) == 0 {
-				return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
-			}
-			updatepayload[k] = v.([]string)
-		}
-
+func (m ManufacturerUtils) Update(updatePayload UpdatePayload) (map[string]interface{}, error) {
+	payload := make(map[string]interface{})
+	if updatePayload.Stock > 0 {
+		payload["stock"] = updatePayload.Stock
 	}
-
-	return &updatepayload, nil
+	if updatePayload.Size > 0 {
+		payload["size"] = updatePayload.Size
+	}
+	if len(updatePayload.Description) > 0 {
+		payload["description"] = updatePayload.Description
+	}
+	if len(updatePayload.Tags) > 0 {
+		payload["tags"] = updatePayload.Tags
+	}
+	if updatePayload.Price > 0 {
+		payload["price"] = updatePayload.Price
+	}
+	if len(updatePayload.Status) > 0 {
+		payload["status"] = updatePayload.Status
+	}
+	if len(updatePayload.Name) > 0 {
+		payload["name"] = updatePayload.Name
+	}
+	return payload, nil
 }

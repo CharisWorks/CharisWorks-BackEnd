@@ -5,7 +5,7 @@ type Requests struct {
 	ManufacturerInspectPayloadUtils IInspectPayloadUtils
 }
 
-func (r Requests) Register(itemRegisterPayload ItemRegisterPayload, userId string) error {
+func (r Requests) Register(itemRegisterPayload RegisterPayload, userId string) error {
 	err := r.ManufacturerInspectPayloadUtils.Register(itemRegisterPayload)
 	if err != nil {
 		return err
@@ -17,13 +17,13 @@ func (r Requests) Register(itemRegisterPayload ItemRegisterPayload, userId strin
 	}
 	return nil
 }
-func (r Requests) Update(query map[string]interface{}) error {
-	updatepayload, err := r.ManufacturerInspectPayloadUtils.Update(query)
+func (r Requests) Update(updatePayload UpdatePayload) error {
+	updatepayload, err := r.ManufacturerInspectPayloadUtils.Update(updatePayload)
 	if err != nil {
 		return err
 	}
 
-	err = r.ManufacturerItemRepository.Update(*updatepayload, "")
+	err = r.ManufacturerItemRepository.Update(updatepayload, "")
 	if err != nil {
 		return err
 	}

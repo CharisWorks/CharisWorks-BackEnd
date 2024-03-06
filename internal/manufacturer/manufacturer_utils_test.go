@@ -2,6 +2,7 @@ package manufacturer
 
 import (
 	"log"
+	"reflect"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
@@ -11,12 +12,12 @@ func TestInspectedRegisterPayload(t *testing.T) {
 	ManufacturerUtils := ManufacturerUtils{}
 	Cases := []struct {
 		name    string
-		payload ItemRegisterPayload
+		payload RegisterPayload
 		err     error
 	}{
 		{
 			name: "正常",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "abc",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -30,7 +31,7 @@ func TestInspectedRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "price error",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "abc",
 				Price: 0,
 				Details: ItemRegisterDetailsPayload{
@@ -44,7 +45,7 @@ func TestInspectedRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "name error",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -58,7 +59,7 @@ func TestInspectedRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "stock error",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "test",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -72,7 +73,7 @@ func TestInspectedRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "size error",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "test",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -86,7 +87,7 @@ func TestInspectedRegisterPayload(t *testing.T) {
 		},
 		{
 			name: "description error",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "test",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -118,74 +119,100 @@ func TestInspectedUpdatePayload(t *testing.T) {
 	ManufacturerUtils := ManufacturerUtils{}
 	Cases := []struct {
 		name    string
-		payload map[string]interface{}
-		err     error
+		payload UpdatePayload
+		want    map[string]interface{}
 	}{
 		{
 			name: "正常",
-			payload: map[string]interface{}{
-				"Price":       1000,
-				"Name":        "test",
-				"Stock":       2,
-				"Size":        3,
-				"Description": "test",
-				"Tags":        []string{"aaa", "bbb"},
+			payload: UpdatePayload{
+				Price:       1000,
+				Name:        "test",
+				Stock:       2,
+				Size:        3,
+				Description: "test",
+				Tags:        []string{"aaa", "bbb"},
 			},
-			err: nil,
+			want: map[string]interface{}{
+				"price":       1000,
+				"name":        "test",
+				"stock":       2,
+				"size":        3,
+				"description": "test",
+				"tags":        []string{"aaa", "bbb"},
+			},
 		},
 		{
 			name: "price error",
-			payload: map[string]interface{}{
-				"Price": 0,
+			payload: UpdatePayload{
+				Price: 0,
+				Name:  "test",
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			want: map[string]interface{}{
+				"name": "test",
+			},
 		},
 		{
 			name: "name error",
-			payload: map[string]interface{}{
-				"Name": "",
+			payload: UpdatePayload{
+				Name:  "",
+				Price: 1000,
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			want: map[string]interface{}{
+				"price": 1000,
+			},
 		},
 		{
 			name: "stock error",
-			payload: map[string]interface{}{
-				"Stock": 0,
+			payload: UpdatePayload{
+				Stock: 0,
+				Tags:  []string{"aaa", "bbb"},
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			want: map[string]interface{}{
+				"tags": []string{"aaa", "bbb"},
+			},
 		},
 		{
 			name: "size error",
-			payload: map[string]interface{}{
-				"Size": 0,
+			payload: UpdatePayload{
+				Size: 0,
+				Tags: []string{"aaa", "bbb"},
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			want: map[string]interface{}{
+				"tags": []string{"aaa", "bbb"},
+			},
 		},
 		{
 			name: "description error",
-			payload: map[string]interface{}{
-				"Description": "",
+			payload: UpdatePayload{
+				Description: "",
+				Tags:        []string{"aaa", "bbb"},
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			want: map[string]interface{}{
+				"tags": []string{"aaa", "bbb"},
+			},
 		},
 		{
 			name: "tags error",
-			payload: map[string]interface{}{
-				"Tags": []string{},
+			payload: UpdatePayload{
+				Tags:  []string{},
+				Price: 1000,
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+			want: map[string]interface{}{
+				"price": 1000,
+			},
 		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := ManufacturerUtils.Update(tt.payload)
+			payload, err := ManufacturerUtils.Update(tt.payload)
+			log.Print(payload, err)
 			if err != nil {
 				log.Print(err.Error())
-				if err.Error() != tt.err.Error() {
-					t.Errorf("got %v, want %v", err, tt.err)
-				}
-
 			}
+			if !reflect.DeepEqual(payload, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, payload, tt.want)
+			}
+
 		})
 	}
 }

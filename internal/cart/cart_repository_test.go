@@ -18,7 +18,7 @@ func Test_CartCRUD(t *testing.T) {
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
 	cartRepository := Repository{DB: db}
-	Items := []manufacturer.ItemRegisterPayload{
+	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
 			Price: 2000,
@@ -195,12 +195,12 @@ func Test_GetItem(t *testing.T) {
 	cartRepository := Repository{DB: db}
 	Cases := []struct {
 		name    string
-		payload manufacturer.ItemRegisterPayload
+		payload manufacturer.RegisterPayload
 		want    itemStatus
 	}{
 		{
 			name: "正常",
-			payload: manufacturer.ItemRegisterPayload{
+			payload: manufacturer.RegisterPayload{
 				Name:  "abc",
 				Price: 2000,
 				Details: manufacturer.ItemRegisterDetailsPayload{

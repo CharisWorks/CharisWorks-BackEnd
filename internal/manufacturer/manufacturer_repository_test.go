@@ -20,14 +20,14 @@ func Test_ManufacturerDB(t *testing.T) {
 	ItemRepository := items.ItemRepository{DB: db}
 	Cases := []struct {
 		name          string
-		payload       ItemRegisterPayload
+		payload       RegisterPayload
 		want          items.Overview
 		updatePayload map[string]interface{}
 		wantUpdated   items.Overview
 	}{
 		{
 			name: "正常",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "abc",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -121,7 +121,7 @@ func Test_GetItemList(t *testing.T) {
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := Repository{DB: db}
 	ItemRepository := items.ItemRepository{DB: db}
-	Items := []ItemRegisterPayload{
+	Items := []RegisterPayload{
 		{
 			Name:  "test1",
 			Price: 2000,
