@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"log"
+	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
@@ -57,12 +58,12 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 	log.Print(internalTransaction)
 	itemList := []TransactionItem{}
 	for _, t := range *internalTransaction {
-		transactionItem := new(TransactionItem)
-		transactionItem.ItemId = t.TransactionItems.ItemId
-		transactionItem.Quantity = t.TransactionItems.Quantity
-		transactionItem.Price = t.TransactionItems.Price
-		transactionItem.Name = t.TransactionItems.Name
-		itemList = append(itemList, *transactionItem)
+		itemList = append(itemList, TransactionItem{
+			ItemId:   t.TransactionItems.ItemId,
+			Quantity: t.TransactionItems.Quantity,
+			Name:     t.TransactionItems.Name,
+			Price:    t.TransactionItems.Price,
+		})
 		userId = t.Transaction.PurchaserUserId
 		transactionDetails.TransactionId = t.Transaction.Id
 		transactionDetails.Status = TransactionStatus(t.Transaction.Status)
@@ -80,10 +81,45 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 	return transactionDetails, userId, nil
 }
 
-func (r TransactionRepository) Register(TransactionDetails TransactionDetails) error {
-	result := r.DB.Create(&TransactionDetails)
-	if err := result.Error; err != nil {
-		return err
+func (r TransactionRepository) Register(internalTransactionDetails InternalTransactionDetails, userId string, stripeTransactionId string) error {
+	totalPrice := 0
+	totalAmount := 0
+	for _, i := range internalTransactionDetails.Items {
+		if err := r.DB.Create(utils.TransactionItem{
+			TransactionId:           internalTransactionDetails.TransactionId,
+			ItemId:                  i.ItemId,
+			Name:                    i.Name,
+			Price:                   i.Price,
+			Quantity:                i.Quantity,
+			Description:             i.Description,
+			Tags:                    i.Tags,
+			ManufacturerUserId:      i.ManufacturerUserId,
+			ManufacturerName:        i.ManufacturerName,
+			ManufacturerDescription: i.ManufacturerDescription,
+		}).Error; err != nil {
+			log.Print("DB error: ", err)
+			return &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		totalPrice += i.Price * i.Quantity
+		totalAmount += i.Quantity
+	}
+
+	address := internalTransactionDetails.UserAddress.Address_1 + " " + internalTransactionDetails.UserAddress.Address_2 + " " + internalTransactionDetails.UserAddress.Address_3
+	name := internalTransactionDetails.UserAddress.FirstName + internalTransactionDetails.UserAddress.LastName
+	if err := r.DB.Create(utils.Transaction{
+		PurchaserUserId:     userId,
+		CreatedAt:           time.Now(),
+		ZipCode:             internalTransactionDetails.UserAddress.ZipCode,
+		Address:             address,
+		PhoneNumber:         internalTransactionDetails.UserAddress.PhoneNumber,
+		RealName:            name,
+		Status:              string(Pending),
+		StripeTransactionId: stripeTransactionId,
+		TotalPrice:          totalPrice,
+		TotalAmount:         totalAmount,
+	}).Error; err != nil {
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }

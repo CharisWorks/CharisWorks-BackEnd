@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,12 @@ type TransactionDetails struct {
 	TransactionAt time.Time          `json:"transaction_at"`
 	Status        TransactionStatus  `json:"status"`
 }
+type InternalTransactionDetails struct {
+	TransactionId int                       `gorm:"transaction_id"`
+	UserAddress   utils.Shipping            `gorm:"embedded"`
+	Items         []InternalTransactionItem `gorm:"embedded"`
+}
+
 type TransactionStatus string
 
 const (
@@ -42,6 +49,17 @@ type TransactionItem struct {
 	Quantity int    `json:"quantity"`
 	Name     string `json:"name"`
 	Price    int    `json:"price"`
+}
+type InternalTransactionItem struct {
+	ItemId                  string `gorm:"item_id"`
+	Price                   int    `gorm:"price"`
+	Name                    string `gorm:"name"`
+	Quantity                int    `gorm:"quantity"`
+	Description             string `gorm:"description"`
+	Tags                    string `gorm:"tags"`
+	ManufacturerUserId      string `gorm:"manufacturer_user_id"`
+	ManufacturerName        string `gorm:"manufacturer_name"`
+	ManufacturerDescription string `gorm:"manufacturer_description"`
 }
 type ITransactionRequests interface {
 	GetList(userId string) (*map[int]TransactionPreview, error)
