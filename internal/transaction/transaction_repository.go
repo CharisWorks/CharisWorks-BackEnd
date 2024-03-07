@@ -4,12 +4,14 @@ import (
 	"log"
 	"time"
 
+	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
 )
 
 type TransactionRepository struct {
-	DB *gorm.DB
+	DB             *gorm.DB
+	cartRepository cart.IRepository
 }
 
 func (r TransactionRepository) GetList(UserId string) (*map[int]TransactionPreview, error) {
@@ -81,27 +83,32 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 	return transactionDetails, userId, nil
 }
 
-func (r TransactionRepository) Register(internalTransactionDetails InternalTransactionDetails, userId string, stripeTransactionId string) error {
+func (r TransactionRepository) Register(userId string, stripeTransactionId string) error {
+	internalTransactionDetails := new(InternalTransactionDetails)
+	internalCartList, err := r.cartRepository.Get(userId)
+	if err != nil {
+		return err
+	}
 	totalPrice := 0
 	totalAmount := 0
-	for _, i := range internalTransactionDetails.Items {
+	for _, i := range *internalCartList {
 		if err := r.DB.Create(utils.TransactionItem{
 			TransactionId:           internalTransactionDetails.TransactionId,
-			ItemId:                  i.ItemId,
-			Name:                    i.Name,
-			Price:                   i.Price,
-			Quantity:                i.Quantity,
-			Description:             i.Description,
-			Tags:                    i.Tags,
-			ManufacturerUserId:      i.ManufacturerUserId,
-			ManufacturerName:        i.ManufacturerName,
-			ManufacturerDescription: i.ManufacturerDescription,
+			ItemId:                  i.Cart.ItemId,
+			Name:                    i.Item.Name,
+			Price:                   i.Item.Price,
+			Quantity:                i.Cart.Quantity,
+			Description:             i.Item.Description,
+			Tags:                    i.Item.Tags,
+			ManufacturerUserId:      i.Item.ManufacturerUserId,
+			ManufacturerName:        i.Item.ManufacturerName,
+			ManufacturerDescription: i.Item.ManufacturerDescription,
 		}).Error; err != nil {
 			log.Print("DB error: ", err)
 			return &utils.InternalError{Message: utils.InternalErrorDB}
 		}
-		totalPrice += i.Price * i.Quantity
-		totalAmount += i.Quantity
+		totalPrice += i.Item.Price * i.Cart.Quantity
+		totalAmount += i.Cart.Quantity
 	}
 
 	address := internalTransactionDetails.UserAddress.Address_1 + " " + internalTransactionDetails.UserAddress.Address_2 + " " + internalTransactionDetails.UserAddress.Address_3
@@ -126,7 +133,8 @@ func (r TransactionRepository) Register(internalTransactionDetails InternalTrans
 
 func (r TransactionRepository) StatusUpdate(TransactionId string, Status TransactionStatus) error {
 	if err := r.DB.Table("transactions").Where("id = ?", TransactionId).Update("status", Status).Error; err != nil {
-		return err
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 
 	return nil

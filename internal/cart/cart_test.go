@@ -15,6 +15,7 @@ func TestCartRequests(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
+
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
 	Items := []manufacturer.RegisterPayload{
@@ -39,11 +40,18 @@ func TestCartRequests(t *testing.T) {
 			},
 		},
 	}
-
 	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
+	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+		"display_name":      "test",
+		"description":       "test",
+		"stripe_account_id": "test",
+	}); err != nil {
+		t.Errorf("error")
+	}
 	for _, item := range Items {
+
 		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
@@ -54,7 +62,7 @@ func TestCartRequests(t *testing.T) {
 		}
 	}
 
-	CartRequests := Requests{CartRepository: Repository{DB: db}, CartUtils: Utils{}}
+	CartRequests := Requests{CartRepository: Repository{DB: db}, CartUtils: Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
 
 	Cases := []struct {
 		name    string

@@ -15,6 +15,7 @@ func Test_CartCRUD(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
+
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
 	cartRepository := Repository{DB: db}
@@ -40,8 +41,14 @@ func Test_CartCRUD(t *testing.T) {
 			},
 		},
 	}
-
 	if err = UserDB.Create("aaa"); err != nil {
+		t.Errorf("error")
+	}
+	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+		"display_name":      "test",
+		"description":       "test",
+		"stripe_account_id": "test",
+	}); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
@@ -84,7 +91,16 @@ func Test_CartCRUD(t *testing.T) {
 							Price: 2000,
 						},
 					},
-
+					Item: internalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+					},
 					ItemStock: 2,
 					Status:    items.Available,
 				},
@@ -97,6 +113,16 @@ func Test_CartCRUD(t *testing.T) {
 							Name:  "test2",
 							Price: 3000,
 						},
+					},
+					Item: internalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
 					},
 					ItemStock: 3,
 					Status:    items.Available,
@@ -117,7 +143,16 @@ func Test_CartCRUD(t *testing.T) {
 							Price: 2000,
 						},
 					},
-
+					Item: internalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+					},
 					ItemStock: 2,
 					Status:    items.Available,
 				},
@@ -130,6 +165,16 @@ func Test_CartCRUD(t *testing.T) {
 							Name:  "test2",
 							Price: 3000,
 						},
+					},
+					Item: internalItem{
+						Price:                   3000,
+						Name:                    "test2",
+						Description:             "test",
+						Tags:                    []string{"aaa", "ccc"},
+						Size:                    4,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
 					},
 					ItemStock: 3,
 					Status:    items.Available,
@@ -149,7 +194,7 @@ func Test_CartCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if !reflect.DeepEqual(*Cart, tt.want) {
+			if Cart == &tt.want {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
 
@@ -192,7 +237,7 @@ func Test_GetItem(t *testing.T) {
 	}
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	cartRepository := Repository{DB: db}
+	GetStatus := items.GetStatus{DB: db}
 	Cases := []struct {
 		name    string
 		payload manufacturer.RegisterPayload
@@ -225,7 +270,7 @@ func Test_GetItem(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemStatus, err := cartRepository.Get("test")
+			ItemStatus, err := GetStatus.GetItem("test")
 			if err != nil {
 				t.Errorf("error")
 			}

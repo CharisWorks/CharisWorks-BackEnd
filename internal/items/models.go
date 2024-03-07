@@ -68,7 +68,7 @@ type IUpdater interface {
 	StatusUpdate(itemId string, State Status)
 }
 type IGetStatus interface {
-	GetItemStatus(itemId string) (*ItemStatus, error)
+	GetItem(itemId string) (*ItemStatus, error)
 }
 type IUtils interface {
 	InspectSearchConditions(ctx *gin.Context) (pageNum int, pageSize int, conditions map[string]interface{}, tags []string, err error)

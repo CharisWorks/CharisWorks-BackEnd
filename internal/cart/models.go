@@ -34,10 +34,20 @@ type CartRequestPayload struct {
 type InternalCart struct {
 	Index     int
 	Cart      Cart
+	Item      internalItem
 	ItemStock int
 	Status    items.Status
 }
-
+type internalItem struct {
+	Price                   int      `gorm:"price"`
+	Name                    string   `gorm:"name"`
+	Description             string   `gorm:"description"`
+	Tags                    []string `gorm:"tags"`
+	Size                    int      `gorm:"size"`
+	ManufacturerUserId      string   `gorm:"manufacturer_user_id"`
+	ManufacturerName        string   `gorm:"manufacturer_name"`
+	ManufacturerDescription string   `gorm:"manufacturer_description"`
+}
 type IRequests interface {
 	Get(userId string) (*[]Cart, error)
 	Register(userId string, cartRequestPayload CartRequestPayload) error

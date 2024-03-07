@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -18,24 +19,40 @@ func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 	InternalCarts := new([]utils.InternalCart)
 	resultCart := new([]InternalCart)
 	if err := r.DB.Table("carts").
-		Select("carts.*, items.*").
+		Select("carts.*, items.*,users.*").
 		Joins("JOIN items ON carts.item_id = items.id").
+		Joins("JOIN users ON carts.purchaser_user_id = users.id").
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
 		log.Print("DB error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
+
 	for i, icart := range *InternalCarts {
 		cart := new(InternalCart)
 		cart.Index = i
 		cart.ItemStock = icart.Item.Stock
 		cart.Status = items.Status(icart.Item.Status)
-
+		tags := new([]string)
+		err := json.Unmarshal([]byte(icart.Item.Tags), &tags)
+		if err != nil {
+			log.Print("DB error: ", err)
+			return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		}
 		cart.Cart.ItemId = icart.Cart.ItemId
 		cart.Cart.Quantity = icart.Cart.Quantity
 		cart.Cart.ItemProperties.Name = icart.Item.Name
 		cart.Cart.ItemProperties.Price = icart.Item.Price
+		cart.Item.Name = icart.Item.Name
+		cart.Item.Price = icart.Item.Price
+		cart.Item.Description = icart.Item.Description
+		cart.Item.Size = icart.Item.Size
+		cart.Item.Tags = *tags
+		cart.Item.ManufacturerDescription = icart.User.Description
+		cart.Item.ManufacturerName = icart.User.DisplayName
+		cart.Item.ManufacturerUserId = icart.User.Id
 
+		log.Print("cart: ", cart)
 		*resultCart = append(*resultCart, *cart)
 	}
 	return resultCart, nil

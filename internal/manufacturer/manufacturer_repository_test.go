@@ -73,7 +73,11 @@ func Test_ManufacturerDB(t *testing.T) {
 	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
-	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{"stripe_account_id": "acct_abcd"}); err != nil {
+	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+		"display_name":      "test",
+		"description":       "test",
+		"stripe_account_id": "test",
+	}); err != nil {
 		t.Errorf("error")
 	}
 	for _, tt := range Cases {

@@ -244,7 +244,7 @@ func TestCartUtils_InspectCart(t *testing.T) {
 			internalCart := tt.cart
 			inspectedCart, err := CartUtils.Inspect(internalCart)
 			for internalCart := range tt.want {
-				if inspectedCart[internalCart] != tt.want[internalCart] {
+				if inspectedCart[internalCart].Cart != tt.want[internalCart].Cart {
 					t.Errorf("%v,got,%v,want%v", tt.name, inspectedCart[internalCart], tt.want[internalCart])
 
 				}

@@ -58,6 +58,7 @@ type Cart struct {
 type InternalCart struct {
 	Cart Cart `gorm:"embedded"`
 	Item Item `gorm:"embedded"`
+	User User `gorm:"embedded"`
 }
 
 type User struct {
@@ -110,15 +111,16 @@ type Transaction struct {
 }
 
 type TransactionItem struct {
-	Id                      int    `gorm:"id"`
-	TransactionId           int    `gorm:"transaction_id"`
-	ItemId                  string `gorm:"item_id"`
-	Name                    string `gorm:"name"`
-	Price                   int    `gorm:"price"`
-	Quantity                int    `gorm:"quantity"`
-	Description             string `gorm:"description"`
-	Tags                    string `gorm:"tags"`
-	ManufacturerUserId      string `gorm:"manufacturer_user_id"`
-	ManufacturerName        string `gorm:"manufacturer_name"`
-	ManufacturerDescription string `gorm:"manufacturer_description"`
+	Id                      int      `gorm:"id"`
+	TransactionId           int      `gorm:"transaction_id"`
+	ItemId                  string   `gorm:"item_id"`
+	Name                    string   `gorm:"name"`
+	Price                   int      `gorm:"price"`
+	Size                    int      `gorm:"size"`
+	Quantity                int      `gorm:"quantity"`
+	Description             string   `gorm:"description"`
+	Tags                    []string `gorm:"tags"`
+	ManufacturerUserId      string   `gorm:"manufacturer_user_id"`
+	ManufacturerName        string   `gorm:"manufacturer_name"`
+	ManufacturerDescription string   `gorm:"manufacturer_description"`
 }

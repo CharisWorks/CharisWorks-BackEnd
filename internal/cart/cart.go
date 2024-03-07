@@ -32,7 +32,7 @@ func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload)
 
 	inspectedCart, _ := r.CartUtils.Inspect(*internalCart)
 	_, exist := inspectedCart[cartRequestPayload.ItemId]
-	itemStatus, err := r.ItemGetStatus.GetItemStatus(cartRequestPayload.ItemId)
+	itemStatus, err := r.ItemGetStatus.GetItem(cartRequestPayload.ItemId)
 	if err != nil {
 		return err
 	}
