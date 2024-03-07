@@ -8,7 +8,7 @@ import (
 type ExampleTransactionRequests struct {
 }
 
-func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHistory ITransactionHistoryRepository) (*[]TransactionPreview, error) {
+func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHistory ITransactionRepository) (*[]TransactionPreview, error) {
 	return nil, nil
 }
 func (r ExampleTransactionRequests) GetDetails(ctx *gin.Context) (*TransactionDetails, error) {

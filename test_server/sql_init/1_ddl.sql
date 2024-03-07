@@ -118,7 +118,7 @@ DROP TABLE IF EXISTS `transaction_items`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transaction_items` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `transaction_id` int(11) NOT NULL,
+  `transaction_id` varchar(100) NOT NULL,
   `item_id` varchar(100) NOT NULL,
   `name` varchar(100) NOT NULL,
   `price` int(11) NOT NULL,
@@ -153,7 +153,7 @@ DROP TABLE IF EXISTS `transactions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transactions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(100) NOT NULL,
   `purchaser_user_id` varchar(100) NOT NULL,
   `tracking_id` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL,

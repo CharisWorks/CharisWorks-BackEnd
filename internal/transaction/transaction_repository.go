@@ -12,7 +12,6 @@ import (
 
 type TransactionRepository struct {
 	DB             *gorm.DB
-	cartRepository cart.IRepository
 	userRepository users.IRepository
 }
 
@@ -50,9 +49,9 @@ func (r TransactionRepository) GetList(UserId string) (*map[string]TransactionPr
 func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDetails, string, error) {
 	transactionDetails := new(TransactionDetails)
 	internalTransaction := new([]utils.InternalTransaction)
-	if err := r.DB.Table("transaction").
-		Select("transaction.*, transactionitems.*").
-		Joins("JOIN items ON transaction.id = transactionitems.transaction_id").
+	if err := r.DB.Table("transactions").
+		Select("transactions.*, transactionitems.*").
+		Joins("JOIN items ON transactions.id = transactionitems.transaction_id").
 		Where("transaction.id = ?", TransactionId).
 		Find(&internalTransaction).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -85,16 +84,12 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 	return transactionDetails, userId, nil
 }
 
-func (r TransactionRepository) Register(userId string, stripeTransactionId string) error {
-	internalCartList, err := r.cartRepository.Get(userId)
-	if err != nil {
-		return err
-	}
+func (r TransactionRepository) Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error {
 	totalPrice := 0
 	totalAmount := 0
-	for _, i := range *internalCartList {
+	for _, i := range internalCartList {
 		if err := r.DB.Create(utils.TransactionItem{
-			TransactionId:           stripeTransactionId,
+			TransactionId:           transactionId,
 			ItemId:                  i.Cart.ItemId,
 			Name:                    i.Item.Name,
 			Price:                   i.Item.Price,
@@ -118,6 +113,7 @@ func (r TransactionRepository) Register(userId string, stripeTransactionId strin
 	address := user.UserAddress.Address1 + user.UserAddress.Address2 + user.UserAddress.Address3
 	name := user.UserAddress.FirstName + user.UserAddress.LastName
 	if err := r.DB.Create(utils.Transaction{
+		Id:                  transactionId,
 		PurchaserUserId:     userId,
 		CreatedAt:           time.Now(),
 		ZipCode:             user.UserAddress.ZipCode,

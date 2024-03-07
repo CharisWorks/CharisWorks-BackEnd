@@ -58,6 +58,7 @@ type IRepository interface {
 	Register(UserId string, c CartRequestPayload) error
 	Update(UserId string, c CartRequestPayload) error
 	Delete(UserId string, itemId string) error
+	DeleteAll(UserId string) error
 }
 type IUtils interface {
 	Inspect([]InternalCart) (map[string]InternalCart, error)

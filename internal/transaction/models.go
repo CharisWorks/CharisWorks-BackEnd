@@ -5,7 +5,6 @@ import (
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/utils"
-	"github.com/gin-gonic/gin"
 )
 
 type TransactionPreview struct {
@@ -61,22 +60,19 @@ type InternalTransactionItem struct {
 	ManufacturerName        string `gorm:"manufacturer_name"`
 	ManufacturerDescription string `gorm:"manufacturer_description"`
 }
-type ITransactionRequests interface {
-	GetList(userId string) (*map[int]TransactionPreview, error)
+type IRequests interface {
+	GetList(userId string) (*[]TransactionPreview, error)
 	GetDetails(userId string, transactionId string) (*TransactionDetails, error)
-	Create(ctx *gin.Context, CartRequests cart.IRequests, cartRepository cart.IRepository, CartUtils cart.IUtils) error
+	Purchase(userId string) (*string, error)
+	PurchaseComplete(stripeTransactionId string) error
+	PurchaseFail(stripeTransactionId string) error
+	PurchaseRefund(stripeTransactionId string) error
+	PurchaseCancel(stripeTransactionId string) error
 }
 
-type ITransactionStripeUtils interface {
-	PurchaseComplete(StipeTransactionId string) error
-	PurchaseCancel(StipeTransactionId string) error
-	PurchaseFail(StipeTransactionId string) error
-	PurchaseRefund(StipeTransactionId string) error
-}
-
-type ITransactionHistoryRepository interface {
-	GetList(UserId string) (*[]TransactionPreview, error)
+type ITransactionRepository interface {
+	GetList(UserId string) (*map[string]TransactionPreview, error)
 	GetDetails(TransactionId string) (*TransactionDetails, string, error)
-	Register(UserId string, transactionDetails TransactionDetails) error
+	Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error
 	StatusUpdate(string, TransactionStatus) error
 }

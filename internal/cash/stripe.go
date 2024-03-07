@@ -16,9 +16,11 @@ import (
 )
 
 type StripeRequests struct {
+	CartRequests cart.IRequests
+	UserRequests users.IRequests
 }
 
-func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.User, UserDB users.IRepository) (*string, error) {
+func (r StripeRequests) GetRegisterLink(email string, user users.User) (*string, error) {
 	log.Print(email)
 	Account, err := GetAccount(user.UserProfile.StripeAccountId)
 	if err != nil {
@@ -69,7 +71,7 @@ func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.Us
 		log.Print("Stripe Error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
 	}
-	err = UserDB.UpdateProfile(user.UserId, map[string]interface{}{"stripe_account_id": a.ID})
+	err = r.UserRequests.ProfileUpdate(user.UserId, users.UserProfile{StripeAccountId: a.ID})
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +91,7 @@ func (StripeRequests StripeRequests) GetRegisterLink(email string, user users.Us
 
 }
 
-func (StripeRequests StripeRequests) GetStripeMypageLink(stripeAccountId string) (*string, error) {
+func (r StripeRequests) GetStripeMypageLink(stripeAccountId string) (*string, error) {
 	Account, err := GetAccount(stripeAccountId)
 	if err != nil {
 		return nil, err
@@ -127,22 +129,12 @@ func GetAccount(stripeAccountId string) (*stripe.Account, error) {
 
 }
 
-func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests cart.IRequests, cartRepository cart.IRepository, CartUtils cart.IUtils) (*string, error) {
+func (r StripeRequests) CreatePaymentintent(userId string, totalAmount int) (ClientSecret *string, StripeTransactionId *string, err error) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
-	Carts, err := cartRepository.Get(userId)
-	if err != nil {
-		return nil, err
-	}
-
-	InspectedCart, err := CartUtils.Inspect(*Carts)
-	if err != nil {
-		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidCart}
-	}
-	totalAmount := int64(CartUtils.GetTotalAmount(InspectedCart))
 
 	// Create a PaymentIntent with amount and currency
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(totalAmount), //合計金額を算出する関数をインジェクト
+		Amount:   stripe.Int64(int64(totalAmount)), //合計金額を算出する関数をインジェクト
 		Currency: stripe.String(string(stripe.CurrencyJPY)),
 		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
 		PaymentMethodTypes: []*string{stripe.String("card"), stripe.String("konbini")},
@@ -153,7 +145,7 @@ func (StripeRequests StripeRequests) GetClientSecret(userId string, CartRequests
 	if err != nil {
 		log.Printf("pi.New: %v", err)
 		log.Print("Stripe Error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
+		return nil, nil, &utils.InternalError{Message: utils.InternalErrorFromStripe}
 	}
-	return &pi.ClientSecret, nil
+	return &pi.ClientSecret, &pi.ID, nil
 }

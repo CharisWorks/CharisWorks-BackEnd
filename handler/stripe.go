@@ -3,17 +3,17 @@ package handler
 import (
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
-	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
+
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, stripeRequests cash.IStripeRequests, cartRequests cart.IRequests, cartRepository cart.IRepository, cartUtils cart.IUtils, itemRepository items.IRepository, UserRequests users.IRequests, UserDB users.IRepository) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, UserRequests users.Requests, stripeRequests cash.IStripeRequests, transactionRequests transaction.IRequests) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
@@ -21,7 +21,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, stri
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
 			userId := ctx.GetString("userId")
-			ClientSecret, err := stripeRequests.GetClientSecret(userId, cartRequests, cartRepository, cartUtils)
+			ClientSecret, err := transactionRequests.Purchase(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -60,7 +60,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, stri
 					ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 					return
 				}
-				URL, err := stripeRequests.GetRegisterLink(email, user.(users.User), UserDB)
+				URL, err := stripeRequests.GetRegisterLink(email, user.(users.User))
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
