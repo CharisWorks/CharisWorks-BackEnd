@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"gorm.io/gorm"
 )
@@ -12,10 +13,11 @@ import (
 type TransactionRepository struct {
 	DB             *gorm.DB
 	cartRepository cart.IRepository
+	userRepository users.IRepository
 }
 
-func (r TransactionRepository) GetList(UserId string) (*map[int]TransactionPreview, error) {
-	transactionPreviewList := make(map[int]TransactionPreview)
+func (r TransactionRepository) GetList(UserId string) (*map[string]TransactionPreview, error) {
+	transactionPreviewList := make(map[string]TransactionPreview)
 	internalTransaction := new([]utils.InternalTransaction)
 	if err := r.DB.Table("transaction").
 		Select("transaction.*, transactionitems.*").
@@ -67,7 +69,7 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 			Price:    t.TransactionItems.Price,
 		})
 		userId = t.Transaction.PurchaserUserId
-		transactionDetails.TransactionId = t.Transaction.Id
+		transactionDetails.TransactionId = TransactionId
 		transactionDetails.Status = TransactionStatus(t.Transaction.Status)
 		transactionDetails.TransactionAt = t.Transaction.CreatedAt
 		transactionDetails.Items = itemList
@@ -84,7 +86,6 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 }
 
 func (r TransactionRepository) Register(userId string, stripeTransactionId string) error {
-	internalTransactionDetails := new(InternalTransactionDetails)
 	internalCartList, err := r.cartRepository.Get(userId)
 	if err != nil {
 		return err
@@ -93,7 +94,7 @@ func (r TransactionRepository) Register(userId string, stripeTransactionId strin
 	totalAmount := 0
 	for _, i := range *internalCartList {
 		if err := r.DB.Create(utils.TransactionItem{
-			TransactionId:           internalTransactionDetails.TransactionId,
+			TransactionId:           stripeTransactionId,
 			ItemId:                  i.Cart.ItemId,
 			Name:                    i.Item.Name,
 			Price:                   i.Item.Price,
@@ -110,15 +111,18 @@ func (r TransactionRepository) Register(userId string, stripeTransactionId strin
 		totalPrice += i.Item.Price * i.Cart.Quantity
 		totalAmount += i.Cart.Quantity
 	}
-
-	address := internalTransactionDetails.UserAddress.Address_1 + " " + internalTransactionDetails.UserAddress.Address_2 + " " + internalTransactionDetails.UserAddress.Address_3
-	name := internalTransactionDetails.UserAddress.FirstName + internalTransactionDetails.UserAddress.LastName
+	user, err := r.userRepository.Get(userId)
+	if err != nil {
+		return err
+	}
+	address := user.UserAddress.Address1 + user.UserAddress.Address2 + user.UserAddress.Address3
+	name := user.UserAddress.FirstName + user.UserAddress.LastName
 	if err := r.DB.Create(utils.Transaction{
 		PurchaserUserId:     userId,
 		CreatedAt:           time.Now(),
-		ZipCode:             internalTransactionDetails.UserAddress.ZipCode,
+		ZipCode:             user.UserAddress.ZipCode,
 		Address:             address,
-		PhoneNumber:         internalTransactionDetails.UserAddress.PhoneNumber,
+		PhoneNumber:         user.UserAddress.PhoneNumber,
 		RealName:            name,
 		Status:              string(Pending),
 		StripeTransactionId: stripeTransactionId,

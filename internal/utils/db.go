@@ -96,7 +96,7 @@ type InternalTransaction struct {
 	TransactionItems TransactionItem `gorm:"embedded"`
 }
 type Transaction struct {
-	Id                  int       `gorm:"id"`
+	Id                  string    `gorm:"id"`
 	PurchaserUserId     string    `gorm:"purchaser_user_id"`
 	TrackingId          string    `gorm:"tracking_id"`
 	CreatedAt           time.Time `gorm:"created_at"`
@@ -112,7 +112,7 @@ type Transaction struct {
 
 type TransactionItem struct {
 	Id                      int      `gorm:"id"`
-	TransactionId           int      `gorm:"transaction_id"`
+	TransactionId           string   `gorm:"transaction_id"`
 	ItemId                  string   `gorm:"item_id"`
 	Name                    string   `gorm:"name"`
 	Price                   int      `gorm:"price"`

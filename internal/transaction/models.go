@@ -9,13 +9,13 @@ import (
 )
 
 type TransactionPreview struct {
-	TransactionId int               `json:"transaction_id"`
+	TransactionId string            `json:"transaction_id"`
 	Items         []TransactionItem `json:"items"`
 	TransactionAt time.Time         `json:"transaction_at"`
 	Status        TransactionStatus `json:"status"`
 }
 type TransactionDetails struct {
-	TransactionId int                `json:"transaction_id"`
+	TransactionId string             `json:"transaction_id"`
 	TrackingId    string             `json:"tracking_id"`
 	UserAddress   TransactionAddress `json:"address"`
 	Items         []TransactionItem  `json:"items"`
@@ -23,7 +23,7 @@ type TransactionDetails struct {
 	Status        TransactionStatus  `json:"status"`
 }
 type InternalTransactionDetails struct {
-	TransactionId int                       `gorm:"transaction_id"`
+	TransactionId string                    `gorm:"transaction_id"`
 	UserAddress   utils.Shipping            `gorm:"embedded"`
 	Items         []InternalTransactionItem `gorm:"embedded"`
 }
