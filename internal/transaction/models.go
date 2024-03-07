@@ -64,10 +64,12 @@ type IRequests interface {
 	GetList(userId string) (*[]TransactionPreview, error)
 	GetDetails(userId string, transactionId string) (*TransactionDetails, error)
 	Purchase(userId string) (*string, error)
+	PurchaseRefund(stripeTransactionId string) error
+}
+type IWebhook interface {
 	PurchaseComplete(stripeTransactionId string) error
 	PurchaseFail(stripeTransactionId string) error
-	PurchaseRefund(stripeTransactionId string) error
-	PurchaseCancel(stripeTransactionId string) error
+	PurchaseCanceled(stripeTransactionId string) error
 }
 
 type ITransactionRepository interface {
