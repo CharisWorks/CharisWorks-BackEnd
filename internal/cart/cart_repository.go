@@ -52,7 +52,6 @@ func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 		cart.Item.ManufacturerName = icart.User.DisplayName
 		cart.Item.ManufacturerUserId = icart.User.Id
 
-		log.Print("cart: ", cart)
 		*resultCart = append(*resultCart, *cart)
 	}
 	return resultCart, nil

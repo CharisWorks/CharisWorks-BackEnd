@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: CharisWorks
 -- ------------------------------------------------------
--- Server version	11.2.2-MariaDB-1:11.2.2+maria~ubu2204
+-- Server version	11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -110,78 +110,6 @@ LOCK TABLES `shippings` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `transaction_items`
---
-
-DROP TABLE IF EXISTS `transaction_items`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `transaction_items` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `transaction_id` varchar(100) NOT NULL,
-  `item_id` varchar(100) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `price` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `description` text NOT NULL,
-  `tags` varchar(100) NOT NULL,
-  `manufacturer_user_id` varchar(100) NOT NULL,
-  `manufacturer_name` varchar(100) DEFAULT NULL,
-  `manufacturer_description` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `transaction_items_unique` (`transaction_id`),
-  KEY `transaction_items_history_items_FK` (`item_id`),
-  CONSTRAINT `transaction_items_history_items_FK` FOREIGN KEY (`item_id`) REFERENCES `history_items` (`item_id`),
-  CONSTRAINT `transaction_items_transactions_FK` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `transaction_items`
---
-
-LOCK TABLES `transaction_items` WRITE;
-/*!40000 ALTER TABLE `transaction_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `transaction_items` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `transactions`
---
-
-DROP TABLE IF EXISTS `transactions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `transactions` (
-  `id` varchar(100) NOT NULL,
-  `purchaser_user_id` varchar(100) NOT NULL,
-  `tracking_id` varchar(100) NOT NULL,
-  `created_at` timestamp NOT NULL,
-  `zip_code` varchar(100) NOT NULL,
-  `address` varchar(100) NOT NULL,
-  `phone_number` varchar(100) NOT NULL,
-  `real_name` varchar(100) NOT NULL,
-  `status` text NOT NULL,
-  `stripe_transaction_id` text NOT NULL,
-  `total_price` int(11) NOT NULL,
-  `total_quantity` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `transactions_unique` (`purchaser_user_id`),
-  KEY `transactions_users_FK_1` (`purchaser_user_id`),
-  CONSTRAINT `transactions_history_users_FK` FOREIGN KEY (`purchaser_user_id`) REFERENCES `history_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `transactions`
---
-
-LOCK TABLES `transactions` WRITE;
-/*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `users`
 --
 
@@ -225,4 +153,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-02 17:21:44
+-- Dump completed on 2024-03-08 20:22:21

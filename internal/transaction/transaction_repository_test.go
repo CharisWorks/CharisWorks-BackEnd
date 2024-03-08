@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"log"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
@@ -15,10 +16,10 @@ func Test_Transaction(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
 	cartRepository := cart.Repository{DB: db}
+	transactionRepository := TransactionRepository{DB: db, userRepository: UserDB}
 	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
@@ -28,8 +29,7 @@ func Test_Transaction(t *testing.T) {
 				Size:        3,
 				Description: "test",
 				Tags:        []string{"aaa", "bbb"},
-			},
-		},
+			}},
 		{
 			Name:  "test2",
 			Price: 3000,
@@ -51,6 +51,20 @@ func Test_Transaction(t *testing.T) {
 	}); err != nil {
 		t.Errorf("error")
 	}
+	if err = UserDB.RegisterAddress("aaa", users.AddressRegisterPayload{
+		ZipCode:       "123-4567",
+		Address1:      "test",
+		Address2:      "test",
+		Address3:      "test",
+		PhoneNumber:   "test",
+		FirstName:     "test",
+		LastName:      "test",
+		FirstNameKana: "test",
+		LastNameKana:  "test",
+	}); err != nil {
+		t.Errorf("error")
+	}
+
 	for _, item := range Items {
 		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
@@ -79,13 +93,24 @@ func Test_Transaction(t *testing.T) {
 		}
 
 	}
-
+	cart, err := cartRepository.Get("aaa")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	transactionRepository.Register("aaa", "test", "test", *cart)
+	transaction, err := transactionRepository.GetList("aaa")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Print("transaction: ", transaction)
 	for _, item := range Items {
 		err = ManufacturerDB.Delete(item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}
 	}
+	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
+	db.Table("carts").Where("purchaser_user_id = ?", "aaa").Delete(utils.TransactionItem{})
 	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
