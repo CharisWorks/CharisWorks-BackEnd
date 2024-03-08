@@ -34,11 +34,11 @@ type CartRequestPayload struct {
 type InternalCart struct {
 	Index     int
 	Cart      Cart
-	Item      internalItem
+	Item      InternalItem
 	ItemStock int
 	Status    items.Status
 }
-type internalItem struct {
+type InternalItem struct {
 	Price                   int      `gorm:"price"`
 	Name                    string   `gorm:"name"`
 	Description             string   `gorm:"description"`

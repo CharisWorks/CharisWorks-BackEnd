@@ -1,9 +1,10 @@
-package cart
+package transaction
 
 import (
 	"reflect"
 	"testing"
 
+	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/users"
@@ -18,7 +19,7 @@ func Test_CartCRUD(t *testing.T) {
 
 	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	cartRepository := Repository{DB: db}
+	cartRepository := cart.Repository{DB: db}
 	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
@@ -63,14 +64,14 @@ func Test_CartCRUD(t *testing.T) {
 	}
 	Cases := []struct {
 		name          string
-		payload       []CartRequestPayload
-		want          []InternalCart
-		updatePayload CartRequestPayload
-		wantUpdated   []InternalCart
+		payload       []cart.CartRequestPayload
+		want          []cart.InternalCart
+		updatePayload cart.CartRequestPayload
+		wantUpdated   []cart.InternalCart
 	}{
 		{
 			name: "正常",
-			payload: []CartRequestPayload{
+			payload: []cart.CartRequestPayload{
 				{
 					ItemId:   "test1",
 					Quantity: 2,
@@ -80,18 +81,18 @@ func Test_CartCRUD(t *testing.T) {
 					Quantity: 2,
 				},
 			},
-			want: []InternalCart{
+			want: []cart.InternalCart{
 				{
 					Index: 0,
-					Cart: Cart{
+					Cart: cart.Cart{
 						ItemId:   "test1",
 						Quantity: 2,
-						ItemProperties: CartItemPreviewProperties{
+						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
 						},
 					},
-					Item: InternalItem{
+					Item: cart.InternalItem{
 						Price:                   2000,
 						Name:                    "test1",
 						Description:             "test",
@@ -106,15 +107,15 @@ func Test_CartCRUD(t *testing.T) {
 				},
 				{
 					Index: 1,
-					Cart: Cart{
+					Cart: cart.Cart{
 						ItemId:   "test2",
 						Quantity: 2,
-						ItemProperties: CartItemPreviewProperties{
+						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test2",
 							Price: 3000,
 						},
 					},
-					Item: InternalItem{
+					Item: cart.InternalItem{
 						Price:                   2000,
 						Name:                    "test1",
 						Description:             "test",
@@ -128,22 +129,22 @@ func Test_CartCRUD(t *testing.T) {
 					Status:    items.Available,
 				},
 			},
-			updatePayload: CartRequestPayload{
+			updatePayload: cart.CartRequestPayload{
 				ItemId:   "test1",
 				Quantity: 3,
 			},
-			wantUpdated: []InternalCart{
+			wantUpdated: []cart.InternalCart{
 				{
 					Index: 0,
-					Cart: Cart{
+					Cart: cart.Cart{
 						ItemId:   "test1",
 						Quantity: 3,
-						ItemProperties: CartItemPreviewProperties{
+						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
 						},
 					},
-					Item: InternalItem{
+					Item: cart.InternalItem{
 						Price:                   2000,
 						Name:                    "test1",
 						Description:             "test",
@@ -158,15 +159,15 @@ func Test_CartCRUD(t *testing.T) {
 				},
 				{
 					Index: 1,
-					Cart: Cart{
+					Cart: cart.Cart{
 						ItemId:   "test2",
 						Quantity: 2,
-						ItemProperties: CartItemPreviewProperties{
+						ItemProperties: cart.CartItemPreviewProperties{
 							Name:  "test2",
 							Price: 3000,
 						},
 					},
-					Item: InternalItem{
+					Item: cart.InternalItem{
 						Price:                   3000,
 						Name:                    "test2",
 						Description:             "test",
@@ -223,66 +224,6 @@ func Test_CartCRUD(t *testing.T) {
 		if err != nil {
 			t.Errorf("error")
 		}
-	}
-	err = UserDB.Delete("aaa")
-	if err != nil {
-		t.Errorf("error")
-	}
-}
-
-func Test_GetItem(t *testing.T) {
-	db, err := utils.DBInitTest()
-	if err != nil {
-		t.Errorf("error")
-	}
-	UserDB := users.UserRepository{DB: db}
-	ManufacturerDB := manufacturer.Repository{DB: db}
-	GetStatus := items.GetStatus{DB: db}
-	Cases := []struct {
-		name    string
-		payload manufacturer.RegisterPayload
-		want    items.ItemStatus
-	}{
-		{
-			name: "正常",
-			payload: manufacturer.RegisterPayload{
-				Name:  "abc",
-				Price: 2000,
-				Details: manufacturer.ItemRegisterDetailsPayload{
-					Stock:       2,
-					Size:        3,
-					Description: "test",
-					Tags:        []string{"aaa", "bbb"},
-				},
-			},
-			want: items.ItemStatus{
-				Stock:  2,
-				Status: items.Ready,
-			},
-		},
-	}
-	if err = UserDB.Create("aaa"); err != nil {
-		t.Errorf("error")
-	}
-	for _, tt := range Cases {
-		t.Run(tt.name, func(t *testing.T) {
-			err = ManufacturerDB.Register("test", tt.payload, "aaa")
-			if err != nil {
-				t.Errorf("error")
-			}
-			ItemStatus, err := GetStatus.GetItem("test")
-			if err != nil {
-				t.Errorf("error")
-			}
-			if !reflect.DeepEqual(*ItemStatus, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemStatus, tt.want)
-			}
-			err = ManufacturerDB.Delete("test")
-			if err != nil {
-				t.Errorf("error")
-			}
-
-		})
 	}
 	err = UserDB.Delete("aaa")
 	if err != nil {
