@@ -68,7 +68,7 @@ type IRequests interface {
 	GetList(userId string) (*[]TransactionPreview, error)
 	GetDetails(userId string, transactionId string) (*TransactionDetails, error)
 	Purchase(userId string) (*string, error)
-	PurchaseRefund(stripeTransferId string, transactionId string, itemId string) error
+	PurchaseRefund(stripeTransferId string, transactionId string) error
 }
 type IWebhook interface {
 	PurchaseComplete(stripeTransactionId string) error
