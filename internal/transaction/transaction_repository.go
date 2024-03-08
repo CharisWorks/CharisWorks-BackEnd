@@ -46,8 +46,7 @@ func (r TransactionRepository) GetList(UserId string) (*map[string]TransactionPr
 	}
 	return &transactionPreviewList, nil
 }
-func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDetails, string, error) {
-	transactionDetails := new(TransactionDetails)
+func (r TransactionRepository) GetDetails(TransactionId string) (transactionDetails *TransactionDetails, userId string, transferList []transfer, err error) {
 	internalTransaction := new([]utils.InternalTransaction)
 	if err := r.DB.Table("transactions").
 		Select("transactions.*, transactionitems.*").
@@ -55,17 +54,20 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 		Where("transaction.id = ?", TransactionId).
 		Find(&internalTransaction).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, "", &utils.InternalError{Message: utils.InternalErrorDB}
+		return nil, "", nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	userId := ""
+	transactionDetails = new(TransactionDetails)
+	transferList = make([]transfer, 0)
 	log.Print(internalTransaction)
 	itemList := []TransactionItem{}
 	for _, t := range *internalTransaction {
 		itemList = append(itemList, TransactionItem{
-			ItemId:   t.TransactionItems.ItemId,
-			Quantity: t.TransactionItems.Quantity,
-			Name:     t.TransactionItems.Name,
-			Price:    t.TransactionItems.Price,
+			ItemId:     t.TransactionItems.ItemId,
+			Quantity:   t.TransactionItems.Quantity,
+			Name:       t.TransactionItems.Name,
+			Price:      t.TransactionItems.Price,
+			TransferId: t.TransactionItems.StripeTransferId,
+			Status:     t.TransactionItems.Status,
 		})
 		userId = t.Transaction.PurchaserUserId
 		transactionDetails.TransactionId = TransactionId
@@ -79,9 +81,17 @@ func (r TransactionRepository) GetDetails(TransactionId string) (*TransactionDet
 			PhoneNumber: t.Transaction.PhoneNumber,
 			RealName:    t.Transaction.RealName,
 		}
+
+		tr := transfer{
+			amount:          t.TransactionItems.Price * t.TransactionItems.Quantity,
+			itemId:          t.TransactionItems.ItemId,
+			stripeAccountId: t.TransactionItems.ManufacturerStripeAccountId,
+		}
+		transferList = append(transferList, tr)
+
 	}
 
-	return transactionDetails, userId, nil
+	return transactionDetails, userId, transferList, nil
 }
 
 func (r TransactionRepository) Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error {
@@ -131,8 +141,16 @@ func (r TransactionRepository) Register(userId string, stripeTransactionId strin
 	return nil
 }
 
-func (r TransactionRepository) StatusUpdate(TransactionId string, Status TransactionStatus) error {
-	if err := r.DB.Table("transactions").Where("id = ?", TransactionId).Update("status", Status).Error; err != nil {
+func (r TransactionRepository) StatusUpdate(stripeTransactionId string, conditions map[string]interface{}) error {
+	if err := r.DB.Table("transactions").Where("stripe_transaction_id = ?", stripeTransactionId).Updates(conditions).Error; err != nil {
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
+	}
+
+	return nil
+}
+func (r TransactionRepository) StatusUpdateItems(stripeTransactionId string, itemId string, conditions map[string]interface{}) error {
+	if err := r.DB.Table("transactions").Where("stripe_transaction_id = ?", stripeTransactionId).Where("item_id", itemId).Updates(conditions).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}

@@ -1,19 +1,16 @@
 package transaction
 
 import (
-	"log"
-
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
-	"github.com/stripe/stripe-go/v76"
-	"github.com/stripe/stripe-go/v76/transfer"
 )
 
 type TransactionRequests struct {
 	TransactionRepository ITransactionRepository
 	CartRepository        cart.IRepository
 	CartUtils             cart.IUtils
-	StripeRequests        cash.IStripeRequests
+	StripeRequests        cash.IRequests
+	webhook               Webhook
 }
 
 func (r TransactionRequests) GetList(userId string) (*[]TransactionPreview, error) {
@@ -29,7 +26,7 @@ func (r TransactionRequests) GetList(userId string) (*[]TransactionPreview, erro
 }
 
 func (r TransactionRequests) GetDetails(userId string, transactionId string) (*TransactionDetails, error) {
-	transactionDetails, transactionUserId, err := r.TransactionRepository.GetDetails(transactionId)
+	transactionDetails, transactionUserId, _, err := r.TransactionRepository.GetDetails(transactionId)
 	if err != nil {
 		return nil, err
 	}
@@ -63,25 +60,18 @@ func (r TransactionRequests) Purchase(userId string) (*string, error) {
 
 	return clientSecret, nil
 }
-
-func (r TransactionRequests) PurchaseComplete(stripeTransactionId string) error {
-
-	err := r.TransactionRepository.StatusUpdate(stripeTransactionId, TransactionStatus(Complete))
+func (r TransactionRequests) PurchaseRefund(stripeTransferId string, transactionId string, itemId string) error {
+	err := r.webhook.PurchaseRefund(stripeTransferId, transactionId)
+	if err != nil {
+		return err
+	}
+	err = r.TransactionRepository.StatusUpdateItems(transactionId, itemId, map[string]interface{}{"status": "refunded"})
+	if err != nil {
+		return err
+	}
+	err = r.TransactionRepository.StatusUpdate(transactionId, map[string]interface{}{"status": "refunded"})
 	if err != nil {
 		return err
 	}
 	return nil
-}
-func Transfer(amount float64, stripeID string, ItemName string) {
-	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
-	log.Print("Transfering... \n amount: ", amount, "\n stripeID: ", stripeID, "\n ItemName: ", ItemName)
-	params := &stripe.TransferParams{
-		Amount:      stripe.Int64(int64(amount)),
-		Currency:    stripe.String(string(stripe.CurrencyJPY)),
-		Destination: stripe.String(stripeID),
-		Description: stripe.String(ItemName),
-	}
-	tr, _ := transfer.New(params)
-	log.Print(tr.ID)
-
 }

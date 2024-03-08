@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/cash"
+	stripe1 "github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
@@ -13,7 +13,7 @@ import (
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, UserRequests users.Requests, stripeRequests cash.IStripeRequests, transactionRequests transaction.IRequests) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, UserRequests users.Requests, stripeRequests stripe1.IRequests, transactionRequests transaction.IRequests) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))

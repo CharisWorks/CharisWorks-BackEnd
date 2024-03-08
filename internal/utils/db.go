@@ -111,16 +111,19 @@ type Transaction struct {
 }
 
 type TransactionItem struct {
-	Id                      int      `gorm:"id"`
-	TransactionId           string   `gorm:"transaction_id"`
-	ItemId                  string   `gorm:"item_id"`
-	Name                    string   `gorm:"name"`
-	Price                   int      `gorm:"price"`
-	Size                    int      `gorm:"size"`
-	Quantity                int      `gorm:"quantity"`
-	Description             string   `gorm:"description"`
-	Tags                    []string `gorm:"tags"`
-	ManufacturerUserId      string   `gorm:"manufacturer_user_id"`
-	ManufacturerName        string   `gorm:"manufacturer_name"`
-	ManufacturerDescription string   `gorm:"manufacturer_description"`
+	Id                          int      `gorm:"id"`
+	TransactionId               string   `gorm:"transaction_id"`
+	ItemId                      string   `gorm:"item_id"`
+	Name                        string   `gorm:"name"`
+	Price                       int      `gorm:"price"`
+	Size                        int      `gorm:"size"`
+	Quantity                    int      `gorm:"quantity"`
+	Description                 string   `gorm:"description"`
+	Tags                        []string `gorm:"tags"`
+	ManufacturerUserId          string   `gorm:"manufacturer_user_id"`
+	ManufacturerName            string   `gorm:"manufacturer_name"`
+	ManufacturerDescription     string   `gorm:"manufacturer_description"`
+	ManufacturerStripeAccountId string   `gorm:"manufacturer_stripe_account_id"`
+	StripeTransferId            string   `gorm:"stripe_transfer_id"`
+	Status                      string   `gorm:"status"`
 }

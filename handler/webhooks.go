@@ -50,6 +50,7 @@ func PaymentComplete(ctx *gin.Context, webhookRequests transaction.IWebhook) err
 		params := &stripe.CheckoutSessionParams{}
 		params.AddExpand("line_items")
 		log.Print(sessions.ID)
+
 		err = webhookRequests.PurchaseComplete(sessions.ID)
 		if err != nil {
 			return err
@@ -65,6 +66,7 @@ func PaymentComplete(ctx *gin.Context, webhookRequests transaction.IWebhook) err
 			return &utils.InternalError{Message: utils.InternalErrorFromStripe}
 		}
 		log.Print(sessions.ID)
+
 		err = webhookRequests.PurchaseCanceled(sessions.ID)
 		if err != nil {
 			return err

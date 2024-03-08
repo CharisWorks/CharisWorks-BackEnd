@@ -44,10 +44,12 @@ type TransactionAddress struct {
 	RealName    string `json:"real_name"`
 }
 type TransactionItem struct {
-	ItemId   string `json:"item_id"`
-	Quantity int    `json:"quantity"`
-	Name     string `json:"name"`
-	Price    int    `json:"price"`
+	ItemId     string `json:"item_id"`
+	Quantity   int    `json:"quantity"`
+	Name       string `json:"name"`
+	Price      int    `json:"price"`
+	TransferId string `json:"transfer_id"`
+	Status     string `json:"status"`
 }
 type InternalTransactionItem struct {
 	ItemId                  string `gorm:"item_id"`
@@ -59,22 +61,30 @@ type InternalTransactionItem struct {
 	ManufacturerUserId      string `gorm:"manufacturer_user_id"`
 	ManufacturerName        string `gorm:"manufacturer_name"`
 	ManufacturerDescription string `gorm:"manufacturer_description"`
+	TransferId              string `gorm:"transfer_id"`
+	Status                  string `gorm:"status"`
 }
 type IRequests interface {
 	GetList(userId string) (*[]TransactionPreview, error)
 	GetDetails(userId string, transactionId string) (*TransactionDetails, error)
 	Purchase(userId string) (*string, error)
-	PurchaseRefund(stripeTransactionId string) error
+	PurchaseRefund(stripeTransferId string, transactionId string, itemId string) error
 }
 type IWebhook interface {
 	PurchaseComplete(stripeTransactionId string) error
 	PurchaseFail(stripeTransactionId string) error
 	PurchaseCanceled(stripeTransactionId string) error
 }
-
+type transfer struct {
+	amount          int
+	itemId          string
+	stripeAccountId string
+	transferId      string
+}
 type ITransactionRepository interface {
 	GetList(UserId string) (*map[string]TransactionPreview, error)
-	GetDetails(TransactionId string) (*TransactionDetails, string, error)
+	GetDetails(stripeTransactionId string) (*TransactionDetails, string, []transfer, error)
 	Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error
-	StatusUpdate(string, TransactionStatus) error
+	StatusUpdate(stripeTransactionId string, conditions map[string]interface{}) error
+	StatusUpdateItems(stripeTransactionId string, itemId string, conditions map[string]interface{}) error
 }
