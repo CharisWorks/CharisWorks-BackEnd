@@ -39,24 +39,41 @@ func (r Webhook) PurchaseComplete(stripeTransactionId string) error {
 
 	return nil
 }
-func (r Webhook) PurchaseRefund(stripeTransferId string, stripeTransactionId string) error {
+func (r Webhook) PurchaseFail(stripeTransactionId string) error {
 	_, _, transferList, err := r.TransactionRepository.GetDetails(stripeTransactionId)
 	if err != nil {
 		return err
 	}
 	for _, t := range transferList {
-		if t.transferId == stripeTransferId {
-			err = r.StripeUtils.Refund(t.amount, stripeTransactionId, t.stripeAccountId)
-			if err != nil {
-				return err
-			}
-			err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": "refunded"})
-			if err != nil {
-				return err
-			}
+		err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": "failed"})
+		if err != nil {
+			return err
 		}
 	}
-	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": "refunded"})
+	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": "failed"})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r Webhook) PurchaseCanceled(stripeTransactionId string) error {
+	_, _, transferList, err := r.TransactionRepository.GetDetails(stripeTransactionId)
+	if err != nil {
+		return err
+	}
+	for _, t := range transferList {
+		err = r.StripeUtils.Refund(t.amount, stripeTransactionId, t.stripeAccountId)
+		if err != nil {
+			return err
+		}
+		err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": "canceled"})
+		if err != nil {
+			return err
+		}
+	}
+	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": "canceled"})
 	if err != nil {
 		return err
 	}

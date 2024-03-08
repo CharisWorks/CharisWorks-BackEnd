@@ -10,7 +10,7 @@ type TransactionRequests struct {
 	CartRepository        cart.IRepository
 	CartUtils             cart.IUtils
 	StripeRequests        cash.IRequests
-	webhook               Webhook
+	StripeUtils           cash.IUtils
 }
 
 func (r TransactionRequests) GetList(userId string) (*[]TransactionPreview, error) {
@@ -60,18 +60,27 @@ func (r TransactionRequests) Purchase(userId string) (*string, error) {
 
 	return clientSecret, nil
 }
-func (r TransactionRequests) PurchaseRefund(stripeTransferId string, transactionId string, itemId string) error {
-	err := r.webhook.PurchaseRefund(stripeTransferId, transactionId)
+func (r TransactionRequests) PurchaseRefund(stripeTransferId string, stripeTransactionId string) error {
+	_, _, transferList, err := r.TransactionRepository.GetDetails(stripeTransactionId)
 	if err != nil {
 		return err
 	}
-	err = r.TransactionRepository.StatusUpdateItems(transactionId, itemId, map[string]interface{}{"status": "refunded"})
+	for _, t := range transferList {
+		if t.transferId == stripeTransferId {
+			err = r.StripeUtils.Refund(t.amount, stripeTransactionId, t.stripeAccountId)
+			if err != nil {
+				return err
+			}
+			err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": "refunded"})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": "refunded"})
 	if err != nil {
 		return err
 	}
-	err = r.TransactionRepository.StatusUpdate(transactionId, map[string]interface{}{"status": "refunded"})
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
