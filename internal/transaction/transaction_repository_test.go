@@ -109,8 +109,11 @@ func Test_Transaction(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
+
+	transactioDetails, user, transfer, err := transactionRepository.GetDetails("test")
+	log.Print("transactioDetails: ", transactioDetails, user, transfer)
 	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
-	db.Table("carts").Where("purchaser_user_id = ?", "aaa").Delete(utils.TransactionItem{})
+	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
 	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")

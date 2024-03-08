@@ -51,7 +51,7 @@ func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 		cart.Item.ManufacturerDescription = icart.User.Description
 		cart.Item.ManufacturerName = icart.User.DisplayName
 		cart.Item.ManufacturerUserId = icart.User.Id
-
+		cart.Item.ManufacturerStripeId = icart.User.StripeAccountId
 		*resultCart = append(*resultCart, *cart)
 	}
 	return resultCart, nil

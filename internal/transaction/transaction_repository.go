@@ -51,8 +51,8 @@ func (r TransactionRepository) GetDetails(TransactionId string) (transactionDeta
 	internalTransaction := new([]utils.InternalTransaction)
 	if err := r.DB.Table("transactions").
 		Select("transactions.*, transaction_items.*").
-		Joins("JOIN transaction_items ON transactions.id = transaction_items.transaction_id").
-		Where("transactions.id = ?", TransactionId).
+		Joins("JOIN transaction_items ON transactions.transaction_id = transaction_items.transaction_id").
+		Where("transactions.transaction_id = ?", TransactionId).
 		Find(&internalTransaction).Error; err != nil {
 		log.Print("DB error: ", err)
 		return nil, "", nil, &utils.InternalError{Message: utils.InternalErrorDB}
@@ -105,16 +105,19 @@ func (r TransactionRepository) Register(userId string, stripeTransactionId strin
 			return &utils.InternalError{Message: utils.InternalErrorDB}
 		}
 		transactionItem := utils.TransactionItem{
-			TransactionId:           transactionId,
-			ItemId:                  i.Cart.ItemId,
-			Name:                    i.Item.Name,
-			Price:                   i.Item.Price,
-			Quantity:                i.Cart.Quantity,
-			Description:             i.Item.Description,
-			Tags:                    string(t),
-			ManufacturerUserId:      i.Item.ManufacturerUserId,
-			ManufacturerName:        i.Item.ManufacturerName,
-			ManufacturerDescription: i.Item.ManufacturerDescription,
+			TransactionId:               transactionId,
+			ItemId:                      i.Cart.ItemId,
+			Name:                        i.Item.Name,
+			Size:                        i.Item.Size,
+			Price:                       i.Item.Price,
+			Quantity:                    i.Cart.Quantity,
+			Description:                 i.Item.Description,
+			Tags:                        string(t),
+			ManufacturerUserId:          i.Item.ManufacturerUserId,
+			ManufacturerName:            i.Item.ManufacturerName,
+			ManufacturerDescription:     i.Item.ManufacturerDescription,
+			ManufacturerStripeAccountId: i.Item.ManufacturerStripeId,
+			Status:                      string(Pending),
 		}
 		transactionItemList = append(transactionItemList, transactionItem)
 		totalPrice += i.Item.Price * i.Cart.Quantity

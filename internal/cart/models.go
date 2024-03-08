@@ -47,6 +47,7 @@ type InternalItem struct {
 	ManufacturerUserId      string   `gorm:"manufacturer_user_id"`
 	ManufacturerName        string   `gorm:"manufacturer_name"`
 	ManufacturerDescription string   `gorm:"manufacturer_description"`
+	ManufacturerStripeId    string   `gorm:"manufacturer_stripe_account_id"`
 }
 type IRequests interface {
 	Get(userId string) (*[]Cart, error)
