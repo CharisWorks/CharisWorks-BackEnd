@@ -86,3 +86,32 @@ func (r GetStatus) GetItem(itemId string) (*ItemStatus, error) {
 	itemStatus.Status = Status(ItemRepository.Status)
 	return itemStatus, nil
 }
+
+type Updater struct {
+	DB *gorm.DB
+}
+
+func (r Updater) ReduceStock(itemId string, Quantity int) error {
+	ItemRepository := new(utils.Item)
+	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
+	}
+	ItemRepository.Stock -= Quantity
+	if err := r.DB.Table("items").Where("id = ?", itemId).Updates(ItemRepository).Error; err != nil {
+		log.Print("DB error: ", err)
+		return &utils.InternalError{Message: utils.InternalErrorDB}
+	}
+	return nil
+}
+
+func (r Updater) StatusUpdate(itemId string, State Status) {
+	ItemRepository := new(utils.Item)
+	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
+		log.Print("DB error: ", err)
+	}
+	ItemRepository.Status = string(State)
+	if err := r.DB.Table("items").Where("id = ?", itemId).Updates(ItemRepository).Error; err != nil {
+		log.Print("DB error: ", err)
+	}
+}
