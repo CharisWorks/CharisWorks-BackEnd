@@ -27,6 +27,7 @@ func (r Repository) GetList(userId string) (map[string]TransactionPreview, error
 		log.Print("DB error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
+	log.Print("internalTransaction: ", internalTransaction)
 	for _, t := range *internalTransaction {
 		transactionPreview := new(TransactionPreview)
 		transactionItem := new(TransactionItem)
@@ -34,15 +35,23 @@ func (r Repository) GetList(userId string) (map[string]TransactionPreview, error
 		transactionItem.Quantity = t.TransactionItems.Quantity
 		transactionItem.Price = t.TransactionItems.Price
 		transactionItem.Name = t.TransactionItems.Name
+		transactionItem.TransferId = t.TransactionItems.StripeTransferId
+		transactionItem.Status = t.TransactionItems.Status
 
 		transactionPreview.TransactionId = t.Transaction.TransactionId
 		transactionPreview.Status = TransactionStatus(t.Transaction.Status)
 		transactionPreview.TransactionAt = t.Transaction.CreatedAt
 		transaction, exist := transactionPreviewList[t.Transaction.TransactionId]
+		list := make([]TransactionItem, 0)
 		if exist {
-			transaction.Items = append(transaction.Items, *transactionItem)
+			list = transactionPreviewList[t.Transaction.TransactionId].Items
+			list = append(list, *transactionItem)
+		} else {
+			list = append(list, *transactionItem)
 		}
-		transactionPreviewList[t.Transaction.TransactionId] = transaction
+		transactionPreview.Items = list
+		transactionPreviewList[t.Transaction.TransactionId] = *transactionPreview
+		log.Print(transaction)
 	}
 	return transactionPreviewList, nil
 }
@@ -120,6 +129,7 @@ func (r Repository) Register(userId string, stripeTransactionId string, transact
 		totalPrice += i.Item.Price * i.Cart.Quantity
 		totalAmount += i.Cart.Quantity
 	}
+	log.Print("transactionItemList: ", transactionItemList)
 	user, err := r.userRepository.Get(userId)
 	if err != nil {
 		return err
@@ -142,9 +152,11 @@ func (r Repository) Register(userId string, stripeTransactionId string, transact
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
+
 	for _, i := range transactionItemList {
 		if err := r.DB.Create(&i).Error; err != nil {
 			log.Print("DB error: ", err)
+			return &utils.InternalError{Message: utils.InternalErrorDB}
 		}
 	}
 	return nil

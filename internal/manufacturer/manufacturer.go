@@ -47,7 +47,7 @@ func (r Requests) Delete(itemId string, userId string) error {
 	if err != nil {
 		return err
 	}
-	if item.Manufacturer.StripeAccountId != userId {
+	if item.Manufacturer.UserId != userId {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
 	}
 	err = r.ManufacturerItemRepository.Delete(itemId)

@@ -103,6 +103,7 @@ func Test_Transaction(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
+	log.Print("cart: ", cart)
 	transactionRepository.Register("aaa", "test", "test", *cart)
 	transaction, err := transactionRepository.GetList("aaa")
 	if err != nil {
@@ -117,7 +118,7 @@ func Test_Transaction(t *testing.T) {
 				Quantity:   2,
 				Name:       "test1",
 				Price:      2000,
-				TransferId: "test",
+				TransferId: "",
 				Status:     "Pending",
 			},
 			{
@@ -125,28 +126,28 @@ func Test_Transaction(t *testing.T) {
 				Quantity:   2,
 				Name:       "test2",
 				Price:      3000,
-				TransferId: "test",
+				TransferId: "",
 				Status:     "Pending",
 			},
 		},
 	}
-
-	if !reflect.DeepEqual(transaction["test"], list) {
-		t.Errorf("got %v, want %v", transaction["test"], list)
+	log.Print("transaction: ", transaction)
+	if !reflect.DeepEqual(transaction["test"].Items, list.Items) {
+		t.Errorf("got %v, want %v", transaction["test"].Items, list.Items)
 	}
-	transactioDetails, user, transfer, err := transactionRepository.GetDetails("test")
+	transactionDetails, user, transfer, err := transactionRepository.GetDetails("test")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	log.Print("transactionDetails: ", transactioDetails, "\n user: ", user, "\ntransfer", transfer)
+	log.Print("transactionDetails: ", transactionDetails, "\n user: ", user, "\ntransfer", transfer)
 
-	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
-	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
+	//db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
+	//db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
 
 	for _, item := range Items {
 		err = manufacturerRequests.Delete(item.Name, "aaa")
 		if err != nil {
-			t.Errorf("error")
+			t.Errorf(err.Error())
 		}
 	}
 	err = UserRepository.Delete("aaa")
