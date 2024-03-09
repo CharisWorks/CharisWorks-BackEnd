@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"log"
 	"reflect"
 	"testing"
 
@@ -103,13 +102,11 @@ func Test_Transaction(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	log.Print("cart: ", cart)
 	transactionRepository.Register("aaa", "test", "test", *cart)
 	transaction, err := transactionRepository.GetList("aaa")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	log.Print("transaction: ", transaction)
 	list := TransactionPreview{
 		TransactionId: "test",
 		Items: []TransactionItem{
@@ -131,18 +128,49 @@ func Test_Transaction(t *testing.T) {
 			},
 		},
 	}
-	log.Print("transaction: ", transaction)
 	if !reflect.DeepEqual(transaction["test"].Items, list.Items) {
 		t.Errorf("got %v, want %v", transaction["test"].Items, list.Items)
 	}
-	transactionDetails, user, transfer, err := transactionRepository.GetDetails("test")
+	transactionDetails, _, _, err := transactionRepository.GetDetails("test")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	log.Print("transactionDetails: ", transactionDetails, "\n user: ", user, "\ntransfer", transfer)
+	details := TransactionDetails{
+		TransactionId: "test",
+		TrackingId:    "",
+		UserAddress: TransactionAddress{
+			ZipCode:     "123-4567",
+			Address:     "testtesttest",
+			PhoneNumber: "00000000000",
+			RealName:    "testtest",
+		},
+		Items: []TransactionItem{
+			{
+				ItemId:     "test1",
+				Quantity:   2,
+				Name:       "test1",
+				Price:      2000,
+				TransferId: "",
+				Status:     "Pending",
+			},
+			{
+				ItemId:     "test2",
+				Quantity:   2,
+				Name:       "test2",
+				Price:      3000,
+				TransferId: "",
+				Status:     "Pending",
+			},
+		},
+		Status: "Pending",
+	}
+	details.TransactionAt = transactionDetails.TransactionAt
+	if !reflect.DeepEqual(transactionDetails, details) {
+		t.Errorf("got %v, want %v", transactionDetails, details)
+	}
 
-	//db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
-	//db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
+	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
+	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
 
 	for _, item := range Items {
 		err = manufacturerRequests.Delete(item.Name, "aaa")

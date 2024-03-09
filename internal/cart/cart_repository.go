@@ -77,7 +77,6 @@ func (r Repository) Update(UserId string, CartRequestPayload CartRequestPayload)
 }
 
 func (r Repository) Delete(UserId string, itemId string) error {
-	log.Print("UserId: ", UserId)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -85,7 +84,6 @@ func (r Repository) Delete(UserId string, itemId string) error {
 	return nil
 }
 func (r Repository) DeleteAll(UserId string) error {
-	log.Print("UserId: ", UserId)
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
