@@ -36,7 +36,7 @@ func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload)
 	if err != nil {
 		return err
 	}
-	InspectedCartRequestPayload, err := r.CartUtils.InspectPayload(cartRequestPayload, *itemStatus)
+	InspectedCartRequestPayload, err := r.CartUtils.InspectPayload(cartRequestPayload, itemStatus)
 	if err != nil {
 		return err
 	}

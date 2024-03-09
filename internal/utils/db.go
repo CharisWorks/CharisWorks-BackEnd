@@ -54,7 +54,10 @@ type Cart struct {
 	ItemId          string `gorm:"item_id;type:varchar(100)"`
 	Quantity        int    `gorm:"quantity"`
 }
-
+type InternalItem struct {
+	Item Item `gorm:"embedded"`
+	User User `gorm:"embedded"`
+}
 type InternalCart struct {
 	Cart Cart `gorm:"embedded"`
 	Item Item `gorm:"embedded"`

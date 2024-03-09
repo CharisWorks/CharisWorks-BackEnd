@@ -29,14 +29,19 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				}
 				ctx.JSON(http.StatusOK, "Item was successfuly registered")
 			})
-			UserRouter.PATCH("/", func(ctx *gin.Context) {
+			UserRouter.PATCH("/:item_id", func(ctx *gin.Context) {
 				payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.UpdatePayload{})
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
 				userId := ctx.GetString("userId")
-				err = manufacturerRequests.Update(*payload, userId)
+				itemId, err := utils.GetParams("item_id", ctx)
+				if err != nil {
+					utils.ReturnErrorResponse(ctx, err)
+					return
+				}
+				err = manufacturerRequests.Update(*payload, userId, *itemId)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

@@ -1,12 +1,18 @@
 package utils
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
+// 構造体が空であるかどうかを判断する関数
+func IsEmptyStruct(s interface{}) bool {
+	// 構造体の値を反射してゼロ値と比較
+	return reflect.DeepEqual(s, reflect.Zero(reflect.TypeOf(s)).Interface())
+}
 func GetPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
 	bind := new(T)
 	err := ctx.BindJSON(&bind)

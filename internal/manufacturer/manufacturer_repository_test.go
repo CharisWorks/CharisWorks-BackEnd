@@ -50,6 +50,12 @@ func Test_ManufacturerDB(t *testing.T) {
 						Tags:        []string{"aaa", "bbb"},
 					},
 				},
+				Manufacturer: items.ManufacturerDetails{
+					Name:            "test",
+					StripeAccountId: "test",
+					Description:     "test",
+					UserId:          "aaa",
+				},
 			},
 			updatePayload: map[string]interface{}{
 				"stock": 4,
@@ -66,6 +72,12 @@ func Test_ManufacturerDB(t *testing.T) {
 						Description: "test",
 						Tags:        []string{"aaa", "bbb"},
 					},
+				},
+				Manufacturer: items.ManufacturerDetails{
+					Name:            "test",
+					StripeAccountId: "test",
+					Description:     "test",
+					UserId:          "aaa",
 				},
 			},
 		},
@@ -91,8 +103,8 @@ func Test_ManufacturerDB(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*ItemOverview, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.want)
+			if !reflect.DeepEqual(ItemOverview, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, ItemOverview, tt.want)
 			}
 			err = ManufacturerDB.Update(tt.updatePayload, "test")
 			if err != nil {
@@ -102,8 +114,8 @@ func Test_ManufacturerDB(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*ItemOverview, tt.wantUpdated) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.wantUpdated)
+			if !reflect.DeepEqual(ItemOverview, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, ItemOverview, tt.wantUpdated)
 			}
 			err = ManufacturerDB.Delete("test")
 			if err != nil {
@@ -334,12 +346,12 @@ func Test_GetItemList(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			previews, totalElements, err := ItemRepository.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
 			log.Print("totalElements: ", totalElements)
-			log.Print("pre: ", *previews)
+			log.Print("pre: ", previews)
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*previews, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *previews, tt.want)
+			if !reflect.DeepEqual(previews, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, previews, tt.want)
 			}
 			if totalElements != tt.totalElements {
 				t.Errorf("%v,got,%v,want%v", tt.name, totalElements, tt.totalElements)

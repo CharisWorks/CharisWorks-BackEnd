@@ -152,6 +152,7 @@ func Test_CartCRUD(t *testing.T) {
 						ManufacturerUserId:      "aaa",
 						ManufacturerName:        "test",
 						ManufacturerDescription: "test",
+						ManufacturerStripeId:    "test",
 					},
 					ItemStock: 2,
 					Status:    items.Available,
@@ -175,6 +176,7 @@ func Test_CartCRUD(t *testing.T) {
 						ManufacturerUserId:      "aaa",
 						ManufacturerName:        "test",
 						ManufacturerDescription: "test",
+						ManufacturerStripeId:    "test",
 					},
 					ItemStock: 3,
 					Status:    items.Available,
@@ -274,8 +276,8 @@ func Test_GetItem(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*ItemStatus, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemStatus, tt.want)
+			if !reflect.DeepEqual(ItemStatus, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, ItemStatus, tt.want)
 			}
 			err = ManufacturerDB.Delete("test")
 			if err != nil {

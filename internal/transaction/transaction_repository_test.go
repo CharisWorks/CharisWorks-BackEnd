@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"log"
+	"reflect"
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
@@ -17,9 +18,11 @@ func Test_Transaction(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserRepository := users.UserRepository{DB: db}
-	ManufacturerDB := manufacturer.Repository{DB: db}
-	cartRepository := cart.Repository{DB: db}
+	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
+	manufacturerRepository := manufacturer.Repository{DB: db}
+	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
 	transactionRepository := Repository{DB: db, userRepository: UserRepository}
+	cartRepository := cart.Repository{DB: db}
 	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
@@ -47,7 +50,7 @@ func Test_Transaction(t *testing.T) {
 	if err = UserRepository.UpdateProfile("aaa", map[string]interface{}{
 		"display_name":      "test",
 		"description":       "test",
-		"stripe_account_id": "test",
+		"stripe_account_id": "acct_test",
 	}); err != nil {
 		t.Errorf("error")
 	}
@@ -56,22 +59,25 @@ func Test_Transaction(t *testing.T) {
 		Address1:      "test",
 		Address2:      "test",
 		Address3:      "test",
-		PhoneNumber:   "test",
+		PhoneNumber:   "00000000000",
 		FirstName:     "test",
 		LastName:      "test",
-		FirstNameKana: "test",
-		LastNameKana:  "test",
+		FirstNameKana: "テスト",
+		LastNameKana:  "テスト",
 	}); err != nil {
 		t.Errorf("error")
 	}
 
 	for _, item := range Items {
+		err = manufacturerRepository.Register(item.Name, item, "aaa")
 		if err != nil {
-			t.Errorf("error")
+			t.Errorf(err.Error())
 		}
-		err = ManufacturerDB.Update(map[string]interface{}{"status": items.Available}, item.Name)
+		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
+			Status: string(items.Available),
+		}, "aaa", item.Name)
 		if err != nil {
-			t.Errorf("error")
+			t.Errorf(err.Error())
 		}
 	}
 	carts := []cart.CartRequestPayload{
@@ -87,7 +93,7 @@ func Test_Transaction(t *testing.T) {
 	}
 
 	for _, p := range carts {
-		err := cartRepository.Register("aaa", p)
+		err := cartRequests.Register("aaa", p)
 		if err != nil {
 			t.Errorf(err.Error())
 		}
@@ -103,7 +109,31 @@ func Test_Transaction(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	log.Print("transaction: ", transaction)
+	list := TransactionPreview{
+		TransactionId: "test",
+		Items: []TransactionItem{
+			{
+				ItemId:     "test1",
+				Quantity:   2,
+				Name:       "test1",
+				Price:      2000,
+				TransferId: "test",
+				Status:     "Pending",
+			},
+			{
+				ItemId:     "test2",
+				Quantity:   2,
+				Name:       "test2",
+				Price:      3000,
+				TransferId: "test",
+				Status:     "Pending",
+			},
+		},
+	}
 
+	if !reflect.DeepEqual(transaction["test"], list) {
+		t.Errorf("got %v, want %v", transaction["test"], list)
+	}
 	transactioDetails, user, transfer, err := transactionRepository.GetDetails("test")
 	if err != nil {
 		t.Errorf(err.Error())
@@ -114,7 +144,7 @@ func Test_Transaction(t *testing.T) {
 	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
 
 	for _, item := range Items {
-		err = ManufacturerDB.Delete(item.Name)
+		err = manufacturerRequests.Delete(item.Name, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}

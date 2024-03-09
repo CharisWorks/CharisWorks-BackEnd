@@ -12,29 +12,37 @@ type ItemRepository struct {
 	DB *gorm.DB
 }
 
-func (r ItemRepository) GetItemOverview(itemId string) (*Overview, error) {
-	ItemOverview := new(Overview)
-	DBItem := new(utils.Item)
-	if err := r.DB.Table("items").Where("id = ?", itemId).First(DBItem).Error; err != nil {
+func (r ItemRepository) GetItemOverview(itemId string) (overview Overview, err error) {
+	DBItem := new(utils.InternalItem)
+	if err := r.DB.Table("items").Select("items.*, users.*").Joins("JOIN users ON items.manufacturer_user_id = users.id").Where("items.id = ?", itemId).First(DBItem).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return overview, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 
 	tags := new([]string)
-	json.Unmarshal([]byte(DBItem.Tags), &tags)
-	ItemOverview.Item_id = DBItem.Id
-	ItemOverview.Properties = OverviewProperties{
-		Name:  DBItem.Name,
-		Price: DBItem.Price,
-		Details: OverviewDetails{
-			Status:      Status(DBItem.Status),
-			Stock:       DBItem.Stock,
-			Size:        DBItem.Size,
-			Description: DBItem.Description,
-			Tags:        *tags,
+	json.Unmarshal([]byte(DBItem.Item.Tags), &tags)
+	overview = Overview{
+		Item_id: DBItem.Item.Id,
+		Properties: OverviewProperties{
+			Name:  DBItem.Item.Name,
+			Price: DBItem.Item.Price,
+			Details: OverviewDetails{
+				Status:      Status(DBItem.Item.Status),
+				Stock:       DBItem.Item.Stock,
+				Size:        DBItem.Item.Size,
+				Description: DBItem.Item.Description,
+				Tags:        *tags,
+			},
+		},
+		Manufacturer: ManufacturerDetails{
+			Name:            DBItem.User.DisplayName,
+			StripeAccountId: DBItem.User.StripeAccountId,
+			Description:     DBItem.User.Description,
+			UserId:          DBItem.User.Id,
 		},
 	}
-	return ItemOverview, nil
+
+	return overview, nil
 }
 func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]interface{}, tags []string) ([]Preview, int, error) {
 	previews := new([]Preview)
@@ -63,28 +71,27 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	}
 	return *previews, int(totalElements), nil
 }
-func (r ItemRepository) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error) {
+func (r ItemRepository) GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) ([]Preview, int, error) {
 	ItemPreview, totalElements, err := getItemPreview(r.DB, pageNum, pageSize, conditions, tags)
 	if err != nil {
 		return nil, 0, err
 	}
-	return &ItemPreview, totalElements, nil
+	return ItemPreview, totalElements, nil
 }
 
 type GetStatus struct {
 	DB *gorm.DB
 }
 
-func (r GetStatus) GetItem(itemId string) (*ItemStatus, error) {
+func (r GetStatus) GetItem(itemId string) (status ItemStatus, err error) {
 	ItemRepository := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return status, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	itemStatus := new(ItemStatus)
-	itemStatus.Stock = ItemRepository.Stock
-	itemStatus.Status = Status(ItemRepository.Status)
-	return itemStatus, nil
+	status.Stock = ItemRepository.Stock
+	status.Status = Status(ItemRepository.Status)
+	return status, nil
 }
 
 type Updater struct {

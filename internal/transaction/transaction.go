@@ -19,8 +19,8 @@ func (r TransactionRequests) GetList(userId string) (*[]TransactionPreview, erro
 	if err != nil {
 		return nil, err
 	}
-	transactionPreview := make([]TransactionPreview, len(*transactionPreviewList))
-	for _, t := range *transactionPreviewList {
+	transactionPreview := make([]TransactionPreview, len(transactionPreviewList))
+	for _, t := range transactionPreviewList {
 		transactionPreview = append(transactionPreview, t)
 	}
 	return &transactionPreview, nil
@@ -34,7 +34,7 @@ func (r TransactionRequests) GetDetails(userId string, transactionId string) (*T
 	if transactionUserId != userId {
 		return nil, nil
 	}
-	return transactionDetails, nil
+	return &transactionDetails, nil
 }
 func (r TransactionRequests) Purchase(userId string) (*string, error) {
 	internalCart, err := r.CartRepository.Get(userId)

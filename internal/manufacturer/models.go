@@ -23,8 +23,8 @@ type UpdatePayload struct {
 }
 
 type IItemRequests interface {
-	Register(registerPayload RegisterPayload, userId string) error
-	Update(updatePayload UpdatePayload, userId string) error
+	Register(registerPayload RegisterPayload, userId string, itemId string) error
+	Update(updatePayload UpdatePayload, userId string, itemId string) error
 	Delete(itemId string, userId string) error
 }
 

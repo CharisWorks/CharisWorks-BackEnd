@@ -7,10 +7,10 @@ type Requests struct {
 	ItemUtils      IUtils
 }
 
-func (r Requests) GetOverview(itemId string) (*Overview, error) {
+func (r Requests) GetOverview(itemId string) (Overview, error) {
 	return r.ItemRepository.GetItemOverview(itemId)
 }
-func (r Requests) GetSearchPreviewList(ctx *gin.Context) (*[]Preview, int, error) {
+func (r Requests) GetSearchPreviewList(ctx *gin.Context) ([]Preview, int, error) {
 	pageNum, pageSize, inspectedConditions, tags, err := r.ItemUtils.InspectSearchConditions(ctx)
 	if err != nil {
 		return nil, 0, err

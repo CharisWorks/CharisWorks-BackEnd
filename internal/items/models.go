@@ -24,8 +24,10 @@ type Overview struct {
 }
 
 type ManufacturerDetails struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	StripeAccountId string `json:"stripe_account_id"`
+	UserId          string
 }
 
 type OverviewProperties struct {
@@ -54,13 +56,13 @@ const (
 )
 
 type IRequests interface {
-	GetOverview(itemId string) (*Overview, error)
-	GetSearchPreviewList(ctx *gin.Context) (*[]Preview, int, error)
+	GetOverview(itemId string) (Overview, error)
+	GetSearchPreviewList(ctx *gin.Context) ([]Preview, int, error)
 }
 
 type IRepository interface {
-	GetItemOverview(itemId string) (*Overview, error)
-	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error)
+	GetItemOverview(itemId string) (Overview, error)
+	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) ([]Preview, int, error)
 }
 
 type IUpdater interface {
@@ -68,7 +70,7 @@ type IUpdater interface {
 	StatusUpdate(itemId string, State Status)
 }
 type IGetStatus interface {
-	GetItem(itemId string) (*ItemStatus, error)
+	GetItem(itemId string) (ItemStatus, error)
 }
 type IUtils interface {
 	InspectSearchConditions(ctx *gin.Context) (pageNum int, pageSize int, conditions map[string]interface{}, tags []string, err error)

@@ -16,7 +16,7 @@ type Repository struct {
 	userRepository users.IRepository
 }
 
-func (r Repository) GetList(userId string) (*map[string]TransactionPreview, error) {
+func (r Repository) GetList(userId string) (map[string]TransactionPreview, error) {
 	transactionPreviewList := make(map[string]TransactionPreview)
 	internalTransaction := new([]utils.InternalTransaction)
 	if err := r.DB.Table("transactions").
@@ -44,9 +44,9 @@ func (r Repository) GetList(userId string) (*map[string]TransactionPreview, erro
 		}
 		transactionPreviewList[t.Transaction.TransactionId] = transaction
 	}
-	return &transactionPreviewList, nil
+	return transactionPreviewList, nil
 }
-func (r Repository) GetDetails(TransactionId string) (transactionDetails *TransactionDetails, userId string, transferList []transfer, err error) {
+func (r Repository) GetDetails(TransactionId string) (transactionDetails TransactionDetails, userId string, transferList []transfer, err error) {
 	internalTransaction := new([]utils.InternalTransaction)
 	if err := r.DB.Table("transactions").
 		Select("transactions.*, transaction_items.*").
@@ -54,9 +54,8 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails *Transa
 		Where("transactions.transaction_id = ?", TransactionId).
 		Find(&internalTransaction).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, "", nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return transactionDetails, "", nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	transactionDetails = new(TransactionDetails)
 	transferList = make([]transfer, 0)
 	itemList := []TransactionItem{}
 	for _, t := range *internalTransaction {
