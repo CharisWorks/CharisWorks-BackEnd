@@ -32,6 +32,7 @@ func Code(i InternalMessage) int {
 		InternalErrorFromStripe:                  http.StatusBadRequest,
 		InternalErrorUnAuthorized:                http.StatusUnauthorized,
 		InternalErrorIncident:                    http.StatusInternalServerError,
+		InternalErrorCartIsEmpty:                 http.StatusBadRequest,
 	}
 	return statusCode[i]
 }
@@ -63,8 +64,9 @@ const (
 
 // DB系
 const (
-	InternalErrorNotFound InternalMessage = "not found"
-	InternalErrorDB       InternalMessage = "DB error"
+	InternalErrorNotFound    InternalMessage = "not found"
+	InternalErrorDB          InternalMessage = "DB error"
+	InternalErrorCartIsEmpty InternalMessage = "cart is empty"
 )
 
 // ストライプ系

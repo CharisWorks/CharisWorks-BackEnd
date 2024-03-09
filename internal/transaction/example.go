@@ -1,24 +1,29 @@
 package transaction
 
-/*
-import (
-	"github.com/charisworks/charisworks-backend/internal/cart"
-	"github.com/gin-gonic/gin"
-)
+import "github.com/charisworks/charisworks-backend/internal/cash"
 
 type ExampleTransactionRequests struct {
+	StripeRequests cash.IRequests
 }
 
-func (r ExampleTransactionRequests) GetList(ctx *gin.Context, TransactionDBHistory ITransactionRepository) (*[]TransactionPreview, error) {
+func (r ExampleTransactionRequests) GetList(userId string) (*[]TransactionPreview, error) {
 	return nil, nil
 }
-func (r ExampleTransactionRequests) GetDetails(ctx *gin.Context) (*TransactionDetails, error) {
-	return new(TransactionDetails), nil
+func (r ExampleTransactionRequests) GetDetails(userId string, s string) (*TransactionDetails, error) {
+	return nil, nil
 }
-func (r ExampleTransactionRequests) Create(ctx *gin.Context, CartRequests cart.IRequests, cartRepository cart.IRepository, CartUtils cart.IUtils) error {
+func (r ExampleTransactionRequests) Purchase(userId string) (*string, error) {
+	url, _, err := r.StripeRequests.CreatePaymentintent(userId, 1000)
+	if err != nil {
+		return nil, err
+	}
+	return url, nil
+}
+func (r ExampleTransactionRequests) PurchaseRefund(SessionId string, s string) error {
 	return nil
 }
 
+/*
 type ExampleTransactionDBHistory struct {
 }
 

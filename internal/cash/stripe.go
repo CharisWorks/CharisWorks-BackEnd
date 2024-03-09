@@ -130,11 +130,12 @@ func GetAccount(stripeAccountId string) (*stripe.Account, error) {
 }
 
 func (r StripeRequests) CreatePaymentintent(userId string, totalAmount int) (ClientSecret *string, StripeTransactionId *string, err error) {
-	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
 
 	// Create a PaymentIntent with amount and currency
 	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(int64(totalAmount)), //合計金額を算出する関数をインジェクト
+		Amount: stripe.Int64(int64(totalAmount)), //合計金額を算出する関数をインジェクト
+
 		Currency: stripe.String(string(stripe.CurrencyJPY)),
 		// In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
 		PaymentMethodTypes: []*string{stripe.String("card"), stripe.String("konbini")},

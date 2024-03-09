@@ -3,6 +3,7 @@ package transaction
 import (
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
 type TransactionRequests struct {
@@ -39,6 +40,9 @@ func (r TransactionRequests) Purchase(userId string) (*string, error) {
 	internalCart, err := r.CartRepository.Get(userId)
 	if err != nil {
 		return nil, err
+	}
+	if len(*internalCart) == 0 {
+		return nil, &utils.InternalError{Message: utils.InternalErrorCartIsEmpty}
 	}
 	inspectedCart, err := r.CartUtils.Inspect(*internalCart)
 	if err != nil {

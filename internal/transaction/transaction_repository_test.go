@@ -19,7 +19,7 @@ func Test_Transaction(t *testing.T) {
 	UserRepository := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
 	cartRepository := cart.Repository{DB: db}
-	transactionRepository := TransactionRepository{DB: db, userRepository: UserRepository}
+	transactionRepository := Repository{DB: db, userRepository: UserRepository}
 	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
