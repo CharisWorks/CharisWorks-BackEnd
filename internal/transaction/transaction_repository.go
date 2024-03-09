@@ -27,7 +27,6 @@ func (r TransactionRepository) GetList(userId string) (*map[string]TransactionPr
 		log.Print("DB error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	log.Print(internalTransaction)
 	for _, t := range *internalTransaction {
 		transactionPreview := new(TransactionPreview)
 		transactionItem := new(TransactionItem)
@@ -59,7 +58,6 @@ func (r TransactionRepository) GetDetails(TransactionId string) (transactionDeta
 	}
 	transactionDetails = new(TransactionDetails)
 	transferList = make([]transfer, 0)
-	log.Print(internalTransaction)
 	itemList := []TransactionItem{}
 	for _, t := range *internalTransaction {
 		itemList = append(itemList, TransactionItem{

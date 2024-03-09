@@ -16,10 +16,10 @@ func Test_Transaction(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserRepository{DB: db}
+	UserRepository := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
 	cartRepository := cart.Repository{DB: db}
-	transactionRepository := TransactionRepository{DB: db, userRepository: UserDB}
+	transactionRepository := TransactionRepository{DB: db, userRepository: UserRepository}
 	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
@@ -41,17 +41,17 @@ func Test_Transaction(t *testing.T) {
 			},
 		},
 	}
-	if err = UserDB.Create("aaa"); err != nil {
+	if err = UserRepository.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
-	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+	if err = UserRepository.UpdateProfile("aaa", map[string]interface{}{
 		"display_name":      "test",
 		"description":       "test",
 		"stripe_account_id": "test",
 	}); err != nil {
 		t.Errorf("error")
 	}
-	if err = UserDB.RegisterAddress("aaa", users.AddressRegisterPayload{
+	if err = UserRepository.RegisterAddress("aaa", users.AddressRegisterPayload{
 		ZipCode:       "123-4567",
 		Address1:      "test",
 		Address2:      "test",
@@ -66,7 +66,6 @@ func Test_Transaction(t *testing.T) {
 	}
 
 	for _, item := range Items {
-		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
 		}
@@ -81,6 +80,7 @@ func Test_Transaction(t *testing.T) {
 			Quantity: 2,
 		},
 		{
+
 			ItemId:   "test2",
 			Quantity: 2,
 		},
@@ -103,18 +103,23 @@ func Test_Transaction(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	log.Print("transaction: ", transaction)
+
+	transactioDetails, user, transfer, err := transactionRepository.GetDetails("test")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	log.Print("transactionDetails: ", transactioDetails, "\n user: ", user, "\ntransfer", transfer)
+
+	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
+	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
+
 	for _, item := range Items {
 		err = ManufacturerDB.Delete(item.Name)
 		if err != nil {
 			t.Errorf("error")
 		}
 	}
-
-	transactioDetails, user, transfer, err := transactionRepository.GetDetails("test")
-	log.Print("transactioDetails: ", transactioDetails, user, transfer)
-	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
-	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
-	err = UserDB.Delete("aaa")
+	err = UserRepository.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}
