@@ -36,7 +36,7 @@ func (r TransactionRequests) GetDetails(userId string, transactionId string) (*T
 	}
 	return &transactionDetails, nil
 }
-func (r TransactionRequests) Purchase(userId string) (*string, error) {
+func (r TransactionRequests) Purchase(userId string, transactionId string) (*string, error) {
 	internalCart, err := r.CartRepository.Get(userId)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (r TransactionRequests) Purchase(userId string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = r.TransactionRepository.Register(userId, *stripeTransactionId, "transactionId", *internalCart)
+	err = r.TransactionRepository.Register(userId, *stripeTransactionId, transactionId, *internalCart)
 	if err != nil {
 		return nil, err
 	}

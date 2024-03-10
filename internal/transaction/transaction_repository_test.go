@@ -11,7 +11,7 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
-func Test_Transaction(t *testing.T) {
+func Test_Transaction_Repository(t *testing.T) {
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")

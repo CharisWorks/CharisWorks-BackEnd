@@ -15,12 +15,12 @@ import (
 	"github.com/ttacon/libphonenumber"
 )
 
-type StripeRequests struct {
+type Requests struct {
 	CartRequests cart.IRequests
 	UserRequests users.IRequests
 }
 
-func (r StripeRequests) GetRegisterLink(email string, user users.User) (*string, error) {
+func (r Requests) GetRegisterLink(email string, user users.User) (*string, error) {
 	log.Print(email)
 	Account, err := GetAccount(user.UserProfile.StripeAccountId)
 	if err != nil {
@@ -91,7 +91,7 @@ func (r StripeRequests) GetRegisterLink(email string, user users.User) (*string,
 
 }
 
-func (r StripeRequests) GetStripeMypageLink(stripeAccountId string) (*string, error) {
+func (r Requests) GetStripeMypageLink(stripeAccountId string) (*string, error) {
 	Account, err := GetAccount(stripeAccountId)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func GetAccount(stripeAccountId string) (*stripe.Account, error) {
 
 }
 
-func (r StripeRequests) CreatePaymentintent(userId string, totalAmount int) (ClientSecret *string, StripeTransactionId *string, err error) {
+func (r Requests) CreatePaymentintent(userId string, totalAmount int) (ClientSecret *string, StripeTransactionId *string, err error) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
 
 	// Create a PaymentIntent with amount and currency

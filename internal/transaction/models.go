@@ -67,7 +67,7 @@ type InternalTransactionItem struct {
 type IRequests interface {
 	GetList(userId string) (*[]TransactionPreview, error)
 	GetDetails(userId string, transactionId string) (*TransactionDetails, error)
-	Purchase(userId string) (*string, error)
+	Purchase(userId string, transactionId string) (*string, error)
 	PurchaseRefund(stripeTransferId string, transactionId string) error
 }
 type IWebhook interface {
@@ -81,6 +81,8 @@ type transfer struct {
 	stripeAccountId string
 	transferId      string
 }
+
+// test complete
 type IRepository interface {
 	GetList(UserId string) (map[string]TransactionPreview, error)
 	GetDetails(stripeTransactionId string) (TransactionDetails, string, []transfer, error)
