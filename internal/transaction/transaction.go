@@ -7,7 +7,7 @@ import (
 )
 
 type TransactionRequests struct {
-	TransactionRepository ITransactionRepository
+	TransactionRepository IRepository
 	CartRepository        cart.IRepository
 	CartUtils             cart.IUtils
 	StripeRequests        cash.IRequests

@@ -168,7 +168,7 @@ func (r Repository) StatusUpdate(stripeTransactionId string, conditions map[stri
 	return nil
 }
 func (r Repository) StatusUpdateItems(stripeTransactionId string, itemId string, conditions map[string]interface{}) error {
-	if err := r.DB.Where("stripe_transaction_id = ?", stripeTransactionId).Where("item_id", itemId).Updates(conditions).Error; err != nil {
+	if err := r.DB.Table("transaction_items").Where("transaction_id = ?", stripeTransactionId).Where("item_id", itemId).Updates(conditions).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}

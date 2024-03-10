@@ -168,7 +168,25 @@ func Test_Transaction(t *testing.T) {
 	if !reflect.DeepEqual(transactionDetails, details) {
 		t.Errorf("got %v, want %v", transactionDetails, details)
 	}
-
+	err = transactionRepository.StatusUpdate("test", map[string]interface{}{"status": "completed", "tracking_id": "test"})
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	err = transactionRepository.StatusUpdateItems("test", "test1", map[string]interface{}{"stripe_transfer_id": "test", "status": "completed"})
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	transactionDetails, _, _, err = transactionRepository.GetDetails("test")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	details.Status = "completed"
+	details.TrackingId = "test"
+	details.Items[0].Status = "completed"
+	details.Items[0].TransferId = "test"
+	if !reflect.DeepEqual(transactionDetails, details) {
+		t.Errorf("got %v, want %v", transactionDetails, details)
+	}
 	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
 	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
 

@@ -81,7 +81,7 @@ type transfer struct {
 	stripeAccountId string
 	transferId      string
 }
-type ITransactionRepository interface {
+type IRepository interface {
 	GetList(UserId string) (map[string]TransactionPreview, error)
 	GetDetails(stripeTransactionId string) (TransactionDetails, string, []transfer, error)
 	Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error

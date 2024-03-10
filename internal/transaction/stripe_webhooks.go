@@ -7,7 +7,7 @@ import (
 
 type Webhook struct {
 	StripeUtils           cash.IUtils
-	TransactionRepository ITransactionRepository
+	TransactionRepository IRepository
 	ItemUpdater           items.IUpdater
 }
 
