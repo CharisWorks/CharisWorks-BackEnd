@@ -30,20 +30,27 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, User
 
 		})
 		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
-			/* TransactionList, err := transactionRequests.GetList(ctx, transactionRepository)
+			userId := ctx.GetString("userId")
+			TransactionList, err := transactionRequests.GetList(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
-			ctx.JSON(http.StatusOK, TransactionList) */
+			ctx.JSON(http.StatusOK, TransactionList)
 		})
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
-			/* 	TransactionDetails, err := transactionRequests.GetDetails(ctx)
+			transactionId, err := utils.GetParams("transactionId", ctx)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
-			ctx.JSON(http.StatusOK, TransactionDetails) */
+			userId := ctx.GetString("userId")
+			TransactionDetails, err := transactionRequests.GetDetails(userId, *transactionId)
+			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			ctx.JSON(http.StatusOK, TransactionDetails)
 		})
 	}
 	StripeManufacturerRouter := h.Router.Group("/api/stripe")
