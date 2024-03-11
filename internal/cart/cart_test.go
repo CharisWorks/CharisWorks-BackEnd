@@ -144,6 +144,17 @@ func TestCartRequests(t *testing.T) {
 			want: nil,
 			err:  &utils.InternalError{Message: utils.InternalErrorStockOver},
 		},
+		{
+			name: "存在しない商品",
+			payload: []CartRequestPayload{
+				{
+					ItemId:   "test3",
+					Quantity: 3,
+				},
+			},
+			want: nil,
+			err:  &utils.InternalError{Message: utils.InternalErrorDB},
+		},
 	}
 
 	for _, tt := range Cases {

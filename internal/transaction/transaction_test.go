@@ -266,7 +266,7 @@ func Test_Transaction(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			items := new([]utils.Item)
 			db.Table("items").Where("1=1").Find(&items)
-			log.Print("items:", items)
+
 			for _, cart := range c.carts {
 				err := cartRequests.Register(c.userId, cart)
 				if err != nil {
