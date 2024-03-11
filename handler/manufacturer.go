@@ -22,7 +22,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 					return
 				}
 				userId := ctx.GetString("userId")
-				err = manufacturerRequests.Register(*payload, userId, "")
+				err = manufacturerRequests.Register(*payload, userId, utils.GenerateRandomString())
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

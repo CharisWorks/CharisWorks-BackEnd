@@ -3,6 +3,7 @@ module github.com/charisworks/charisworks-backend
 go 1.21.5
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/stripe/stripe-go/v76 v76.17.0

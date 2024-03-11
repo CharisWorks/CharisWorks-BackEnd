@@ -35,7 +35,7 @@ func DBInitTest() (db *gorm.DB, err error) {
 }
 func HistoryDBInitTest() (db *gorm.DB, err error) {
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
-	dsn := "root:password@tcp(127.0.0.1:3306)/CharisWorks?parseTime=true"
+	dsn := "root:password@tcp(127.0.0.1:3307)/CharisWorks?parseTime=true"
 	log.Print("connect to ", dsn)
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

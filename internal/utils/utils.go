@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"strings"
 	"time"
 
+	"github.com/bwmarrin/snowflake"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -60,4 +62,34 @@ func CORS(r *gin.Engine) {
 		MaxAge: 24 * time.Hour,
 	}))
 
+}
+func GenerateRandomString() string {
+	// Snowflakeノード設定
+	node, err := snowflake.NewNode(1)
+	if err != nil {
+		panic(err)
+	}
+
+	// Snowflake ID生成
+	id := node.Generate().Int64()
+
+	// 使用する文字セット
+	charSet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	// 文字列生成
+	var sb strings.Builder
+	base := int64(len(charSet))
+	for id > 0 {
+		sb.WriteByte(charSet[id%base])
+		id /= base
+	}
+
+	// 文字列を反転させる（SnowflakeのIDは末尾がよりランダムとなるため）
+	str := sb.String()
+	runes := []rune(str)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	return string(runes)
 }

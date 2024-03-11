@@ -18,12 +18,16 @@ func Test_Transaction(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
 	UserRepository := users.UserRepository{DB: db}
 	userRequests := users.Requests{UserRepository: UserRepository, UserUtils: users.UserUtils{}}
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
 	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
-	transactionRequests := TransactionRequests{TransactionRepository: Repository{DB: db, UserRepository: UserRepository}, CartRepository: cartRequests.CartRepository, CartUtils: cartRequests.CartUtils, StripeRequests: cash.Requests{}, StripeUtils: cash.Utils{}}
-	webhook := Webhook{StripeUtils: cash.Utils{}, TransactionRepository: Repository{DB: db, UserRepository: UserRepository}, ItemUpdater: items.Updater{DB: db}}
+	transactionRequests := TransactionRequests{TransactionRepository: Repository{DB: trdb, UserRepository: UserRepository}, CartRepository: cartRequests.CartRepository, CartUtils: cartRequests.CartUtils, StripeRequests: cash.Requests{}, StripeUtils: cash.Utils{}}
+	webhook := Webhook{StripeUtils: cash.Utils{}, TransactionRepository: Repository{DB: trdb, UserRepository: UserRepository}, ItemUpdater: items.Updater{DB: db}}
 	user_data := []struct {
 		userId  string
 		profile users.UserProfile
@@ -706,9 +710,9 @@ func After(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-
-	db.Table("transactions").Where("1=1").Delete(utils.Transaction{})
-	db.Table("transaction_items").Where("1=1").Delete(utils.TransactionItem{})
+	trdb, err := utils.HistoryDBInitTest()
+	trdb.Table("transactions").Where("1=1").Delete(utils.Transaction{})
+	trdb.Table("transaction_items").Where("1=1").Delete(utils.TransactionItem{})
 	db.Table("users").Where("1=1").Delete(utils.User{})
 	db.Table("shippings").Where("1=1").Delete(utils.Shipping{})
 	db.Table("items").Where("1=1").Delete(utils.Item{})
