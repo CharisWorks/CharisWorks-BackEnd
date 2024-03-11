@@ -30,11 +30,11 @@ type InternalTransactionDetails struct {
 type TransactionStatus string
 
 const (
-	Pending  TransactionStatus = "Pending"
-	Complete TransactionStatus = "Complete"
-	Cancel   TransactionStatus = "Cancel"
-	Fail     TransactionStatus = "Fail"
-	Refund   TransactionStatus = "Refund"
+	Pending   TransactionStatus = "Pending"
+	Complete  TransactionStatus = "Complete"
+	Cancelled TransactionStatus = "Cancel"
+	Fail      TransactionStatus = "Fail"
+	Refund    TransactionStatus = "Refund"
 )
 
 type TransactionAddress struct {

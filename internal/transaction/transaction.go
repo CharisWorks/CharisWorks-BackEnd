@@ -74,13 +74,13 @@ func (r TransactionRequests) PurchaseRefund(stripeTransferId string, stripeTrans
 			if err != nil {
 				return err
 			}
-			err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": "refunded"})
+			err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": string(Refund)})
 			if err != nil {
 				return err
 			}
 		}
 	}
-	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": "refunded"})
+	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": string(Refund)})
 	if err != nil {
 		return err
 	}

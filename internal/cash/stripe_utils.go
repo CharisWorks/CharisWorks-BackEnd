@@ -13,7 +13,7 @@ type Utils struct {
 }
 
 func (r Utils) Refund(amount int, transferId string, accountId string) (err error) {
-	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
 
 	params := &stripe.RefundParams{PaymentIntent: stripe.String(transferId)}
 	result, err := refund.New(params)
@@ -21,7 +21,7 @@ func (r Utils) Refund(amount int, transferId string, accountId string) (err erro
 		log.Fatal(err)
 	}
 	log.Print(result)
-	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
 	log.Print("Reversing transfer... \n amount: ", amount, "\n transferId: ", accountId)
 
 	reverseParams := &stripe.TransferReversalParams{

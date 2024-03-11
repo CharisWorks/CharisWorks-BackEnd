@@ -67,16 +67,12 @@ func (r Webhook) PurchaseCanceled(stripeTransactionId string) error {
 		return err
 	}
 	for _, t := range transferList {
-		err = r.StripeUtils.Refund(t.amount, stripeTransactionId, t.stripeAccountId)
-		if err != nil {
-			return err
-		}
-		err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": "canceled"})
+		err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"status": string(Cancelled)})
 		if err != nil {
 			return err
 		}
 	}
-	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": "canceled"})
+	err = r.TransactionRepository.StatusUpdate(stripeTransactionId, map[string]interface{}{"status": string(Cancelled)})
 	if err != nil {
 		return err
 	}

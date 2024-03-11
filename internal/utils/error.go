@@ -60,6 +60,7 @@ const (
 	InternalErrorInvalidUserRequest InternalMessage = "invalid user request"
 	InternalErrorUnAuthorized       InternalMessage = "unauthorized"
 	InternalErrorEmailIsNotVerified InternalMessage = "email is not verified"
+	InternalErrorAddressIsNotSet    InternalMessage = "address is not set"
 )
 
 // DB系

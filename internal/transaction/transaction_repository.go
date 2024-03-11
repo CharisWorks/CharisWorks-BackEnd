@@ -92,6 +92,7 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 			amount:          t.TransactionItems.Price * t.TransactionItems.Quantity,
 			itemId:          t.TransactionItems.ItemId,
 			stripeAccountId: t.TransactionItems.ManufacturerStripeAccountId,
+			transferId:      t.TransactionItems.StripeTransferId,
 		}
 		transferList = append(transferList, tr)
 
@@ -131,6 +132,10 @@ func (r Repository) Register(userId string, transactionId string, internalCartLi
 	user, err := r.UserRepository.Get(userId)
 	if err != nil {
 		return err
+	}
+
+	if user.UserAddress == *new(users.UserAddress) {
+		return &utils.InternalError{Message: utils.InternalErrorAddressIsNotSet}
 	}
 	address := user.UserAddress.Address1 + user.UserAddress.Address2 + user.UserAddress.Address3
 	name := user.UserAddress.FirstName + user.UserAddress.LastName
