@@ -18,7 +18,7 @@ import (
 func TestCartRequests_Get_example(t *testing.T) {
 	CartRequests := new(CartRequests)
 	CartUtils := new(CartUtils)
-	CartDB := new(ExampleCartDB)
+	cartRepository := new(ExamplecartRepository)
 
 	Cases := []struct {
 		name          string
@@ -215,10 +215,10 @@ func TestCartRequests_Get_example(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			CartDB.InternalCarts = tt.internalCarts
-			CartDB.SelectError = tt.SelectErrerr
+			cartRepository.InternalCarts = tt.internalCarts
+			cartRepository.SelectError = tt.SelectErrerr
 			ctx.Set("UserId", "test")
-			result, err := CartRequests.Get(ctx, CartDB, CartUtils)
+			result, err := CartRequests.Get(ctx, cartRepository, CartUtils)
 			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
@@ -235,7 +235,7 @@ func TestCartRequests_Get_example(t *testing.T) {
 func TestCartRequests_Get(t *testing.T) {
 	CartRequests := new(CartRequests)
 	CartUtils := new(CartUtils)
-	CartDB := new(ExampleCartDB)
+	cartRepository := new(ExamplecartRepository)
 
 	Cases := []struct {
 		name          string
@@ -432,10 +432,10 @@ func TestCartRequests_Get(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			CartDB.InternalCarts = tt.internalCarts
-			CartDB.SelectError = tt.SelectErrerr
+			cartRepository.InternalCarts = tt.internalCarts
+			cartRepository.SelectError = tt.SelectErrerr
 			ctx.Set("UserId", "test")
-			result, err := CartRequests.Get(ctx, CartDB, CartUtils)
+			result, err := CartRequests.Get(ctx, cartRepository, CartUtils)
 			log.Print(result, tt.want)
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
@@ -452,7 +452,7 @@ func TestCartRequests_Get(t *testing.T) {
 func TestCartRequests_Register(t *testing.T) {
 	CartRequests := new(CartRequests)
 	CartUtils := new(CartUtils)
-	CartDB := new(ExampleCartDB)
+	cartRepository := new(ExamplecartRepository)
 
 	Cases := []struct {
 		name               string
@@ -787,12 +787,12 @@ func TestCartRequests_Register(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 
-			CartDB.InternalCarts = tt.internalCarts
-			CartDB.ItemSelectError = tt.DBerr
-			CartDB.SelectError = tt.SelectErr
-			CartDB.UpdateError = tt.UpdateDBerr
-			CartDB.RegisterError = tt.registerDBerr
-			CartDB.ItemStatus = tt.itemStatus
+			cartRepository.InternalCarts = tt.internalCarts
+			cartRepository.ItemSelectError = tt.DBerr
+			cartRepository.SelectError = tt.SelectErr
+			cartRepository.UpdateError = tt.UpdateDBerr
+			cartRepository.RegisterError = tt.registerDBerr
+			cartRepository.ItemStatus = tt.itemStatus
 
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
@@ -806,7 +806,7 @@ func TestCartRequests_Register(t *testing.T) {
 			log.Println(req.Body)
 			ctx.Request = req
 			ctx.Set("UserId", "test")
-			err = CartRequests.Register(CartDB, CartUtils, ctx)
+			err = CartRequests.Register(cartRepository, CartUtils, ctx)
 			log.Print(err)
 			if err != nil {
 				if err.Error() != tt.err.Error() {
@@ -821,7 +821,7 @@ func TestCartRequests_Register(t *testing.T) {
 func TestCartRequests_Delete(t *testing.T) {
 	CartRequests := new(CartRequests)
 	CartUtils := new(CartUtils)
-	CartDB := new(ExampleCartDB)
+	cartRepository := new(ExamplecartRepository)
 
 	Cases := []struct {
 		name          string
@@ -909,9 +909,9 @@ func TestCartRequests_Delete(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 
-			CartDB.InternalCarts = tt.internalCarts
-			CartDB.DeleteError = tt.DeleteDBerr
-			CartDB.SelectError = tt.SelectError
+			cartRepository.InternalCarts = tt.internalCarts
+			cartRepository.DeleteError = tt.DeleteDBerr
+			cartRepository.SelectError = tt.SelectError
 
 			log.Print("pointer")
 			w := httptest.NewRecorder()
@@ -920,7 +920,7 @@ func TestCartRequests_Delete(t *testing.T) {
 			ctx.Request = req
 			ctx.Set("UserId", "test")
 			ctx.Request.URL.RawQuery = "item_id=" + tt.itemId
-			err := CartRequests.Delete(CartDB, CartUtils, ctx)
+			err := CartRequests.Delete(cartRepository, CartUtils, ctx)
 
 			if err != nil {
 				if err.Error() != tt.err.Error() {

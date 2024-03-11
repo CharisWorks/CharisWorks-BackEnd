@@ -15,10 +15,10 @@ func TestCartRequests(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	CartDB := CartRepository{DB: db}
-	Items := []manufacturer.ItemRegisterPayload{
+	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
 			Price: 2000,
@@ -40,11 +40,18 @@ func TestCartRequests(t *testing.T) {
 			},
 		},
 	}
-
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
+		t.Errorf("error")
+	}
+	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+		"display_name":      "test",
+		"description":       "test",
+		"stripe_account_id": "test",
+	}); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
+
 		err = ManufacturerDB.Register(item.Name, item, "aaa")
 		if err != nil {
 			t.Errorf("error")
@@ -55,8 +62,7 @@ func TestCartRequests(t *testing.T) {
 		}
 	}
 
-	CartRequests := new(CartRequests)
-	CartUtils := new(CartUtils)
+	CartRequests := Requests{CartRepository: Repository{DB: db}, CartUtils: Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
 
 	Cases := []struct {
 		name    string
@@ -123,9 +129,9 @@ func TestCartRequests(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				CartRequests.Register("aaa", p, CartDB, CartUtils)
+				CartRequests.Register("aaa", p)
 			}
-			result, err := CartRequests.Get("aaa", CartDB, CartUtils)
+			result, err := CartRequests.Get("aaa")
 			if !reflect.DeepEqual(result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
@@ -135,7 +141,7 @@ func TestCartRequests(t *testing.T) {
 				}
 			}
 			for _, p := range tt.payload {
-				CartRequests.Delete("aaa", p.ItemId, CartDB, CartUtils)
+				CartRequests.Delete("aaa", p.ItemId)
 			}
 
 		})
@@ -146,7 +152,7 @@ func TestCartRequests(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}

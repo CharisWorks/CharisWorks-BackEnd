@@ -1,34 +1,56 @@
 package manufacturer
 
+import (
+	"github.com/charisworks/charisworks-backend/internal/items"
+	"github.com/charisworks/charisworks-backend/internal/utils"
+)
+
 type Requests struct {
+	ManufacturerItemRepository      IItemRepository
+	ManufacturerInspectPayloadUtils IInspectPayloadUtils
+	ItemRepository                  items.IRepository
 }
 
-func (m Requests) Register(itemRegisterPayload ItemRegisterPayload, userId string, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error {
-	err := manufacturerUtils.Register(itemRegisterPayload)
+func (r Requests) Register(itemRegisterPayload RegisterPayload, userId string, itemId string) error {
+	err := r.ManufacturerInspectPayloadUtils.Register(itemRegisterPayload)
 	if err != nil {
 		return err
 	}
 
-	err = manufacturerDB.Register("", itemRegisterPayload, userId)
+	err = r.ManufacturerItemRepository.Register(itemId, itemRegisterPayload, userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (m Requests) Update(query map[string]interface{}, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error {
-	updatepayload, err := manufacturerUtils.Update(query)
+func (r Requests) Update(updatePayload UpdatePayload, userId string, itemId string) error {
+	item, err := r.ItemRepository.GetItemOverview(itemId)
 	if err != nil {
 		return err
 	}
+	if item.Manufacturer.UserId != userId {
+		return &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+	}
 
-	err = manufacturerDB.Update(*updatepayload, "")
+	updatepayload, err := r.ManufacturerInspectPayloadUtils.Update(updatePayload)
+	if err != nil {
+		return err
+	}
+	err = r.ManufacturerItemRepository.Update(updatepayload, itemId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (m Requests) Delete(itemId string, manufacturerDB IItemRepository) error {
-	err := manufacturerDB.Delete(itemId)
+func (r Requests) Delete(itemId string, userId string) error {
+	item, err := r.ItemRepository.GetItemOverview(itemId)
+	if err != nil {
+		return err
+	}
+	if item.Manufacturer.UserId != userId {
+		return &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+	}
+	err = r.ManufacturerItemRepository.Delete(itemId)
 	if err != nil {
 		return err
 	}

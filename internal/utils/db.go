@@ -29,7 +29,19 @@ func DBInitTest() (db *gorm.DB, err error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&User{}, &Item{}, &Cart{}, &Shipping{})
+	db.AutoMigrate(&User{}, &Item{}, &Cart{}, &Shipping{}, &Transaction{}, &TransactionItem{})
+
+	return
+}
+func HistoryDBInitTest() (db *gorm.DB, err error) {
+	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
+	dsn := "root:password@tcp(127.0.0.1:3306)/CharisWorks?parseTime=true"
+	log.Print("connect to ", dsn)
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	db.AutoMigrate(&Transaction{}, &TransactionItem{})
 
 	return
 }
@@ -42,10 +54,14 @@ type Cart struct {
 	ItemId          string `gorm:"item_id;type:varchar(100)"`
 	Quantity        int    `gorm:"quantity"`
 }
-
+type InternalItem struct {
+	Item Item `gorm:"embedded"`
+	User User `gorm:"embedded"`
+}
 type InternalCart struct {
 	Cart Cart `gorm:"embedded"`
 	Item Item `gorm:"embedded"`
+	User User `gorm:"embedded"`
 }
 
 type User struct {
@@ -78,32 +94,38 @@ type Shipping struct {
 	LastName      string `gorm:"last_name"`
 	LastNameKana  string `gorm:"last_name_kana"`
 }
-
+type InternalTransaction struct {
+	Transaction      Transaction     `gorm:"embedded"`
+	TransactionItems TransactionItem `gorm:"embedded"`
+}
 type Transaction struct {
-	Id                  int       `gorm:"id"`
-	PurchaserUserId     string    `gorm:"purchaser_user_id"`
-	TrackingId          string    `gorm:"tracking_id"`
-	CreatedAt           time.Time `gorm:"created_at"`
-	ZipCode             string    `gorm:"zip_code"`
-	Address             string    `gorm:"address"`
-	PhoneNumber         string    `gorm:"phone_number"`
-	RealName            string    `gorm:"real_name"`
-	Status              string    `gorm:"status"`
-	StripeTransactionId string    `gorm:"stripe_transaction_id"`
-	TotalPrice          int       `gorm:"total_price"`
-	TotalAmount         int       `gorm:"total_amount"`
+	TransactionId   string    `gorm:"column:transaction_id;type:varchar(100);primaryKey"`
+	PurchaserUserId string    `gorm:"purchaser_user_id;type:varchar(100)"`
+	TrackingId      string    `gorm:"tracking_id;type:varchar(100)"`
+	CreatedAt       time.Time `gorm:"created_at"`
+	ZipCode         string    `gorm:"zip_code"`
+	Address         string    `gorm:"address"`
+	PhoneNumber     string    `gorm:"phone_number"`
+	RealName        string    `gorm:"real_name"`
+	Status          string    `gorm:"status"`
+	TotalPrice      int       `gorm:"total_price"`
+	TotalAmount     int       `gorm:"total_amount"`
 }
 
 type TransactionItem struct {
-	Id                      int    `gorm:"id"`
-	TransactionId           int    `gorm:"transaction_id"`
-	ItemId                  string `gorm:"item_id"`
-	Name                    string `gorm:"name"`
-	Price                   int    `gorm:"price"`
-	Quantity                int    `gorm:"quantity"`
-	Description             string `gorm:"description"`
-	Tags                    string `gorm:"tags"`
-	ManufacturerUserId      string `gorm:"manufacturer_user_id"`
-	ManufacturerName        string `gorm:"manufacturer_name"`
-	ManufacturerDescription string `gorm:"manufacturer_description"`
+	Id                          int    `gorm:"id"`
+	TransactionId               string `gorm:"transaction_id;type:varchar(100)"`
+	ItemId                      string `gorm:"item_id;type:varchar(100)"`
+	Name                        string `gorm:"name"`
+	Price                       int    `gorm:"price"`
+	Size                        int    `gorm:"size"`
+	Quantity                    int    `gorm:"quantity"`
+	Description                 string `gorm:"description"`
+	Tags                        string `gorm:"tags"`
+	ManufacturerUserId          string `gorm:"manufacturer_user_id;type:varchar(100)"`
+	ManufacturerName            string `gorm:"manufacturer_name"`
+	ManufacturerDescription     string `gorm:"manufacturer_description"`
+	ManufacturerStripeAccountId string `gorm:"manufacturer_stripe_account_id;type:varchar(100)"`
+	StripeTransferId            string `gorm:"stripe_transfer_id;type:varchar(100)"`
+	Status                      string `gorm:"status"`
 }

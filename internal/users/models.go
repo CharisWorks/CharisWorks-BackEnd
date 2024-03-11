@@ -2,8 +2,6 @@ package users
 
 import (
 	"time"
-
-	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
 type User struct {
@@ -32,7 +30,7 @@ type UserProfileRegisterPayload struct {
 	DisplayName string `json:"display_name" binding:"required"`
 	Description string `json:"description" binding:"required"`
 }
-type UserAddressRegisterPayload struct {
+type AddressRegisterPayload struct {
 	FirstName     string `json:"first_name" binding:"required"`
 	FirstNameKana string `json:"first_name_kana" binding:"required"`
 	LastName      string `json:"last_name" binding:"required"`
@@ -44,39 +42,24 @@ type UserAddressRegisterPayload struct {
 	PhoneNumber   string `json:"phone_number" binding:"required"`
 }
 
-type HistoryUser struct {
-	HistoryUserId string    `json:"history_user_id"`
-	UserId        string    `json:"user_id"`
-	DisplayName   string    `json:"display_name"`
-	Description   string    `json:"description"`
-	CreatedAt     time.Time `json:"crated_at"`
+type IRequests interface {
+	Create(userId string) error
+	Get(userId string) (*User, error)
+	Delete(userId string) error
+	ProfileUpdate(userId string, userProfile UserProfile) error
+	AddressRegister(userId string, AddressRegisterPayload AddressRegisterPayload) error
+	AddressUpdate(userId string, userAddress UserAddress) error
 }
-
-type IUserRequests interface {
-	UserCreate(userId string, UserDB IUserDB) error
-	UserGet(userId string, UserDB IUserDB) (*User, error)
-	UserDelete(userId string, UserDB IUserDB) error
-	UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error
-	UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, UserDB IUserDB, UserUtils IUserUtils) error
-	UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error
-}
-type IUserUtils interface {
-	InspectAddressRegisterPayload(UserAddressRegisterPayload) (UserAddressRegisterPayload, error)
+type IUtils interface {
+	InspectAddressRegisterPayload(AddressRegisterPayload) (AddressRegisterPayload, error)
 	InspectProfileUpdatePayload(UserProfile) map[string]interface{}
 	InspectAddressUpdatePayload(UserAddress) (map[string]interface{}, error)
 }
-type IUserDB interface {
-	CreateUser(UserId string) error
-	GetUser(UserId string) (user *User, err error)
-	DeleteUser(UserId string) error
+type IRepository interface {
+	Create(UserId string) error
+	Get(UserId string) (user *User, err error)
+	Delete(UserId string) error
 	UpdateProfile(string, map[string]interface{}) error
-	RegisterAddress(string, UserAddressRegisterPayload) error
+	RegisterAddress(string, AddressRegisterPayload) error
 	UpdateAddress(string, map[string]interface{}) error
-}
-type IUserDBHistory interface {
-	GetUser(itemId string) (*utils.User, error)
-	RegisterUserProfile(UserProfile utils.User) error
-}
-type IUserHistoryUtils interface {
-	HistoryUserUpdate(utils.User, map[string]interface{}) (utils.User, error)
 }

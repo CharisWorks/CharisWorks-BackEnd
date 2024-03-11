@@ -1,10 +1,6 @@
 package manufacturer
 
-import (
-	"github.com/charisworks/charisworks-backend/internal/utils"
-)
-
-type ItemRegisterPayload struct {
+type RegisterPayload struct {
 	Name    string                     `json:"name" binding:"required"`
 	Price   int                        `json:"price" binding:"required"`
 	Details ItemRegisterDetailsPayload `json:"details" binding:"required"`
@@ -16,17 +12,9 @@ type ItemRegisterDetailsPayload struct {
 	Tags        []string `json:"tags" binding:"required" `
 }
 
-type ItemUpdatePayload struct {
-	ItemId                      string                      `json:"item_id" binding:"required"`
-	ItemUpdatePropertiesPayload ItemUpdatePropertiesPayload `json:"properties" binding:"required"`
-}
-type ItemUpdatePropertiesPayload struct {
-	Name    string                   `json:"name"`
-	Price   int                      `json:"price"`
-	Details ItemUpdateDetailsPayload `json:"details"`
-}
-
-type ItemUpdateDetailsPayload struct {
+type UpdatePayload struct {
+	Name        string   `json:"name"`
+	Price       int      `json:"price"`
 	Status      string   `json:"status"`
 	Stock       int      `json:"stock"`
 	Size        int      `json:"size"`
@@ -35,25 +23,18 @@ type ItemUpdateDetailsPayload struct {
 }
 
 type IItemRequests interface {
-	Register(itemRegisterPayload ItemRegisterPayload, userId string, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error
-	Update(query map[string]interface{}, manufacturerDB IItemRepository, manufacturerUtils IInspectPayloadUtils, manufacturerDBHistoy IHistoryRepository) error
-	Delete(itemId string, manufacturerDB IItemRepository) error
+	Register(registerPayload RegisterPayload, userId string, itemId string) error
+	Update(updatePayload UpdatePayload, userId string, itemId string) error
+	Delete(itemId string, userId string) error
 }
 
 type IInspectPayloadUtils interface {
-	Register(ItemRegisterPayload) error
-	Update(map[string]interface{}) (*map[string]interface{}, error)
+	Register(RegisterPayload) error
+	Update(UpdatePayload) (map[string]interface{}, error)
 }
 
 type IItemRepository interface {
-	Register(itemId string, i ItemRegisterPayload, userId string) error
+	Register(itemId string, i RegisterPayload, userId string) error
 	Update(i map[string]interface{}, itemId string) error
 	Delete(itemId string) error
-}
-type IHistoryRepository interface {
-	Register(i utils.Item) (err error)
-	Get(itemId string) (utils.Item, error)
-}
-type IHistoryUtils interface {
-	HistoryItemUpdate(i utils.Item, payload map[string]interface{}) (utils.Item, error)
 }

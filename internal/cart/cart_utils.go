@@ -8,10 +8,10 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
 
-type CartUtils struct {
+type Utils struct {
 }
 
-func (CartUtils CartUtils) Inspect(internalCarts []InternalCart) (result map[string]InternalCart, err error) {
+func (r Utils) Inspect(internalCarts []InternalCart) (result map[string]InternalCart, err error) {
 	cartMap := map[string]InternalCart{}
 	for _, internalCart := range internalCarts {
 		if internalCart.ItemStock < internalCart.Cart.Quantity {
@@ -34,7 +34,7 @@ func (CartUtils CartUtils) Inspect(internalCarts []InternalCart) (result map[str
 	return cartMap, nil
 }
 
-func (CartUtils CartUtils) Convert(internalCarts map[string]InternalCart) (result []Cart) {
+func (r Utils) Convert(internalCarts map[string]InternalCart) (result []Cart) {
 	sortedCart := []InternalCart{}
 	for _, inteinternalCart := range internalCarts {
 		sortedCart = append(sortedCart, inteinternalCart)
@@ -49,24 +49,24 @@ func (CartUtils CartUtils) Convert(internalCarts map[string]InternalCart) (resul
 
 	return result
 }
-func (CartUtils CartUtils) GetTotalAmount(internalCarts map[string]InternalCart) int {
+func (r Utils) GetTotalAmount(internalCarts map[string]InternalCart) int {
 	totalAmount := 0
 	for _, internalCart := range internalCarts {
 		totalAmount += internalCart.Cart.ItemProperties.Price * internalCart.Cart.Quantity
 	}
 	return totalAmount
 }
-func (CartUtils CartUtils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus itemStatus) (result *CartRequestPayload, err error) {
+func (r Utils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus items.ItemStatus) (result *CartRequestPayload, err error) {
 	if CartRequestPayload.Quantity <= 0 {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
-	if itemStatus.status != items.Available {
+	if itemStatus.Status != items.Available {
 		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 	}
-	if itemStatus.itemStock == 0 {
+	if itemStatus.Stock == 0 {
 		return nil, &utils.InternalError{Message: utils.InternalErrorNoStock}
 	}
-	if CartRequestPayload.Quantity > itemStatus.itemStock {
+	if CartRequestPayload.Quantity > itemStatus.Stock {
 		return nil, &utils.InternalError{Message: utils.InternalErrorStockOver}
 	}
 

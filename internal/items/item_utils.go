@@ -39,11 +39,8 @@ func (i ItemUtils) InspectSearchConditions(ctx *gin.Context) (int, int, map[stri
 		*size = i
 	}
 
-	tags := make([]string, 0)
 	tagString, _ := utils.GetQuery("tags", ctx)
-	if tagString == nil {
-		tags = strings.Split(*tagString, "+")
-	}
+	tags := strings.Split(*tagString, "+")
 
 	conditions := make(map[string]interface{})
 	minPrice, _ := utils.GetQuery("min_price", ctx)

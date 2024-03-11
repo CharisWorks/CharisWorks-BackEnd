@@ -13,7 +13,7 @@ type Repository struct {
 	DB *gorm.DB
 }
 
-func (m Repository) Register(itemId string, i ItemRegisterPayload, userId string) error {
+func (m Repository) Register(itemId string, i RegisterPayload, userId string) error {
 	json, err := json.Marshal(i.Details.Tags)
 	if err != nil {
 		return &utils.InternalError{Message: utils.InternalErrorInvalidPayload}

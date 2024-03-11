@@ -18,4 +18,5 @@ const (
 	userId        structInContext = "userId"
 	user          structInContext = "user"
 	emailVerified structInContext = "EmailVerified"
+	stripeEvent   structInContext = "Event"
 )

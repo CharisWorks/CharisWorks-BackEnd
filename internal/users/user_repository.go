@@ -8,12 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserDB struct {
+type UserRepository struct {
 	DB *gorm.DB
 }
 
 // firstorinitをそのうち使うかもしれない
-func (r UserDB) CreateUser(UserId string) error {
+func (r UserRepository) Create(UserId string) error {
 	DBUser := new(utils.User)
 	DBUser.Id = UserId
 	DBUser.CreatedAt = time.Now()
@@ -24,7 +24,7 @@ func (r UserDB) CreateUser(UserId string) error {
 	}
 	return nil
 }
-func (r UserDB) GetUser(UserId string) (*User, error) {
+func (r UserRepository) Get(UserId string) (*User, error) {
 	DBUser := new(utils.User)
 	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
@@ -53,7 +53,7 @@ func (r UserDB) GetUser(UserId string) (*User, error) {
 	}
 	return user, nil
 }
-func (r UserDB) DeleteUser(UserId string) error {
+func (r UserRepository) Delete(UserId string) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Delete(utils.User{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -61,14 +61,14 @@ func (r UserDB) DeleteUser(UserId string) error {
 	return nil
 }
 
-func (r UserDB) UpdateProfile(UserId string, payload map[string]interface{}) error {
+func (r UserRepository) UpdateProfile(UserId string, payload map[string]interface{}) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Updates(payload).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
-func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayload) error {
+func (r UserRepository) RegisterAddress(UserId string, payload AddressRegisterPayload) error {
 	Shipping := new(utils.Shipping)
 	Shipping.Id = UserId
 	Shipping.ZipCode = payload.ZipCode
@@ -89,7 +89,7 @@ func (r UserDB) RegisterAddress(UserId string, payload UserAddressRegisterPayloa
 
 	return nil
 }
-func (r UserDB) UpdateAddress(UserId string, payload map[string]interface{}) error {
+func (r UserRepository) UpdateAddress(UserId string, payload map[string]interface{}) error {
 	if err := r.DB.Table("shippings").Where("id = ?", UserId).Updates(payload).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}

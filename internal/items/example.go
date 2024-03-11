@@ -46,7 +46,7 @@ func ExampleItemOverview(itemId string) ItemOverview {
 type ExampleItemRequests struct {
 }
 
-func (i ExampleItemRequests) GetOverview(ItemDB IItemDB, ctx *gin.Context) (*ItemOverview, error) {
+func (i ExampleItemRequests) GetOverview(ItemRepository IItemRepository, ctx *gin.Context) (*ItemOverview, error) {
 	itemId, err := utils.GetParams("itemId", ctx)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (i ExampleItemRequests) GetOverview(ItemDB IItemDB, ctx *gin.Context) (*Ite
 	ItemOverview := ExampleItemOverview(*itemId)
 	return &ItemOverview, nil
 }
-func (i ExampleItemRequests) GetSearchPreviewList(ItemDb IItemDB, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
+func (i ExampleItemRequests) GetSearchPreviewList(ItemRepository IItemRepository, ItemUtils IItemUtils, ctx *gin.Context) (*[]ItemPreview, error) {
 	//log.Println("tags: ", tags)
 		page, _ := utils.GetQuery("page", false, ctx)
 	   	sort, _ := utils.GetQuery("sort", false, ctx)

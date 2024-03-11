@@ -15,19 +15,19 @@ func Test_ManufacturerDB(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := Repository{DB: db}
-	ItemDB := items.ItemDB{DB: db}
+	ItemRepository := items.ItemRepository{DB: db}
 	Cases := []struct {
 		name          string
-		payload       ItemRegisterPayload
+		payload       RegisterPayload
 		want          items.Overview
 		updatePayload map[string]interface{}
 		wantUpdated   items.Overview
 	}{
 		{
 			name: "正常",
-			payload: ItemRegisterPayload{
+			payload: RegisterPayload{
 				Name:  "abc",
 				Price: 2000,
 				Details: ItemRegisterDetailsPayload{
@@ -50,6 +50,12 @@ func Test_ManufacturerDB(t *testing.T) {
 						Tags:        []string{"aaa", "bbb"},
 					},
 				},
+				Manufacturer: items.ManufacturerDetails{
+					Name:            "test",
+					StripeAccountId: "test",
+					Description:     "test",
+					UserId:          "aaa",
+				},
 			},
 			updatePayload: map[string]interface{}{
 				"stock": 4,
@@ -67,13 +73,23 @@ func Test_ManufacturerDB(t *testing.T) {
 						Tags:        []string{"aaa", "bbb"},
 					},
 				},
+				Manufacturer: items.ManufacturerDetails{
+					Name:            "test",
+					StripeAccountId: "test",
+					Description:     "test",
+					UserId:          "aaa",
+				},
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
-	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{"stripe_account_id": "acct_abcd"}); err != nil {
+	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+		"display_name":      "test",
+		"description":       "test",
+		"stripe_account_id": "test",
+	}); err != nil {
 		t.Errorf("error")
 	}
 	for _, tt := range Cases {
@@ -83,23 +99,23 @@ func Test_ManufacturerDB(t *testing.T) {
 				log.Print("error", err.Error())
 				t.Errorf("error")
 			}
-			ItemOverview, err := ItemDB.GetItemOverview("test")
+			ItemOverview, err := ItemRepository.GetItemOverview("test")
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*ItemOverview, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.want)
+			if !reflect.DeepEqual(ItemOverview, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, ItemOverview, tt.want)
 			}
 			err = ManufacturerDB.Update(tt.updatePayload, "test")
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemOverview, err = ItemDB.GetItemOverview("test")
+			ItemOverview, err = ItemRepository.GetItemOverview("test")
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*ItemOverview, tt.wantUpdated) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemOverview, tt.wantUpdated)
+			if !reflect.DeepEqual(ItemOverview, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, ItemOverview, tt.wantUpdated)
 			}
 			err = ManufacturerDB.Delete("test")
 			if err != nil {
@@ -108,7 +124,7 @@ func Test_ManufacturerDB(t *testing.T) {
 
 		})
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}
@@ -118,10 +134,10 @@ func Test_GetItemList(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := Repository{DB: db}
-	ItemDB := items.ItemDB{DB: db}
-	Items := []ItemRegisterPayload{
+	ItemRepository := items.ItemRepository{DB: db}
+	Items := []RegisterPayload{
 		{
 			Name:  "test1",
 			Price: 2000,
@@ -184,7 +200,7 @@ func Test_GetItemList(t *testing.T) {
 		},
 	}
 
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
@@ -328,14 +344,14 @@ func Test_GetItemList(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			previews, totalElements, err := ItemDB.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
+			previews, totalElements, err := ItemRepository.GetPreviewList(tt.pageNum, tt.pageSize, tt.condition, tt.tags)
 			log.Print("totalElements: ", totalElements)
-			log.Print("pre: ", *previews)
+			log.Print("pre: ", previews)
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*previews, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *previews, tt.want)
+			if !reflect.DeepEqual(previews, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, previews, tt.want)
 			}
 			if totalElements != tt.totalElements {
 				t.Errorf("%v,got,%v,want%v", tt.name, totalElements, tt.totalElements)
@@ -349,7 +365,7 @@ func Test_GetItemList(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}

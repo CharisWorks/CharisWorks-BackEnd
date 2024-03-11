@@ -15,7 +15,7 @@ import (
 func TestGetClientSecret(t *testing.T) {
 	StripeRequests := new(StripeRequests)
 	CartRequests := new(cart.CartRequests)
-	CartDB := new(cart.CartDB)
+	cartRepository := new(cart.cartRepository)
 	CartUtils := new(cart.CartUtils)
 	Cases := []struct {
 		name        string
@@ -110,14 +110,14 @@ func TestGetClientSecret(t *testing.T) {
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
-			CartDB.SelectError = tt.SelectError
-			CartDB.InternalCarts = tt.cart
+			cartRepository.SelectError = tt.SelectError
+			cartRepository.InternalCarts = tt.cart
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
 			req := httptest.NewRequest("GET", "/stripe", nil)
 			ctx.Request = req
 			ctx.Set("UserId", "test")
-			_, err := StripeRequests.GetClientSecret(ctx, CartRequests, CartDB, CartUtils)
+			_, err := StripeRequests.GetClientSecret(ctx, CartRequests, cartRepository, CartUtils)
 
 			if err != nil {
 				log.Print(err)

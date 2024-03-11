@@ -1,54 +1,56 @@
 package users
 
-type UserRequests struct {
+type Requests struct {
+	UserRepository IRepository
+	UserUtils      IUtils
 }
 
-func (r UserRequests) UserCreate(userId string, UserDB IUserDB) error {
-	err := UserDB.CreateUser(userId)
+func (r Requests) Create(userId string) error {
+	err := r.UserRepository.Create(userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (r UserRequests) UserGet(userId string, UserDB IUserDB) (*User, error) {
-	User, err := UserDB.GetUser(userId)
+func (r Requests) Get(userId string) (*User, error) {
+	User, err := r.UserRepository.Get(userId)
 	if err != nil {
 		return nil, err
 	}
 	return User, nil
 }
-func (r UserRequests) UserDelete(userId string, UserDB IUserDB) error {
-	err := UserDB.DeleteUser(userId)
+func (r Requests) Delete(userId string) error {
+	err := r.UserRepository.Delete(userId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (r UserRequests) UserProfileUpdate(userId string, userProfile UserProfile, UserDB IUserDB, UserUtils IUserUtils) error {
-	updatePayload := UserUtils.InspectProfileUpdatePayload(userProfile)
-	err := UserDB.UpdateProfile(userId, updatePayload)
+func (r Requests) ProfileUpdate(userId string, userProfile UserProfile) error {
+	updatePayload := r.UserUtils.InspectProfileUpdatePayload(userProfile)
+	err := r.UserRepository.UpdateProfile(userId, updatePayload)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (r UserRequests) UserAddressRegister(userId string, userAddressRegisterPayload UserAddressRegisterPayload, userDB IUserDB, UserUtils IUserUtils) error {
-	payload, err := UserUtils.InspectAddressRegisterPayload(userAddressRegisterPayload)
+func (r Requests) AddressRegister(userId string, AddressRegisterPayload AddressRegisterPayload) error {
+	payload, err := r.UserUtils.InspectAddressRegisterPayload(AddressRegisterPayload)
 	if err != nil {
 		return err
 	}
-	err = userDB.RegisterAddress(userId, payload)
+	err = r.UserRepository.RegisterAddress(userId, payload)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (r UserRequests) UserAddressUpdate(userId string, userAddress UserAddress, UserDB IUserDB, UserUtils IUserUtils) error {
-	updatePayload, err := UserUtils.InspectAddressUpdatePayload(userAddress)
+func (r Requests) AddressUpdate(userId string, userAddress UserAddress) error {
+	updatePayload, err := r.UserUtils.InspectAddressUpdatePayload(userAddress)
 	if err != nil {
 		return err
 	}
-	err = UserDB.UpdateAddress(userId, updatePayload)
+	err = r.UserRepository.UpdateAddress(userId, updatePayload)
 	if err != nil {
 		return err
 	}

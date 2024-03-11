@@ -12,6 +12,6 @@ services:
       TZ: "Asia/Tokyo"
     volumes:
       - ./sql_init:/docker-entrypoint-initdb.d
-
+ 
 volumes:
   data-volume:

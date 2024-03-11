@@ -3,17 +3,17 @@ package handler
 import (
 	"net/http"
 
-	"github.com/charisworks/charisworks-backend/internal/cart"
-	"github.com/charisworks/charisworks-backend/internal/cash"
-	"github.com/charisworks/charisworks-backend/internal/items"
+	stripe1 "github.com/charisworks/charisworks-backend/internal/cash"
+	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
+
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, transactionRequests cash.ITransactionRequests, StripeRequests cash.IStripeRequests, CartRequests cart.ICartRequests, cartDB cart.ICartRepository, cartUtils cart.ICartUtils, ItemDB items.IItemDB, TransactionDBHistory cash.ITransactionDBHistory, UserRequests users.IUserRequests, UserDB users.IUserDB) {
+func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, UserRequests users.Requests, stripeRequests stripe1.IRequests, transactionRequests transaction.IRequests) {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
@@ -21,7 +21,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
 			userId := ctx.GetString("userId")
-			ClientSecret, err := StripeRequests.GetClientSecret(userId, CartRequests, cartDB, cartUtils)
+			ClientSecret, _, err := transactionRequests.Purchase(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -30,7 +30,8 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 
 		})
 		StripeRouter.GET("/transaction", func(ctx *gin.Context) {
-			TransactionList, err := transactionRequests.GetList(ctx, TransactionDBHistory)
+			userId := ctx.GetString("userId")
+			TransactionList, err := transactionRequests.GetList(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -38,7 +39,13 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 			ctx.JSON(http.StatusOK, TransactionList)
 		})
 		StripeRouter.GET("/transaction/:transactionId", func(ctx *gin.Context) {
-			TransactionDetails, err := transactionRequests.GetDetails(ctx)
+			transactionId, err := utils.GetParams("transactionId", ctx)
+			if err != nil {
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			userId := ctx.GetString("userId")
+			TransactionDetails, err := transactionRequests.GetDetails(userId, *transactionId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -49,7 +56,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 	StripeManufacturerRouter := h.Router.Group("/api/stripe")
 	StripeManufacturerRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		StripeManufacturerRouter.Use(userMiddleware(UserRequests, UserDB))
+		StripeManufacturerRouter.Use(userMiddleware(UserRequests))
 		StripeManufacturerRouter.Use(stripeMiddleware())
 		{
 			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
@@ -60,7 +67,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 					ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 					return
 				}
-				URL, err := StripeRequests.GetRegisterLink(email, user.(users.User), UserDB)
+				URL, err := stripeRequests.GetRegisterLink(email, user.(users.User))
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
@@ -75,7 +82,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, tran
 					ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 					return
 				}
-				URL, err := StripeRequests.GetStripeMypageLink(user.(users.User).UserProfile.StripeAccountId)
+				URL, err := stripeRequests.GetStripeMypageLink(user.(users.User).UserProfile.StripeAccountId)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

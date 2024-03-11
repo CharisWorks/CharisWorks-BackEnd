@@ -24,8 +24,10 @@ type Overview struct {
 }
 
 type ManufacturerDetails struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	StripeAccountId string `json:"stripe_account_id"`
+	UserId          string
 }
 
 type OverviewProperties struct {
@@ -41,6 +43,10 @@ type OverviewDetails struct {
 	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
 }
+type ItemStatus struct {
+	Stock  int
+	Status Status
+}
 type Status string
 
 const (
@@ -49,16 +55,23 @@ const (
 	Ready     Status = "Ready"
 )
 
-type IItemRequests interface {
-	GetOverview(itemId string, ItemDB IItemDB) (*Overview, error)
-	GetSearchPreviewList(ctx *gin.Context, ItemDB IItemDB, ItemUtils IItemUtils) (*[]Preview, int, error)
+type IRequests interface {
+	GetOverview(itemId string) (Overview, error)
+	GetSearchPreviewList(ctx *gin.Context) ([]Preview, int, error)
 }
 
-type IItemDB interface {
-	GetItemOverview(itemId string) (*Overview, error)
-	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) (*[]Preview, int, error)
+type IRepository interface {
+	GetItemOverview(itemId string) (Overview, error)
+	GetPreviewList(pageNum int, pageSize int, conditions map[string]interface{}, tags []string) ([]Preview, int, error)
 }
 
-type IItemUtils interface {
+type IUpdater interface {
+	ReduceStock(itemId string, Quantity int) error
+	StatusUpdate(itemId string, State Status)
+}
+type IGetStatus interface {
+	GetItem(itemId string) (ItemStatus, error)
+}
+type IUtils interface {
 	InspectSearchConditions(ctx *gin.Context) (pageNum int, pageSize int, conditions map[string]interface{}, tags []string, err error)
 }

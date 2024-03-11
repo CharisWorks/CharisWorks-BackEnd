@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -8,40 +9,55 @@ import (
 	"gorm.io/gorm"
 )
 
-// ICartDB is an interface for cart database
+// IcartRepository is an interface for cart database
 
-type CartRepository struct {
+type Repository struct {
 	DB *gorm.DB
 }
 
-func (r CartRepository) Get(UserId string) (*[]InternalCart, error) {
+func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 	InternalCarts := new([]utils.InternalCart)
 	resultCart := new([]InternalCart)
 	if err := r.DB.Table("carts").
-		Select("carts.*, items.*").
+		Select("carts.*, items.*,users.*").
 		Joins("JOIN items ON carts.item_id = items.id").
+		Joins("JOIN users ON carts.purchaser_user_id = users.id").
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
 		log.Print("DB error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
+
 	for i, icart := range *InternalCarts {
 		cart := new(InternalCart)
 		cart.Index = i
 		cart.ItemStock = icart.Item.Stock
 		cart.Status = items.Status(icart.Item.Status)
-
+		tags := new([]string)
+		err := json.Unmarshal([]byte(icart.Item.Tags), &tags)
+		if err != nil {
+			log.Print("DB error: ", err)
+			return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		}
 		cart.Cart.ItemId = icart.Cart.ItemId
 		cart.Cart.Quantity = icart.Cart.Quantity
 		cart.Cart.ItemProperties.Name = icart.Item.Name
 		cart.Cart.ItemProperties.Price = icart.Item.Price
-
+		cart.Item.Name = icart.Item.Name
+		cart.Item.Price = icart.Item.Price
+		cart.Item.Description = icart.Item.Description
+		cart.Item.Size = icart.Item.Size
+		cart.Item.Tags = *tags
+		cart.Item.ManufacturerDescription = icart.User.Description
+		cart.Item.ManufacturerName = icart.User.DisplayName
+		cart.Item.ManufacturerUserId = icart.User.Id
+		cart.Item.ManufacturerStripeId = icart.User.StripeAccountId
 		*resultCart = append(*resultCart, *cart)
 	}
 	return resultCart, nil
 }
 
-func (r CartRepository) Register(UserId string, CartRequestPayload CartRequestPayload) error {
+func (r Repository) Register(UserId string, CartRequestPayload CartRequestPayload) error {
 	Cart := new(utils.Cart)
 	Cart.PurchaserUserId = UserId
 	Cart.ItemId = CartRequestPayload.ItemId
@@ -52,7 +68,7 @@ func (r CartRepository) Register(UserId string, CartRequestPayload CartRequestPa
 	}
 	return nil
 }
-func (r CartRepository) Update(UserId string, CartRequestPayload CartRequestPayload) error {
+func (r Repository) Update(UserId string, CartRequestPayload CartRequestPayload) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", CartRequestPayload.ItemId).Update("quantity", CartRequestPayload.Quantity).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -60,22 +76,17 @@ func (r CartRepository) Update(UserId string, CartRequestPayload CartRequestPayl
 	return nil
 }
 
-func (r CartRepository) Delete(UserId string, itemId string) error {
-	log.Print("UserId: ", UserId)
+func (r Repository) Delete(UserId string, itemId string) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	return nil
 }
-func (r CartRepository) GetItem(itemId string) (*itemStatus, error) {
-	itemDB := new(utils.Item)
-	if err := r.DB.Table("items").Where("id = ?", itemId).First(itemDB).Error; err != nil {
+func (r Repository) DeleteAll(UserId string) error {
+	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	itemStatus := new(itemStatus)
-	itemStatus.itemStock = itemDB.Stock
-	itemStatus.status = items.Status(itemDB.Status)
-	return itemStatus, nil
+	return nil
 }

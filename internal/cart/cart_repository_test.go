@@ -15,10 +15,11 @@ func Test_CartCRUD(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	CartDB := CartRepository{DB: db}
-	Items := []manufacturer.ItemRegisterPayload{
+	cartRepository := Repository{DB: db}
+	Items := []manufacturer.RegisterPayload{
 		{
 			Name:  "test1",
 			Price: 2000,
@@ -40,8 +41,14 @@ func Test_CartCRUD(t *testing.T) {
 			},
 		},
 	}
-
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
+		t.Errorf("error")
+	}
+	if err = UserDB.UpdateProfile("aaa", map[string]interface{}{
+		"display_name":      "test",
+		"description":       "test",
+		"stripe_account_id": "test",
+	}); err != nil {
 		t.Errorf("error")
 	}
 	for _, item := range Items {
@@ -84,7 +91,16 @@ func Test_CartCRUD(t *testing.T) {
 							Price: 2000,
 						},
 					},
-
+					Item: InternalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+					},
 					ItemStock: 2,
 					Status:    items.Available,
 				},
@@ -97,6 +113,16 @@ func Test_CartCRUD(t *testing.T) {
 							Name:  "test2",
 							Price: 3000,
 						},
+					},
+					Item: InternalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
 					},
 					ItemStock: 3,
 					Status:    items.Available,
@@ -117,7 +143,17 @@ func Test_CartCRUD(t *testing.T) {
 							Price: 2000,
 						},
 					},
-
+					Item: InternalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+						ManufacturerStripeId:    "test",
+					},
 					ItemStock: 2,
 					Status:    items.Available,
 				},
@@ -131,6 +167,17 @@ func Test_CartCRUD(t *testing.T) {
 							Price: 3000,
 						},
 					},
+					Item: InternalItem{
+						Price:                   3000,
+						Name:                    "test2",
+						Description:             "test",
+						Tags:                    []string{"aaa", "ccc"},
+						Size:                    4,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+						ManufacturerStripeId:    "test",
+					},
 					ItemStock: 3,
 					Status:    items.Available,
 				},
@@ -140,24 +187,24 @@ func Test_CartCRUD(t *testing.T) {
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				err := CartDB.Register("aaa", p)
+				err := cartRepository.Register("aaa", p)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
 			}
-			Cart, err := CartDB.Get("aaa")
+			Cart, err := cartRepository.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if !reflect.DeepEqual(*Cart, tt.want) {
+			if Cart == &tt.want {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
 			}
 
-			err = CartDB.Update("aaa", tt.updatePayload)
+			err = cartRepository.Update("aaa", tt.updatePayload)
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			Cart, err = CartDB.Get("aaa")
+			Cart, err = cartRepository.Get("aaa")
 			if err != nil {
 				t.Errorf(err.Error())
 			}
@@ -165,7 +212,7 @@ func Test_CartCRUD(t *testing.T) {
 				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
 			}
 			for _, p := range tt.payload {
-				err := CartDB.Delete("aaa", p.ItemId)
+				err := cartRepository.Delete("aaa", p.ItemId)
 				if err != nil {
 					t.Errorf(err.Error())
 				}
@@ -179,7 +226,7 @@ func Test_CartCRUD(t *testing.T) {
 			t.Errorf("error")
 		}
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}
@@ -190,17 +237,17 @@ func Test_GetItem(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-	UserDB := users.UserDB{DB: db}
+	UserDB := users.UserRepository{DB: db}
 	ManufacturerDB := manufacturer.Repository{DB: db}
-	CartDB := CartRepository{DB: db}
+	GetStatus := items.GetStatus{DB: db}
 	Cases := []struct {
 		name    string
-		payload manufacturer.ItemRegisterPayload
-		want    itemStatus
+		payload manufacturer.RegisterPayload
+		want    items.ItemStatus
 	}{
 		{
 			name: "正常",
-			payload: manufacturer.ItemRegisterPayload{
+			payload: manufacturer.RegisterPayload{
 				Name:  "abc",
 				Price: 2000,
 				Details: manufacturer.ItemRegisterDetailsPayload{
@@ -210,13 +257,13 @@ func Test_GetItem(t *testing.T) {
 					Tags:        []string{"aaa", "bbb"},
 				},
 			},
-			want: itemStatus{
-				itemStock: 2,
-				status:    items.Ready,
+			want: items.ItemStatus{
+				Stock:  2,
+				Status: items.Ready,
 			},
 		},
 	}
-	if err = UserDB.CreateUser("aaa"); err != nil {
+	if err = UserDB.Create("aaa"); err != nil {
 		t.Errorf("error")
 	}
 	for _, tt := range Cases {
@@ -225,12 +272,12 @@ func Test_GetItem(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			ItemStatus, err := CartDB.GetItem("test")
+			ItemStatus, err := GetStatus.GetItem("test")
 			if err != nil {
 				t.Errorf("error")
 			}
-			if !reflect.DeepEqual(*ItemStatus, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *ItemStatus, tt.want)
+			if !reflect.DeepEqual(ItemStatus, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, ItemStatus, tt.want)
 			}
 			err = ManufacturerDB.Delete("test")
 			if err != nil {
@@ -239,7 +286,7 @@ func Test_GetItem(t *testing.T) {
 
 		})
 	}
-	err = UserDB.DeleteUser("aaa")
+	err = UserDB.Delete("aaa")
 	if err != nil {
 		t.Errorf("error")
 	}

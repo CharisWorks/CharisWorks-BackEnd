@@ -123,7 +123,7 @@ import (
 type ExampleUserRequests struct {
 }
 
-	func (u ExampleUserRequests) UserGet(UserId string, ctx *gin.Context, UserDB IUserDB) (*User, error) {
+	func (u ExampleUserRequests) Get(UserId string, ctx *gin.Context, UserDB IUserRepository) (*User, error) {
 		log.Println("UserId: ", UserId)
 		if UserId == "zbGHo5B74BNcnzEYFDIqmmtdtF82" {
 			log.Print("hoge")
@@ -148,7 +148,7 @@ type ExampleUserRequests struct {
 		return nil, nil
 	}
 
-	func (u ExampleUserRequests) UserDelete(UserId string, ctx *gin.Context) error {
+	func (u ExampleUserRequests) Delete(UserId string, ctx *gin.Context) error {
 		log.Println("UserId: ", UserId)
 		return nil
 	}
@@ -158,17 +158,17 @@ type ExampleUserRequests struct {
 		return nil
 	}
 
-	func (u ExampleUserRequests) UserProfileUpdate(p UserProfile, ctx *gin.Context) error {
+	func (u ExampleUserRequests) ProfileUpdate(p UserProfile, ctx *gin.Context) error {
 		log.Println("UserProfile: ", p)
 		return nil
 	}
 
-	func (u ExampleUserRequests) UserAddressRegister(p UserAddressRegisterPayload, ctx *gin.Context) error {
-		log.Println("UserAddressRegisterPayload: ", p)
+	func (u ExampleUserRequests) AddressRegister(p AddressRegisterPayload, ctx *gin.Context) error {
+		log.Println("AddressRegisterPayload: ", p)
 		return nil
 	}
 
-	func (u ExampleUserRequests) UserAddressUpdate(p UserAddress, ctx *gin.Context) error {
+	func (u ExampleUserRequests) AddressUpdate(p UserAddress, ctx *gin.Context) error {
 		log.Println("UserAddress: ", p)
 		return nil
 	}
@@ -181,7 +181,7 @@ type ExampleUserRequests struct {
 /* type ExampleUserUtils struct {
 }
 
-func (r ExampleUserUtils) InspectAddressRegisterPayload(p UserAddressRegisterPayload) error {
+func (r ExampleUserUtils) InspectAddressRegisterPayload(p AddressRegisterPayload) error {
 	return nil
 }
 func (r ExampleUserUtils) InspectAddressUpdatePayload(p UserAddress) map[string]interface{} {
