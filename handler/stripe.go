@@ -21,7 +21,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, User
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
 			userId := ctx.GetString("userId")
-			ClientSecret, err := transactionRequests.Purchase(userId, "test")
+			ClientSecret, _, err := transactionRequests.Purchase(userId)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

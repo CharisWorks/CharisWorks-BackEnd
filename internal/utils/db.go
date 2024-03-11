@@ -99,18 +99,17 @@ type InternalTransaction struct {
 	TransactionItems TransactionItem `gorm:"embedded"`
 }
 type Transaction struct {
-	TransactionId       string    `gorm:"column:transaction_id;type:varchar(100);primaryKey"`
-	PurchaserUserId     string    `gorm:"purchaser_user_id;type:varchar(100)"`
-	TrackingId          string    `gorm:"tracking_id;type:varchar(100)"`
-	CreatedAt           time.Time `gorm:"created_at"`
-	ZipCode             string    `gorm:"zip_code"`
-	Address             string    `gorm:"address"`
-	PhoneNumber         string    `gorm:"phone_number"`
-	RealName            string    `gorm:"real_name"`
-	Status              string    `gorm:"status"`
-	StripeTransactionId string    `gorm:"stripe_transaction_id"`
-	TotalPrice          int       `gorm:"total_price"`
-	TotalAmount         int       `gorm:"total_amount"`
+	TransactionId   string    `gorm:"column:transaction_id;type:varchar(100);primaryKey"`
+	PurchaserUserId string    `gorm:"purchaser_user_id;type:varchar(100)"`
+	TrackingId      string    `gorm:"tracking_id;type:varchar(100)"`
+	CreatedAt       time.Time `gorm:"created_at"`
+	ZipCode         string    `gorm:"zip_code"`
+	Address         string    `gorm:"address"`
+	PhoneNumber     string    `gorm:"phone_number"`
+	RealName        string    `gorm:"real_name"`
+	Status          string    `gorm:"status"`
+	TotalPrice      int       `gorm:"total_price"`
+	TotalAmount     int       `gorm:"total_amount"`
 }
 
 type TransactionItem struct {

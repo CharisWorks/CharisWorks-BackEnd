@@ -65,9 +65,9 @@ type InternalTransactionItem struct {
 	Status                  string `gorm:"status"`
 }
 type IRequests interface {
-	GetList(userId string) (*[]TransactionPreview, error)
-	GetDetails(userId string, transactionId string) (*TransactionDetails, error)
-	Purchase(userId string, transactionId string) (*string, error)
+	GetList(userId string) ([]TransactionPreview, error)
+	GetDetails(userId string, transactionId string) (TransactionDetails, error)
+	Purchase(userId string) (clientSecret string, transactionId string, err error)
 	PurchaseRefund(stripeTransferId string, transactionId string) error
 }
 type IWebhook interface {
@@ -85,8 +85,8 @@ type transfer struct {
 // test complete
 type IRepository interface {
 	GetList(UserId string) (map[string]TransactionPreview, error)
-	GetDetails(stripeTransactionId string) (TransactionDetails, string, []transfer, error)
-	Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error
-	StatusUpdate(stripeTransactionId string, conditions map[string]interface{}) error
-	StatusUpdateItems(stripeTransactionId string, itemId string, conditions map[string]interface{}) error
+	GetDetails(transactionId string) (TransactionDetails, string, []transfer, error)
+	Register(userId string, transactionId string, internalCartList []cart.InternalCart) error
+	StatusUpdate(transactionId string, conditions map[string]interface{}) error
+	StatusUpdateItems(transactionId string, itemId string, conditions map[string]interface{}) error
 }

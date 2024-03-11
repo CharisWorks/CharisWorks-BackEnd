@@ -20,7 +20,7 @@ func Test_Transaction_Repository(t *testing.T) {
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
 	manufacturerRepository := manufacturer.Repository{DB: db}
 	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
-	transactionRepository := Repository{DB: db, userRepository: UserRepository}
+	transactionRepository := Repository{DB: db, UserRepository: UserRepository}
 	cartRepository := cart.Repository{DB: db}
 	Items := []manufacturer.RegisterPayload{
 		{
@@ -98,11 +98,11 @@ func Test_Transaction_Repository(t *testing.T) {
 		}
 
 	}
-	cart, err := cartRepository.Get("aaa")
+	c, err := cartRepository.Get("aaa")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	transactionRepository.Register("aaa", "test", "test", *cart)
+	transactionRepository.Register("aaa", "test", *c)
 	transaction, err := transactionRepository.GetList("aaa")
 	if err != nil {
 		t.Errorf(err.Error())

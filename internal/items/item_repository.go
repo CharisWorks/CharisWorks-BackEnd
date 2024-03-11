@@ -104,8 +104,10 @@ func (r Updater) ReduceStock(itemId string, Quantity int) error {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	ItemRepository.Stock -= Quantity
-	if err := r.DB.Table("items").Where("id = ?", itemId).Updates(ItemRepository).Error; err != nil {
+	log.Print("stock", ItemRepository.Stock)
+	log.Print("Quantity", Quantity)
+	condition := map[string]interface{}{"stock": ItemRepository.Stock - Quantity}
+	if err := r.DB.Table("items").Where("id = ?", itemId).Updates(condition).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}

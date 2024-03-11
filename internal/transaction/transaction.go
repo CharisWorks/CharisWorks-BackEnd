@@ -14,55 +14,54 @@ type TransactionRequests struct {
 	StripeUtils           cash.IUtils
 }
 
-func (r TransactionRequests) GetList(userId string) (*[]TransactionPreview, error) {
+func (r TransactionRequests) GetList(userId string) (transactionPreview []TransactionPreview, err error) {
 	transactionPreviewList, err := r.TransactionRepository.GetList(userId)
 	if err != nil {
 		return nil, err
 	}
-	transactionPreview := make([]TransactionPreview, len(transactionPreviewList))
 	for _, t := range transactionPreviewList {
 		transactionPreview = append(transactionPreview, t)
 	}
-	return &transactionPreview, nil
+	return transactionPreview, nil
 }
 
-func (r TransactionRequests) GetDetails(userId string, transactionId string) (*TransactionDetails, error) {
+func (r TransactionRequests) GetDetails(userId string, transactionId string) (transactionDetails TransactionDetails, err error) {
 	transactionDetails, transactionUserId, _, err := r.TransactionRepository.GetDetails(transactionId)
 	if err != nil {
-		return nil, err
+		return transactionDetails, err
 	}
 	if transactionUserId != userId {
-		return nil, nil
+		return transactionDetails, nil
 	}
-	return &transactionDetails, nil
+	return transactionDetails, nil
 }
-func (r TransactionRequests) Purchase(userId string, transactionId string) (*string, error) {
+func (r TransactionRequests) Purchase(userId string) (clientSecret string, transactionId string, err error) {
 	internalCart, err := r.CartRepository.Get(userId)
 	if err != nil {
-		return nil, err
+		return clientSecret, transactionId, err
 	}
 	if len(*internalCart) == 0 {
-		return nil, &utils.InternalError{Message: utils.InternalErrorCartIsEmpty}
+		return clientSecret, transactionId, &utils.InternalError{Message: utils.InternalErrorCartIsEmpty}
 	}
-	inspectedCart, err := r.CartUtils.Inspect(*internalCart)
+	mappedInspectedCart, err := r.CartUtils.Inspect(*internalCart)
 	if err != nil {
-		return nil, err
+		return clientSecret, transactionId, err
 	}
-	totalAmount := r.CartUtils.GetTotalAmount(inspectedCart)
-	clientSecret, stripeTransactionId, err := r.StripeRequests.CreatePaymentintent(userId, totalAmount)
+	totalAmount := r.CartUtils.GetTotalAmount(mappedInspectedCart)
+	clientSecret, transactionId, err = r.StripeRequests.CreatePaymentintent(userId, totalAmount)
 	if err != nil {
-		return nil, err
+		return clientSecret, transactionId, err
 	}
 	err = r.CartRepository.DeleteAll(userId)
 	if err != nil {
-		return nil, err
+		return clientSecret, transactionId, err
 	}
-	err = r.TransactionRepository.Register(userId, *stripeTransactionId, transactionId, *internalCart)
+	err = r.TransactionRepository.Register(userId, transactionId, *internalCart)
 	if err != nil {
-		return nil, err
+		return clientSecret, transactionId, err
 	}
 
-	return clientSecret, nil
+	return clientSecret, transactionId, nil
 }
 func (r TransactionRequests) PurchaseRefund(stripeTransferId string, stripeTransactionId string) error {
 	_, _, transferList, err := r.TransactionRepository.GetDetails(stripeTransactionId)

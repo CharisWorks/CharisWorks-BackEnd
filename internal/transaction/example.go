@@ -1,5 +1,6 @@
 package transaction
 
+/*
 import "github.com/charisworks/charisworks-backend/internal/cash"
 
 type ExampleTransactionRequests struct {
@@ -21,7 +22,7 @@ func (r ExampleTransactionRequests) Purchase(userId string) (*string, error) {
 }
 func (r ExampleTransactionRequests) PurchaseRefund(SessionId string, s string) error {
 	return nil
-}
+} */
 
 /*
 type ExampleTransactionDBHistory struct {

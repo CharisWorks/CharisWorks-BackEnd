@@ -13,11 +13,10 @@ import (
 
 type Repository struct {
 	DB             *gorm.DB
-	userRepository users.IRepository
+	UserRepository users.IRepository
 }
 
-func (r Repository) GetList(userId string) (map[string]TransactionPreview, error) {
-	transactionPreviewList := make(map[string]TransactionPreview)
+func (r Repository) GetList(userId string) (transactionPreviewList map[string]TransactionPreview, err error) {
 	internalTransaction := new([]utils.InternalTransaction)
 	if err := r.DB.Table("transactions").
 		Select("transactions.*, transaction_items.*").
@@ -27,6 +26,7 @@ func (r Repository) GetList(userId string) (map[string]TransactionPreview, error
 		log.Print("DB error: ", err)
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
+	transactionPreviewList = map[string]TransactionPreview{}
 	for _, t := range *internalTransaction {
 		transactionPreview := new(TransactionPreview)
 		transactionItem := new(TransactionItem)
@@ -50,6 +50,7 @@ func (r Repository) GetList(userId string) (map[string]TransactionPreview, error
 		}
 		transactionPreview.Items = list
 		transactionPreviewList[t.Transaction.TransactionId] = *transactionPreview
+
 	}
 	return transactionPreviewList, nil
 }
@@ -99,7 +100,7 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 	return transactionDetails, userId, transferList, nil
 }
 
-func (r Repository) Register(userId string, stripeTransactionId string, transactionId string, internalCartList []cart.InternalCart) error {
+func (r Repository) Register(userId string, transactionId string, internalCartList []cart.InternalCart) error {
 	totalPrice := 0
 	totalAmount := 0
 	transactionItemList := make([]utils.TransactionItem, 0)
@@ -127,24 +128,23 @@ func (r Repository) Register(userId string, stripeTransactionId string, transact
 		totalPrice += i.Item.Price * i.Cart.Quantity
 		totalAmount += i.Cart.Quantity
 	}
-	user, err := r.userRepository.Get(userId)
+	user, err := r.UserRepository.Get(userId)
 	if err != nil {
 		return err
 	}
 	address := user.UserAddress.Address1 + user.UserAddress.Address2 + user.UserAddress.Address3
 	name := user.UserAddress.FirstName + user.UserAddress.LastName
 	if err := r.DB.Create(utils.Transaction{
-		TransactionId:       transactionId,
-		PurchaserUserId:     userId,
-		CreatedAt:           time.Now(),
-		ZipCode:             user.UserAddress.ZipCode,
-		Address:             address,
-		PhoneNumber:         user.UserAddress.PhoneNumber,
-		RealName:            name,
-		Status:              string(Pending),
-		StripeTransactionId: stripeTransactionId,
-		TotalPrice:          totalPrice,
-		TotalAmount:         totalAmount,
+		TransactionId:   transactionId,
+		PurchaserUserId: userId,
+		CreatedAt:       time.Now(),
+		ZipCode:         user.UserAddress.ZipCode,
+		Address:         address,
+		PhoneNumber:     user.UserAddress.PhoneNumber,
+		RealName:        name,
+		Status:          string(Pending),
+		TotalPrice:      totalPrice,
+		TotalAmount:     totalAmount,
 	}).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
@@ -159,16 +159,16 @@ func (r Repository) Register(userId string, stripeTransactionId string, transact
 	return nil
 }
 
-func (r Repository) StatusUpdate(stripeTransactionId string, conditions map[string]interface{}) error {
-	if err := r.DB.Table("transactions").Where("stripe_transaction_id = ?", stripeTransactionId).Updates(conditions).Error; err != nil {
+func (r Repository) StatusUpdate(transactionId string, conditions map[string]interface{}) error {
+	if err := r.DB.Table("transactions").Where("transaction_id = ?", transactionId).Updates(conditions).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 
 	return nil
 }
-func (r Repository) StatusUpdateItems(stripeTransactionId string, itemId string, conditions map[string]interface{}) error {
-	if err := r.DB.Table("transaction_items").Where("transaction_id = ?", stripeTransactionId).Where("item_id", itemId).Updates(conditions).Error; err != nil {
+func (r Repository) StatusUpdateItems(transactionId string, itemId string, conditions map[string]interface{}) error {
+	if err := r.DB.Table("transaction_items").Where("transaction_id = ?", transactionId).Where("item_id", itemId).Updates(conditions).Error; err != nil {
 		log.Print("DB error: ", err)
 		return &utils.InternalError{Message: utils.InternalErrorDB}
 	}
