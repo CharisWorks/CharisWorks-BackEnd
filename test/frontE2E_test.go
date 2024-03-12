@@ -103,7 +103,6 @@ func TestE2E(t *testing.T) {
 	}
 
 	log.Print("test finished")
-
 }
 func After(t *testing.T) {
 	db, err := utils.DBInitTest()

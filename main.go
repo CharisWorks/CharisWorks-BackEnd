@@ -16,6 +16,7 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
+	userpb "github.com/charisworks/charisworks-backend/pkg/grpc"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
@@ -36,14 +37,16 @@ func main() {
 		return
 	}
 	s := grpc.NewServer(
-		grpc.UnaryInterceptor(admin.MyUnaryServerInterceptor1),
+	//grpc.UnaryInterceptor(admin.AuthUnaryServerInterceptor),
 	)
+	userpb.RegisterGetAllUserServiceServer(s, &admin.GetAllUserServiceServer{})
 	go func() {
 		port := 8081
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 		if err != nil {
 			panic(err)
 		}
+
 		reflection.Register(s)
 		log.Printf("start gRPC server port: %v", port)
 		s.Serve(listener)
