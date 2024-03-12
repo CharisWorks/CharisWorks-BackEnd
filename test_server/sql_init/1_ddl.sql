@@ -54,7 +54,6 @@ DROP TABLE IF EXISTS `items`;
 CREATE TABLE `items` (
   `id` varchar(100) NOT NULL,
   `manufacturer_user_id` varchar(100) NOT NULL,
-  `history_item_id` bigint(20) DEFAULT NULL,
   `name` longtext DEFAULT NULL,
   `price` bigint(20) DEFAULT NULL,
   `status` longtext DEFAULT NULL,

@@ -18,11 +18,8 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, cartRe
 		{
 			CartRouter.GET("/", func(ctx *gin.Context) {
 				userId := ctx.GetString("userId")
-				Cart, err := cartRequests.Get(userId)
-				if err != nil {
-					return
-				}
-				ctx.JSON(http.StatusOK, Cart)
+				Cart, _ := cartRequests.Get(userId)
+				ctx.JSON(http.StatusOK, gin.H{"items": Cart})
 			})
 			CartRouter.POST("/", func(ctx *gin.Context) {
 				userId := ctx.GetString("userId")

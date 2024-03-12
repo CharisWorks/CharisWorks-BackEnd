@@ -89,6 +89,9 @@ func TestCartRequests(t *testing.T) {
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test1",
 						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: Available,
+						},
 					},
 				},
 				{
@@ -97,6 +100,9 @@ func TestCartRequests(t *testing.T) {
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test2",
 						Price: 3000,
+						Details: CartItemPreviewDetails{
+							Status: Available,
+						},
 					},
 				},
 			},
@@ -120,16 +126,47 @@ func TestCartRequests(t *testing.T) {
 					ItemProperties: CartItemPreviewProperties{
 						Name:  "test1",
 						Price: 2000,
+						Details: CartItemPreviewDetails{
+							Status: Available,
+						},
 					},
 				},
 			},
+		},
+		{
+			name: "在庫不足",
+			payload: []CartRequestPayload{
+				{
+					ItemId:   "test1",
+					Quantity: 3,
+				},
+			},
+			want: nil,
+			err:  &utils.InternalError{Message: utils.InternalErrorStockOver},
+		},
+		{
+			name: "存在しない商品",
+			payload: []CartRequestPayload{
+				{
+					ItemId:   "test3",
+					Quantity: 3,
+				},
+			},
+			want: nil,
+			err:  &utils.InternalError{Message: utils.InternalErrorDB},
 		},
 	}
 
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
-				CartRequests.Register("aaa", p)
+				err := CartRequests.Register("aaa", p)
+				if err != nil {
+					if err.Error() != tt.err.Error() {
+						t.Errorf(err.Error())
+					}
+					return
+				}
 			}
 			result, err := CartRequests.Get("aaa")
 			if !reflect.DeepEqual(result, tt.want) {

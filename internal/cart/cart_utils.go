@@ -26,6 +26,9 @@ func (r Utils) Inspect(internalCarts []InternalCart) (result map[string]Internal
 			internalCart.Cart.ItemProperties.Details.Status = InvalidItem
 			err = &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 		}
+		if internalCart.ItemStock > 0 && internalCart.ItemStock >= internalCart.Cart.Quantity && internalCart.Status == items.Available {
+			internalCart.Cart.ItemProperties.Details.Status = Available
+		}
 		cartMap[internalCart.Cart.ItemId] = internalCart
 	}
 	if err != nil {

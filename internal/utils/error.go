@@ -15,6 +15,7 @@ func (r *InternalError) Error() string {
 }
 func Code(i InternalMessage) int {
 	statusCode := map[InternalMessage]int{
+		InternalErrorEmailIsNotVerified:          http.StatusUnauthorized,
 		InternalErrorInvalidItem:                 http.StatusBadRequest,
 		InternalErrorStockOver:                   http.StatusBadRequest,
 		InternalErrorInvalidQuantity:             http.StatusBadRequest,
@@ -53,19 +54,19 @@ const (
 
 // リクエスト系
 const (
-	InternalErrorInvalidPayload     InternalMessage = "The request payload is malformed or contains invalid data."
-	InternalErrorInvalidQuery       InternalMessage = "invalid Query"
-	InternalErrorInvalidParams      InternalMessage = "invalid Params"
-	InternalErrorInvalidCart        InternalMessage = "invalid cart"
-	InternalErrorInvalidUserRequest InternalMessage = "invalid user request"
-	InternalErrorUnAuthorized       InternalMessage = "unauthorized"
-	InternalErrorEmailIsNotVerified InternalMessage = "email is not verified"
-	InternalErrorAddressIsNotSet    InternalMessage = "address is not set"
+	InternalErrorInvalidPayload         InternalMessage = "The request payload is malformed or contains invalid data."
+	InternalErrorInvalidQuery           InternalMessage = "invalid Query"
+	InternalErrorInvalidParams          InternalMessage = "invalid Params"
+	InternalErrorInvalidCart            InternalMessage = "invalid cart"
+	InternalErrorInvalidUserRequest     InternalMessage = "invalid user request"
+	InternalErrorUnAuthorized           InternalMessage = "unauthorized"
+	InternalErrorEmailIsNotVerified     InternalMessage = "email is not verified"
+	InternalErrorAddressIsNotRegistered InternalMessage = "address is not registered"
 )
 
 // DB系
 const (
-	InternalErrorNotFound    InternalMessage = "not found"
+	InternalErrorNotFound    InternalMessage = "record not found"
 	InternalErrorDB          InternalMessage = "DB error"
 	InternalErrorCartIsEmpty InternalMessage = "cart is empty"
 )

@@ -37,9 +37,11 @@ func (r Utils) Refund(amount int, transferId string, accountId string) (err erro
 }
 func (r Utils) Transfer(amount int, stripeAccountId string, transactionId string) *string {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
-	log.Print("Transfering... \n amount: ", amount, "\n stripeID: ", stripeAccountId, "\n transactionId: ", transactionId)
+	const margin = 0.05
+	log.Print("Transfering... \n amount: ", float64(amount)*(1-margin), "\n stripeID: ", stripeAccountId, "\n transactionId: ", transactionId)
+
 	params := &stripe.TransferParams{
-		Amount:      stripe.Int64(int64(amount)),
+		Amount:      stripe.Int64(int64(float64(amount) * (1 - margin))),
 		Currency:    stripe.String(string(stripe.CurrencyJPY)),
 		Destination: stripe.String(stripeAccountId),
 		Description: stripe.String(transactionId),

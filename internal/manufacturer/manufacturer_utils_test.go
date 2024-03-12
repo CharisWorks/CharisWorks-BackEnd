@@ -182,6 +182,17 @@ func TestInspectedUpdatePayload(t *testing.T) {
 			},
 		},
 		{
+			name: "status",
+			payload: UpdatePayload{
+				Status: "Available",
+				Tags:   []string{"aaa", "bbb"},
+			},
+			want: map[string]interface{}{
+				"status": "Available",
+				"tags":   []string{"aaa", "bbb"},
+			},
+		},
+		{
 			name: "description error",
 			payload: UpdatePayload{
 				Description: "",
