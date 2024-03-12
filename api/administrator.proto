@@ -6,7 +6,7 @@ syntax = "proto3";
 option go_package = "pkg/grpc";
 
 // packageの宣言
-package admin;
+package administrator;
 
 // サービスの定義
 service GetAllUserService {
@@ -16,7 +16,6 @@ service GetAllUserService {
 
 // 型の定義
 message AllUserRequest {
-	string token = 1;
 }
 
 message AllUserResponse {
@@ -29,8 +28,7 @@ service RemoveUserService {
 }
 
 message RemoveUserRequest {
-    string token = 1;
-    string user = 2;
+    string user = 1;
 }
 
 message RemoveUserResponse {
@@ -42,8 +40,7 @@ service RemoveItemService {
 }
 
 message RemoveItemRequest {
-    string token = 1;
-    string item = 2;
+    string item = 1;
 }
 
 message RemoveItemResponse {
@@ -55,9 +52,8 @@ service PrivilegeUserService {
 }
 
 message PrivilegeUserRequest {
-    string token = 1;
-    string user = 2;
-    string privilege = 3;
+    string user = 1;
+    string privilege = 2;
 }
 
 message PrivilegeUserResponse {
@@ -69,7 +65,6 @@ service GetAllItemService {
 }
 
 message AllItemRequest {
-    string token = 1;
 }
 
 message AllItemResponse {
@@ -81,7 +76,6 @@ service GetAllTransactionService {
 }
 
 message AllTransactionRequest {
-    string token = 1;
 }
 
 message AllTransactionResponse {
@@ -94,8 +88,7 @@ service GetSpecificUserTransactionService {
 }
 
 message SpecificUserTransactionRequest {
-    string token = 1;
-    string user = 2;
+    string user = 1;
 }
 
 message SpecificUserTransactionResponse {
@@ -108,8 +101,7 @@ service SpecificTransactionReponse{
 }
 
 message SpecificTransactionRequest {
-    string token = 1;
-    string transaction = 2;
+    string transaction = 1;
 }
 
 message SpecificTransactionResponse {
@@ -122,9 +114,8 @@ service RegisterTrackingIdService {
 }
 
 message RegisterTrackingIdRequest {
-    string token = 1;
-    string transaction = 2;
-    string tracking_id = 3;
+    string transaction = 1;
+    string tracking_id = 2;
 }
 
 message RegisterTrackingIdResponse {
@@ -136,9 +127,8 @@ service UpdateTransactionStatusService {
 }
 
 message UpdateTransactionStatusRequest {
-    string token = 1;
-    string transaction = 2;
-    string status = 3;
+    string transaction = 1;
+    string status = 2;
 }
 
 message UpdateTransactionStatusResponse {
