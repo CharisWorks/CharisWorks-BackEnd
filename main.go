@@ -37,7 +37,7 @@ func main() {
 		return
 	}
 	s := grpc.NewServer(
-	//grpc.UnaryInterceptor(admin.AuthUnaryServerInterceptor),
+		grpc.UnaryInterceptor(admin.AuthUnaryServerInterceptor),
 	)
 	userpb.RegisterGetAllUserServiceServer(s, &admin.GetAllUserServiceServer{})
 	go func() {
