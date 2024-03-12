@@ -40,5 +40,5 @@ func main() {
 	h.SetupRoutesForCart(app, cartRequests, userRequests)
 	h.SetupRoutesForManufacturer(app, manufacturerRequests)
 	h.SetupRoutesForStripe(app, userRequests, stripeRequests, transactionRequests)
-	h.Router.Run("localhost:8080")
+	h.Router.Run(":8080")
 }
