@@ -156,7 +156,7 @@ func Test_Transaction(t *testing.T) {
 					Quantity: 1,
 				},
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorAddressIsNotSet},
+			err: &utils.InternalError{Message: utils.InternalErrorAddressIsNotRegistered},
 		},
 		{
 			name:   "正常",

@@ -22,15 +22,16 @@ type Requests struct {
 
 func (r Requests) GetRegisterLink(email string, user users.User) (url string, err error) {
 	log.Print(email)
-	Account, err := GetAccount(user.UserProfile.StripeAccountId)
-	if err != nil {
-		return url, &utils.InternalError{Message: utils.InternalErrorNotFound}
+	if user.UserProfile.StripeAccountId == "" {
+		return url, &utils.InternalError{Message: utils.InternalErrorUnAuthorized}
 	}
-	if Account.PayoutsEnabled {
+	Account, _ := GetAccount(user.UserProfile.StripeAccountId)
+	if Account != nil && Account.PayoutsEnabled {
 		return url, &utils.InternalError{Message: utils.InternalErrorManufacturerAlreadyHasBank}
 	}
-	if &user.UserAddress == new(users.UserAddress) {
-		return url, &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
+
+	if user.UserAddress == *new(users.UserAddress) {
+		return url, &utils.InternalError{Message: utils.InternalErrorAddressIsNotRegistered}
 	}
 	pnum, err := libphonenumber.Parse(user.UserAddress.PhoneNumber, "JP")
 	e164Number := new(string)

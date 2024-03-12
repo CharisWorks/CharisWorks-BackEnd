@@ -135,7 +135,7 @@ func (r Repository) Register(userId string, transactionId string, internalCartLi
 	}
 
 	if user.UserAddress == *new(users.UserAddress) {
-		return &utils.InternalError{Message: utils.InternalErrorAddressIsNotSet}
+		return &utils.InternalError{Message: utils.InternalErrorAddressIsNotRegistered}
 	}
 	address := user.UserAddress.Address1 + user.UserAddress.Address2 + user.UserAddress.Address3
 	name := user.UserAddress.FirstName + user.UserAddress.LastName

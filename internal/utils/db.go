@@ -29,7 +29,7 @@ func DBInitTest() (db *gorm.DB, err error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&User{}, &Item{}, &Cart{}, &Shipping{}, &Transaction{}, &TransactionItem{})
+	db.AutoMigrate(&User{}, &Item{}, &Cart{}, &Shipping{})
 
 	return
 }

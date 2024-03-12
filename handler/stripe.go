@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	stripe1 "github.com/charisworks/charisworks-backend/internal/cash"
@@ -14,7 +15,7 @@ import (
 )
 
 func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, UserRequests users.Requests, stripeRequests stripe1.IRequests, transactionRequests transaction.IRequests) {
-	stripe.Key = "sk_test_51Nj1urA3bJzqElthx8UK5v9CdaucJOZj3FwkOHZ8KjDt25IAvplosSab4uybQOyE2Ne6xxxI4Rnh8pWEbYUwPoPG00wvseAHzl"
+	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
 	{
@@ -57,17 +58,16 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, User
 	StripeManufacturerRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		StripeManufacturerRouter.Use(userMiddleware(UserRequests))
-		StripeManufacturerRouter.Use(stripeMiddleware())
 		{
 			StripeManufacturerRouter.GET("/create", func(ctx *gin.Context) {
 				email := ctx.GetString("email")
-				user, exist := ctx.Get("userId")
+				user, exist := ctx.Get(string(user))
 				if !exist {
 					err := utils.InternalError{Message: utils.InternalErrorUnAuthorized}
 					ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 					return
 				}
-				URL, err := stripeRequests.GetRegisterLink(email, user.(users.User))
+				URL, err := stripeRequests.GetRegisterLink(email, *user.(*users.User))
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
@@ -75,20 +75,24 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, User
 				ctx.JSON(http.StatusOK, gin.H{"url": URL})
 
 			})
-			StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
-				user, exist := ctx.Get("userId")
-				if !exist {
-					err := utils.InternalError{Message: utils.InternalErrorUnAuthorized}
-					ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-					return
-				}
-				URL, err := stripeRequests.GetStripeMypageLink(user.(users.User).UserProfile.StripeAccountId)
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				ctx.JSON(http.StatusOK, gin.H{"url": URL})
-			})
+			StripeManufacturerRouter.Use(stripeMiddleware())
+			{
+				StripeManufacturerRouter.GET("/mypage", func(ctx *gin.Context) {
+					user, exist := ctx.Get(string(user))
+					log.Print(user)
+					if !exist {
+						err := utils.InternalError{Message: utils.InternalErrorUnAuthorized}
+						ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
+						return
+					}
+					URL, err := stripeRequests.GetStripeMypageLink(user.(users.User).UserProfile.StripeAccountId)
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					ctx.JSON(http.StatusOK, gin.H{"url": URL})
+				})
+			}
 		}
 	}
 

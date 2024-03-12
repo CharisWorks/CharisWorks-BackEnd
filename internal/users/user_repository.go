@@ -28,6 +28,9 @@ func (r UserRepository) Get(UserId string) (*User, error) {
 	DBUser := new(utils.User)
 	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
+		if err.Error() == string(utils.InternalErrorNotFound) {
+			return nil, err
+		}
 		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	user := new(User)
