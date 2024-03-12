@@ -30,21 +30,36 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 }
 
 func (app *FirebaseApp) VerifyIDToken(ctx *gin.Context) (string, error) {
-	client, err := app.App.Auth(ctx.Request.Context())
+	userId, email, emailVerified, err := app.Verify(ctx.Request.Context(), ctx.GetHeader("Authorization"))
 	if err != nil {
-		log.Printf("error getting Auth client: %v\n", err)
+		ctx.JSON(401, gin.H{"error": err.Error()})
+		ctx.Abort()
 		return "", err
 	}
-	idToken := ctx.Request.Header.Get("Authorization")
+
+	ctx.Set("UserEmail", email)
+	ctx.Set("UserId", userId)
+	ctx.Set("EmailVerified", emailVerified)
+
+	return userId, nil
+}
+func (app *FirebaseApp) Verify(ctx context.Context, idToken string) (userId string, email string, emailVerified bool, err error) {
+	client, err := app.App.Auth(ctx)
+	if err != nil {
+		log.Printf("error getting Auth client: %v\n", err)
+		return userId, email, emailVerified, err
+	}
+
 	token, err := client.VerifyIDToken(ctx, idToken)
 	if err != nil {
 		log.Printf("error verifying ID token: %v\n", err)
-		return "", err
+		return userId, email, emailVerified, err
 	}
-	ctx.Set("UserEmail", token.Claims["email"].(string))
-	ctx.Set("UserId", token.Claims["user_id"].(string))
-	ctx.Set("EmailVerified", token.Claims["email_verified"].(bool))
+	userId = token.UID
+	email = token.Claims["email"].(string)
+	emailVerified = token.Claims["email_verified"].(bool)
+
 	log.Printf("Verified ID token: %v\n", token)
 
-	return token.UID, nil
+	return userId, email, emailVerified, nil
 }

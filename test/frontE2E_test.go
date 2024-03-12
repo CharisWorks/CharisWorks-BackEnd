@@ -15,7 +15,6 @@ func TestE2E(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-
 	UserRepository := users.UserRepository{DB: db}
 	userRequests := users.Requests{UserRepository: UserRepository, UserUtils: users.UserUtils{}}
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
