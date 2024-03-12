@@ -1,0 +1,147 @@
+// protoのバージョンの宣言
+syntax = "proto3";
+
+// protoファイルから自動生成させるGoのコードの置き先
+// (詳細は4章にて)
+option go_package = "pkg/grpc";
+
+// packageの宣言
+package admin;
+
+// サービスの定義
+service GetAllUserService {
+	// サービスが持つメソッドの定義
+	rpc GetAll (AllUserRequest) returns (AllUserResponse); 
+}
+
+// 型の定義
+message AllUserRequest {
+	string token = 1;
+}
+
+message AllUserResponse {
+	string message = 1;
+    string user = 2;
+}
+
+service RemoveUserService {
+    rpc Remove (RemoveUserRequest) returns (RemoveUserResponse);
+}
+
+message RemoveUserRequest {
+    string token = 1;
+    string user = 2;
+}
+
+message RemoveUserResponse {
+    string message = 1;
+}
+
+service RemoveItemService {
+    rpc Remove (RemoveItemRequest) returns (RemoveItemResponse);
+}
+
+message RemoveItemRequest {
+    string token = 1;
+    string item = 2;
+}
+
+message RemoveItemResponse {
+    string message = 1;
+}
+
+service PrivilegeUserService {
+    rpc Privilege (PrivilegeUserRequest) returns (PrivilegeUserResponse);
+}
+
+message PrivilegeUserRequest {
+    string token = 1;
+    string user = 2;
+    string privilege = 3;
+}
+
+message PrivilegeUserResponse {
+    string message = 1;
+}
+
+service GetAllItemService {
+    rpc GetAllItem (AllItemRequest) returns (AllItemResponse);
+}
+
+message AllItemRequest {
+    string token = 1;
+}
+
+message AllItemResponse {
+    string message = 1;
+    string item = 2;
+}
+service GetAllTransactionService {
+    rpc GetAllTransaction (AllTransactionRequest) returns (AllTransactionResponse);
+}
+
+message AllTransactionRequest {
+    string token = 1;
+}
+
+message AllTransactionResponse {
+    string message = 1;
+    string transaction = 2;
+}
+
+service GetSpecificUserTransactionService {
+    rpc GetSpecificUser (SpecificUserTransactionRequest) returns (SpecificUserTransactionResponse);
+}
+
+message SpecificUserTransactionRequest {
+    string token = 1;
+    string user = 2;
+}
+
+message SpecificUserTransactionResponse {
+    string message = 1;
+    string transaction = 2;
+}
+
+service SpecificTransactionReponse{
+    rpc GetSpecificTransaction (SpecificTransactionRequest) returns (SpecificTransactionResponse);
+}
+
+message SpecificTransactionRequest {
+    string token = 1;
+    string transaction = 2;
+}
+
+message SpecificTransactionResponse {
+    string message = 1;
+    string transaction = 2;
+}
+
+service RegisterTrackingIdService {
+    rpc Register (RegisterTrackingIdRequest) returns (RegisterTrackingIdResponse);
+}
+
+message RegisterTrackingIdRequest {
+    string token = 1;
+    string transaction = 2;
+    string tracking_id = 3;
+}
+
+message RegisterTrackingIdResponse {
+    string message = 1;
+}
+
+service UpdateTransactionStatusService {
+    rpc Update (UpdateTransactionStatusRequest) returns (UpdateTransactionStatusResponse);
+}
+
+message UpdateTransactionStatusRequest {
+    string token = 1;
+    string transaction = 2;
+    string status = 3;
+}
+
+message UpdateTransactionStatusResponse {
+    string message = 1;
+}
+
