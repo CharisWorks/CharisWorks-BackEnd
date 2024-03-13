@@ -176,6 +176,7 @@ func TestCartRequests(t *testing.T) {
 				if err.Error() != tt.err.Error() {
 					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
 				}
+				return
 			}
 			for _, p := range tt.payload {
 				CartRequests.Delete("aaa", p.ItemId)

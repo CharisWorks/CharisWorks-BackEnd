@@ -89,6 +89,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -112,6 +115,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test2",
 							Price: 3000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -141,6 +147,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -165,6 +174,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test2",
 							Price: 3000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
