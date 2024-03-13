@@ -3,24 +3,22 @@ package admin
 import (
 	"context"
 	"encoding/json"
-	"log"
 
+	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	userpb "github.com/charisworks/charisworks-backend/pkg/grpc"
-	"github.com/charisworks/charisworks-backend/validation"
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"google.golang.org/grpc"
 )
 
-type GetAllUserServiceServer struct {
-	userpb.UnimplementedGetAllUserServiceServer
+type UserServiceServer struct {
+	userpb.UserServiceServer
 }
 
-func (r *GetAllUserServiceServer) GetAll(ctx context.Context, req *userpb.AllUserRequest) (res *userpb.AllUserResponse, err error) {
+func (r *UserServiceServer) All(ctx context.Context, req *userpb.VoidRequest) (res *userpb.AllUserResponse, err error) {
 	db, err := utils.DBInit()
+	res = new(userpb.AllUserResponse)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
 	userIds := new([]string)
 	userList := new([]users.User)
@@ -29,41 +27,67 @@ func (r *GetAllUserServiceServer) GetAll(ctx context.Context, req *userpb.AllUse
 		userRequests := users.Requests{UserUtils: users.UserUtils{}, UserRepository: users.UserRepository{DB: db}}
 		user, err := userRequests.Get(userId)
 		if err != nil {
-			return nil, err
+			return res, err
 		}
 		*userList = append(*userList, *user)
 	}
 	jsonBytes, err := json.Marshal(userList)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
-	res = new(userpb.AllUserResponse)
-	res.Message = "ok"
+
 	res.User = string(jsonBytes)
 
 	return res, nil
 }
 
-func AuthUnaryServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	log.Println("[pre] my unary server interceptor 1: ", info.FullMethod) // ハンドラの前に割り込ませる前処理
-	idToken, err := grpc_auth.AuthFromMD(ctx, "bearer")
+func (r *UserServiceServer) Remove(ctx context.Context, req *userpb.RemoveUserRequest) (res *userpb.VoidResponse, err error) {
+	res = new(userpb.VoidResponse)
+	db, err := utils.DBInit()
 	if err != nil {
-		return nil, err
+		return res, err
 	}
-	app, err := validation.NewFirebaseApp()
+	userId := req.GetUser()
+	userRequests := users.Requests{UserUtils: users.UserUtils{}, UserRepository: users.UserRepository{DB: db}}
+	err = userRequests.Delete(userId)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
-	fApp := validation.FirebaseApp{App: app.App}
-	userId, _, _, err := fApp.Verify(ctx, idToken)
+	return res, nil
+}
+
+func (r *UserServiceServer) Privilege(ctx context.Context, req *userpb.PrivilegeUserRequest) (res *userpb.VoidResponse, err error) {
+	db, err := utils.DBInit()
+	res = new(userpb.VoidResponse)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
-	if userId != "cowatanabe26@gmail.com" {
-		return nil, err
+	userId := req.GetUser()
+	privilege := req.GetPrivilege()
+	userRepository := users.UserRepository{DB: db}
+	err = userRepository.UpdateProfile(userId, map[string]interface{}{"stripe_account_id": privilege})
+	if err != nil {
+		return res, err
 	}
-	log.Printf("idToken: %v\n", idToken)
-	res, err := handler(ctx, req)                         // 本来の処理
-	log.Println("[post] my unary server interceptor 1: ") // ハンドラの後に割り込ませる後処理
-	return res, err
+	return res, nil
+}
+
+func (r *UserServiceServer) Transaction(ctx context.Context, req *userpb.SpecificUserTransactionRequest) (res *userpb.SpecificUserTransactionResponse, err error) {
+	db, err := utils.DBInit()
+	res = new(userpb.SpecificUserTransactionResponse)
+	if err != nil {
+		return res, err
+	}
+	userId := req.GetUser()
+	transactionRepository := transaction.Repository{DB: db}
+	transactions, err := transactionRepository.GetList(userId)
+	if err != nil {
+		return res, err
+	}
+	jsonBytes, err := json.Marshal(transactions)
+	if err != nil {
+		return res, err
+	}
+	res.Transaction = string(jsonBytes)
+	return res, nil
 }

@@ -18,867 +18,512 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// GetAllUserServiceClient is the client API for GetAllUserService service.
+// UserServiceClient is the client API for UserService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GetAllUserServiceClient interface {
+type UserServiceClient interface {
 	// サービスが持つメソッドの定義
-	GetAll(ctx context.Context, in *AllUserRequest, opts ...grpc.CallOption) (*AllUserResponse, error)
+	All(ctx context.Context, in *VoidRequest, opts ...grpc.CallOption) (*AllUserResponse, error)
+	Remove(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*VoidResponse, error)
+	Privilege(ctx context.Context, in *PrivilegeUserRequest, opts ...grpc.CallOption) (*VoidResponse, error)
+	Transaction(ctx context.Context, in *SpecificUserTransactionRequest, opts ...grpc.CallOption) (*SpecificUserTransactionResponse, error)
 }
 
-type getAllUserServiceClient struct {
+type userServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGetAllUserServiceClient(cc grpc.ClientConnInterface) GetAllUserServiceClient {
-	return &getAllUserServiceClient{cc}
+func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
+	return &userServiceClient{cc}
 }
 
-func (c *getAllUserServiceClient) GetAll(ctx context.Context, in *AllUserRequest, opts ...grpc.CallOption) (*AllUserResponse, error) {
+func (c *userServiceClient) All(ctx context.Context, in *VoidRequest, opts ...grpc.CallOption) (*AllUserResponse, error) {
 	out := new(AllUserResponse)
-	err := c.cc.Invoke(ctx, "/administrator.GetAllUserService/GetAll", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/administrator.UserService/All", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GetAllUserServiceServer is the server API for GetAllUserService service.
-// All implementations must embed UnimplementedGetAllUserServiceServer
+func (c *userServiceClient) Remove(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*VoidResponse, error) {
+	out := new(VoidResponse)
+	err := c.cc.Invoke(ctx, "/administrator.UserService/Remove", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Privilege(ctx context.Context, in *PrivilegeUserRequest, opts ...grpc.CallOption) (*VoidResponse, error) {
+	out := new(VoidResponse)
+	err := c.cc.Invoke(ctx, "/administrator.UserService/Privilege", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Transaction(ctx context.Context, in *SpecificUserTransactionRequest, opts ...grpc.CallOption) (*SpecificUserTransactionResponse, error) {
+	out := new(SpecificUserTransactionResponse)
+	err := c.cc.Invoke(ctx, "/administrator.UserService/Transaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserServiceServer is the server API for UserService service.
+// All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
-type GetAllUserServiceServer interface {
+type UserServiceServer interface {
 	// サービスが持つメソッドの定義
-	GetAll(context.Context, *AllUserRequest) (*AllUserResponse, error)
-	mustEmbedUnimplementedGetAllUserServiceServer()
+	All(context.Context, *VoidRequest) (*AllUserResponse, error)
+	Remove(context.Context, *RemoveUserRequest) (*VoidResponse, error)
+	Privilege(context.Context, *PrivilegeUserRequest) (*VoidResponse, error)
+	Transaction(context.Context, *SpecificUserTransactionRequest) (*SpecificUserTransactionResponse, error)
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-// UnimplementedGetAllUserServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedGetAllUserServiceServer struct {
+// UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedGetAllUserServiceServer) GetAll(context.Context, *AllUserRequest) (*AllUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+func (UnimplementedUserServiceServer) All(context.Context, *VoidRequest) (*AllUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method All not implemented")
 }
-func (UnimplementedGetAllUserServiceServer) mustEmbedUnimplementedGetAllUserServiceServer() {}
+func (UnimplementedUserServiceServer) Remove(context.Context, *RemoveUserRequest) (*VoidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
+}
+func (UnimplementedUserServiceServer) Privilege(context.Context, *PrivilegeUserRequest) (*VoidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Privilege not implemented")
+}
+func (UnimplementedUserServiceServer) Transaction(context.Context, *SpecificUserTransactionRequest) (*SpecificUserTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Transaction not implemented")
+}
+func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
-// UnsafeGetAllUserServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GetAllUserServiceServer will
+// UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServiceServer will
 // result in compilation errors.
-type UnsafeGetAllUserServiceServer interface {
-	mustEmbedUnimplementedGetAllUserServiceServer()
+type UnsafeUserServiceServer interface {
+	mustEmbedUnimplementedUserServiceServer()
 }
 
-func RegisterGetAllUserServiceServer(s grpc.ServiceRegistrar, srv GetAllUserServiceServer) {
-	s.RegisterService(&GetAllUserService_ServiceDesc, srv)
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
+	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _GetAllUserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AllUserRequest)
+func _UserService_All_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoidRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GetAllUserServiceServer).GetAll(ctx, in)
+		return srv.(UserServiceServer).All(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.GetAllUserService/GetAll",
+		FullMethod: "/administrator.UserService/All",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GetAllUserServiceServer).GetAll(ctx, req.(*AllUserRequest))
+		return srv.(UserServiceServer).All(ctx, req.(*VoidRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// GetAllUserService_ServiceDesc is the grpc.ServiceDesc for GetAllUserService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var GetAllUserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.GetAllUserService",
-	HandlerType: (*GetAllUserServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetAll",
-			Handler:    _GetAllUserService_GetAll_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// RemoveUserServiceClient is the client API for RemoveUserService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RemoveUserServiceClient interface {
-	Remove(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error)
-}
-
-type removeUserServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewRemoveUserServiceClient(cc grpc.ClientConnInterface) RemoveUserServiceClient {
-	return &removeUserServiceClient{cc}
-}
-
-func (c *removeUserServiceClient) Remove(ctx context.Context, in *RemoveUserRequest, opts ...grpc.CallOption) (*RemoveUserResponse, error) {
-	out := new(RemoveUserResponse)
-	err := c.cc.Invoke(ctx, "/administrator.RemoveUserService/Remove", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// RemoveUserServiceServer is the server API for RemoveUserService service.
-// All implementations must embed UnimplementedRemoveUserServiceServer
-// for forward compatibility
-type RemoveUserServiceServer interface {
-	Remove(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error)
-	mustEmbedUnimplementedRemoveUserServiceServer()
-}
-
-// UnimplementedRemoveUserServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedRemoveUserServiceServer struct {
-}
-
-func (UnimplementedRemoveUserServiceServer) Remove(context.Context, *RemoveUserRequest) (*RemoveUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
-}
-func (UnimplementedRemoveUserServiceServer) mustEmbedUnimplementedRemoveUserServiceServer() {}
-
-// UnsafeRemoveUserServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RemoveUserServiceServer will
-// result in compilation errors.
-type UnsafeRemoveUserServiceServer interface {
-	mustEmbedUnimplementedRemoveUserServiceServer()
-}
-
-func RegisterRemoveUserServiceServer(s grpc.ServiceRegistrar, srv RemoveUserServiceServer) {
-	s.RegisterService(&RemoveUserService_ServiceDesc, srv)
-}
-
-func _RemoveUserService_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RemoveUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RemoveUserServiceServer).Remove(ctx, in)
+		return srv.(UserServiceServer).Remove(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.RemoveUserService/Remove",
+		FullMethod: "/administrator.UserService/Remove",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RemoveUserServiceServer).Remove(ctx, req.(*RemoveUserRequest))
+		return srv.(UserServiceServer).Remove(ctx, req.(*RemoveUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RemoveUserService_ServiceDesc is the grpc.ServiceDesc for RemoveUserService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var RemoveUserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.RemoveUserService",
-	HandlerType: (*RemoveUserServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Remove",
-			Handler:    _RemoveUserService_Remove_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// RemoveItemServiceClient is the client API for RemoveItemService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RemoveItemServiceClient interface {
-	Remove(ctx context.Context, in *RemoveItemRequest, opts ...grpc.CallOption) (*RemoveItemResponse, error)
-}
-
-type removeItemServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewRemoveItemServiceClient(cc grpc.ClientConnInterface) RemoveItemServiceClient {
-	return &removeItemServiceClient{cc}
-}
-
-func (c *removeItemServiceClient) Remove(ctx context.Context, in *RemoveItemRequest, opts ...grpc.CallOption) (*RemoveItemResponse, error) {
-	out := new(RemoveItemResponse)
-	err := c.cc.Invoke(ctx, "/administrator.RemoveItemService/Remove", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// RemoveItemServiceServer is the server API for RemoveItemService service.
-// All implementations must embed UnimplementedRemoveItemServiceServer
-// for forward compatibility
-type RemoveItemServiceServer interface {
-	Remove(context.Context, *RemoveItemRequest) (*RemoveItemResponse, error)
-	mustEmbedUnimplementedRemoveItemServiceServer()
-}
-
-// UnimplementedRemoveItemServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedRemoveItemServiceServer struct {
-}
-
-func (UnimplementedRemoveItemServiceServer) Remove(context.Context, *RemoveItemRequest) (*RemoveItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
-}
-func (UnimplementedRemoveItemServiceServer) mustEmbedUnimplementedRemoveItemServiceServer() {}
-
-// UnsafeRemoveItemServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RemoveItemServiceServer will
-// result in compilation errors.
-type UnsafeRemoveItemServiceServer interface {
-	mustEmbedUnimplementedRemoveItemServiceServer()
-}
-
-func RegisterRemoveItemServiceServer(s grpc.ServiceRegistrar, srv RemoveItemServiceServer) {
-	s.RegisterService(&RemoveItemService_ServiceDesc, srv)
-}
-
-func _RemoveItemService_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveItemRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RemoveItemServiceServer).Remove(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/administrator.RemoveItemService/Remove",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RemoveItemServiceServer).Remove(ctx, req.(*RemoveItemRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// RemoveItemService_ServiceDesc is the grpc.ServiceDesc for RemoveItemService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var RemoveItemService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.RemoveItemService",
-	HandlerType: (*RemoveItemServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Remove",
-			Handler:    _RemoveItemService_Remove_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// PrivilegeUserServiceClient is the client API for PrivilegeUserService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type PrivilegeUserServiceClient interface {
-	Privilege(ctx context.Context, in *PrivilegeUserRequest, opts ...grpc.CallOption) (*PrivilegeUserResponse, error)
-}
-
-type privilegeUserServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewPrivilegeUserServiceClient(cc grpc.ClientConnInterface) PrivilegeUserServiceClient {
-	return &privilegeUserServiceClient{cc}
-}
-
-func (c *privilegeUserServiceClient) Privilege(ctx context.Context, in *PrivilegeUserRequest, opts ...grpc.CallOption) (*PrivilegeUserResponse, error) {
-	out := new(PrivilegeUserResponse)
-	err := c.cc.Invoke(ctx, "/administrator.PrivilegeUserService/Privilege", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// PrivilegeUserServiceServer is the server API for PrivilegeUserService service.
-// All implementations must embed UnimplementedPrivilegeUserServiceServer
-// for forward compatibility
-type PrivilegeUserServiceServer interface {
-	Privilege(context.Context, *PrivilegeUserRequest) (*PrivilegeUserResponse, error)
-	mustEmbedUnimplementedPrivilegeUserServiceServer()
-}
-
-// UnimplementedPrivilegeUserServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedPrivilegeUserServiceServer struct {
-}
-
-func (UnimplementedPrivilegeUserServiceServer) Privilege(context.Context, *PrivilegeUserRequest) (*PrivilegeUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Privilege not implemented")
-}
-func (UnimplementedPrivilegeUserServiceServer) mustEmbedUnimplementedPrivilegeUserServiceServer() {}
-
-// UnsafePrivilegeUserServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to PrivilegeUserServiceServer will
-// result in compilation errors.
-type UnsafePrivilegeUserServiceServer interface {
-	mustEmbedUnimplementedPrivilegeUserServiceServer()
-}
-
-func RegisterPrivilegeUserServiceServer(s grpc.ServiceRegistrar, srv PrivilegeUserServiceServer) {
-	s.RegisterService(&PrivilegeUserService_ServiceDesc, srv)
-}
-
-func _PrivilegeUserService_Privilege_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Privilege_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PrivilegeUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PrivilegeUserServiceServer).Privilege(ctx, in)
+		return srv.(UserServiceServer).Privilege(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.PrivilegeUserService/Privilege",
+		FullMethod: "/administrator.UserService/Privilege",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivilegeUserServiceServer).Privilege(ctx, req.(*PrivilegeUserRequest))
+		return srv.(UserServiceServer).Privilege(ctx, req.(*PrivilegeUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// PrivilegeUserService_ServiceDesc is the grpc.ServiceDesc for PrivilegeUserService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var PrivilegeUserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.PrivilegeUserService",
-	HandlerType: (*PrivilegeUserServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Privilege",
-			Handler:    _PrivilegeUserService_Privilege_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// GetAllItemServiceClient is the client API for GetAllItemService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GetAllItemServiceClient interface {
-	GetAllItem(ctx context.Context, in *AllItemRequest, opts ...grpc.CallOption) (*AllItemResponse, error)
-}
-
-type getAllItemServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewGetAllItemServiceClient(cc grpc.ClientConnInterface) GetAllItemServiceClient {
-	return &getAllItemServiceClient{cc}
-}
-
-func (c *getAllItemServiceClient) GetAllItem(ctx context.Context, in *AllItemRequest, opts ...grpc.CallOption) (*AllItemResponse, error) {
-	out := new(AllItemResponse)
-	err := c.cc.Invoke(ctx, "/administrator.GetAllItemService/GetAllItem", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// GetAllItemServiceServer is the server API for GetAllItemService service.
-// All implementations must embed UnimplementedGetAllItemServiceServer
-// for forward compatibility
-type GetAllItemServiceServer interface {
-	GetAllItem(context.Context, *AllItemRequest) (*AllItemResponse, error)
-	mustEmbedUnimplementedGetAllItemServiceServer()
-}
-
-// UnimplementedGetAllItemServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedGetAllItemServiceServer struct {
-}
-
-func (UnimplementedGetAllItemServiceServer) GetAllItem(context.Context, *AllItemRequest) (*AllItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllItem not implemented")
-}
-func (UnimplementedGetAllItemServiceServer) mustEmbedUnimplementedGetAllItemServiceServer() {}
-
-// UnsafeGetAllItemServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GetAllItemServiceServer will
-// result in compilation errors.
-type UnsafeGetAllItemServiceServer interface {
-	mustEmbedUnimplementedGetAllItemServiceServer()
-}
-
-func RegisterGetAllItemServiceServer(s grpc.ServiceRegistrar, srv GetAllItemServiceServer) {
-	s.RegisterService(&GetAllItemService_ServiceDesc, srv)
-}
-
-func _GetAllItemService_GetAllItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AllItemRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GetAllItemServiceServer).GetAllItem(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/administrator.GetAllItemService/GetAllItem",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GetAllItemServiceServer).GetAllItem(ctx, req.(*AllItemRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// GetAllItemService_ServiceDesc is the grpc.ServiceDesc for GetAllItemService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var GetAllItemService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.GetAllItemService",
-	HandlerType: (*GetAllItemServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetAllItem",
-			Handler:    _GetAllItemService_GetAllItem_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// GetAllTransactionServiceClient is the client API for GetAllTransactionService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GetAllTransactionServiceClient interface {
-	GetAllTransaction(ctx context.Context, in *AllTransactionRequest, opts ...grpc.CallOption) (*AllTransactionResponse, error)
-}
-
-type getAllTransactionServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewGetAllTransactionServiceClient(cc grpc.ClientConnInterface) GetAllTransactionServiceClient {
-	return &getAllTransactionServiceClient{cc}
-}
-
-func (c *getAllTransactionServiceClient) GetAllTransaction(ctx context.Context, in *AllTransactionRequest, opts ...grpc.CallOption) (*AllTransactionResponse, error) {
-	out := new(AllTransactionResponse)
-	err := c.cc.Invoke(ctx, "/administrator.GetAllTransactionService/GetAllTransaction", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// GetAllTransactionServiceServer is the server API for GetAllTransactionService service.
-// All implementations must embed UnimplementedGetAllTransactionServiceServer
-// for forward compatibility
-type GetAllTransactionServiceServer interface {
-	GetAllTransaction(context.Context, *AllTransactionRequest) (*AllTransactionResponse, error)
-	mustEmbedUnimplementedGetAllTransactionServiceServer()
-}
-
-// UnimplementedGetAllTransactionServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedGetAllTransactionServiceServer struct {
-}
-
-func (UnimplementedGetAllTransactionServiceServer) GetAllTransaction(context.Context, *AllTransactionRequest) (*AllTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllTransaction not implemented")
-}
-func (UnimplementedGetAllTransactionServiceServer) mustEmbedUnimplementedGetAllTransactionServiceServer() {
-}
-
-// UnsafeGetAllTransactionServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GetAllTransactionServiceServer will
-// result in compilation errors.
-type UnsafeGetAllTransactionServiceServer interface {
-	mustEmbedUnimplementedGetAllTransactionServiceServer()
-}
-
-func RegisterGetAllTransactionServiceServer(s grpc.ServiceRegistrar, srv GetAllTransactionServiceServer) {
-	s.RegisterService(&GetAllTransactionService_ServiceDesc, srv)
-}
-
-func _GetAllTransactionService_GetAllTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AllTransactionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GetAllTransactionServiceServer).GetAllTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/administrator.GetAllTransactionService/GetAllTransaction",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GetAllTransactionServiceServer).GetAllTransaction(ctx, req.(*AllTransactionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// GetAllTransactionService_ServiceDesc is the grpc.ServiceDesc for GetAllTransactionService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var GetAllTransactionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.GetAllTransactionService",
-	HandlerType: (*GetAllTransactionServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetAllTransaction",
-			Handler:    _GetAllTransactionService_GetAllTransaction_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// GetSpecificUserTransactionServiceClient is the client API for GetSpecificUserTransactionService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GetSpecificUserTransactionServiceClient interface {
-	GetSpecificUser(ctx context.Context, in *SpecificUserTransactionRequest, opts ...grpc.CallOption) (*SpecificUserTransactionResponse, error)
-}
-
-type getSpecificUserTransactionServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewGetSpecificUserTransactionServiceClient(cc grpc.ClientConnInterface) GetSpecificUserTransactionServiceClient {
-	return &getSpecificUserTransactionServiceClient{cc}
-}
-
-func (c *getSpecificUserTransactionServiceClient) GetSpecificUser(ctx context.Context, in *SpecificUserTransactionRequest, opts ...grpc.CallOption) (*SpecificUserTransactionResponse, error) {
-	out := new(SpecificUserTransactionResponse)
-	err := c.cc.Invoke(ctx, "/administrator.GetSpecificUserTransactionService/GetSpecificUser", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// GetSpecificUserTransactionServiceServer is the server API for GetSpecificUserTransactionService service.
-// All implementations must embed UnimplementedGetSpecificUserTransactionServiceServer
-// for forward compatibility
-type GetSpecificUserTransactionServiceServer interface {
-	GetSpecificUser(context.Context, *SpecificUserTransactionRequest) (*SpecificUserTransactionResponse, error)
-	mustEmbedUnimplementedGetSpecificUserTransactionServiceServer()
-}
-
-// UnimplementedGetSpecificUserTransactionServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedGetSpecificUserTransactionServiceServer struct {
-}
-
-func (UnimplementedGetSpecificUserTransactionServiceServer) GetSpecificUser(context.Context, *SpecificUserTransactionRequest) (*SpecificUserTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSpecificUser not implemented")
-}
-func (UnimplementedGetSpecificUserTransactionServiceServer) mustEmbedUnimplementedGetSpecificUserTransactionServiceServer() {
-}
-
-// UnsafeGetSpecificUserTransactionServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GetSpecificUserTransactionServiceServer will
-// result in compilation errors.
-type UnsafeGetSpecificUserTransactionServiceServer interface {
-	mustEmbedUnimplementedGetSpecificUserTransactionServiceServer()
-}
-
-func RegisterGetSpecificUserTransactionServiceServer(s grpc.ServiceRegistrar, srv GetSpecificUserTransactionServiceServer) {
-	s.RegisterService(&GetSpecificUserTransactionService_ServiceDesc, srv)
-}
-
-func _GetSpecificUserTransactionService_GetSpecificUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Transaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SpecificUserTransactionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GetSpecificUserTransactionServiceServer).GetSpecificUser(ctx, in)
+		return srv.(UserServiceServer).Transaction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.GetSpecificUserTransactionService/GetSpecificUser",
+		FullMethod: "/administrator.UserService/Transaction",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GetSpecificUserTransactionServiceServer).GetSpecificUser(ctx, req.(*SpecificUserTransactionRequest))
+		return srv.(UserServiceServer).Transaction(ctx, req.(*SpecificUserTransactionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// GetSpecificUserTransactionService_ServiceDesc is the grpc.ServiceDesc for GetSpecificUserTransactionService service.
+// UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var GetSpecificUserTransactionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.GetSpecificUserTransactionService",
-	HandlerType: (*GetSpecificUserTransactionServiceServer)(nil),
+var UserService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "administrator.UserService",
+	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetSpecificUser",
-			Handler:    _GetSpecificUserTransactionService_GetSpecificUser_Handler,
+			MethodName: "All",
+			Handler:    _UserService_All_Handler,
+		},
+		{
+			MethodName: "Remove",
+			Handler:    _UserService_Remove_Handler,
+		},
+		{
+			MethodName: "Privilege",
+			Handler:    _UserService_Privilege_Handler,
+		},
+		{
+			MethodName: "Transaction",
+			Handler:    _UserService_Transaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "administrator.proto",
 }
 
-// SpecificTransactionReponseClient is the client API for SpecificTransactionReponse service.
+// ItemServiceClient is the client API for ItemService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SpecificTransactionReponseClient interface {
-	GetSpecificTransaction(ctx context.Context, in *SpecificTransactionRequest, opts ...grpc.CallOption) (*SpecificTransactionResponse, error)
+type ItemServiceClient interface {
+	Remove(ctx context.Context, in *RemoveItemRequest, opts ...grpc.CallOption) (*VoidResponse, error)
+	All(ctx context.Context, in *VoidRequest, opts ...grpc.CallOption) (*AllItemResponse, error)
 }
 
-type specificTransactionReponseClient struct {
+type itemServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewSpecificTransactionReponseClient(cc grpc.ClientConnInterface) SpecificTransactionReponseClient {
-	return &specificTransactionReponseClient{cc}
+func NewItemServiceClient(cc grpc.ClientConnInterface) ItemServiceClient {
+	return &itemServiceClient{cc}
 }
 
-func (c *specificTransactionReponseClient) GetSpecificTransaction(ctx context.Context, in *SpecificTransactionRequest, opts ...grpc.CallOption) (*SpecificTransactionResponse, error) {
-	out := new(SpecificTransactionResponse)
-	err := c.cc.Invoke(ctx, "/administrator.SpecificTransactionReponse/GetSpecificTransaction", in, out, opts...)
+func (c *itemServiceClient) Remove(ctx context.Context, in *RemoveItemRequest, opts ...grpc.CallOption) (*VoidResponse, error) {
+	out := new(VoidResponse)
+	err := c.cc.Invoke(ctx, "/administrator.ItemService/Remove", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// SpecificTransactionReponseServer is the server API for SpecificTransactionReponse service.
-// All implementations must embed UnimplementedSpecificTransactionReponseServer
+func (c *itemServiceClient) All(ctx context.Context, in *VoidRequest, opts ...grpc.CallOption) (*AllItemResponse, error) {
+	out := new(AllItemResponse)
+	err := c.cc.Invoke(ctx, "/administrator.ItemService/All", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ItemServiceServer is the server API for ItemService service.
+// All implementations must embed UnimplementedItemServiceServer
 // for forward compatibility
-type SpecificTransactionReponseServer interface {
-	GetSpecificTransaction(context.Context, *SpecificTransactionRequest) (*SpecificTransactionResponse, error)
-	mustEmbedUnimplementedSpecificTransactionReponseServer()
+type ItemServiceServer interface {
+	Remove(context.Context, *RemoveItemRequest) (*VoidResponse, error)
+	All(context.Context, *VoidRequest) (*AllItemResponse, error)
+	mustEmbedUnimplementedItemServiceServer()
 }
 
-// UnimplementedSpecificTransactionReponseServer must be embedded to have forward compatible implementations.
-type UnimplementedSpecificTransactionReponseServer struct {
+// UnimplementedItemServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedItemServiceServer struct {
 }
 
-func (UnimplementedSpecificTransactionReponseServer) GetSpecificTransaction(context.Context, *SpecificTransactionRequest) (*SpecificTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSpecificTransaction not implemented")
+func (UnimplementedItemServiceServer) Remove(context.Context, *RemoveItemRequest) (*VoidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Remove not implemented")
 }
-func (UnimplementedSpecificTransactionReponseServer) mustEmbedUnimplementedSpecificTransactionReponseServer() {
+func (UnimplementedItemServiceServer) All(context.Context, *VoidRequest) (*AllItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method All not implemented")
 }
+func (UnimplementedItemServiceServer) mustEmbedUnimplementedItemServiceServer() {}
 
-// UnsafeSpecificTransactionReponseServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SpecificTransactionReponseServer will
+// UnsafeItemServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ItemServiceServer will
 // result in compilation errors.
-type UnsafeSpecificTransactionReponseServer interface {
-	mustEmbedUnimplementedSpecificTransactionReponseServer()
+type UnsafeItemServiceServer interface {
+	mustEmbedUnimplementedItemServiceServer()
 }
 
-func RegisterSpecificTransactionReponseServer(s grpc.ServiceRegistrar, srv SpecificTransactionReponseServer) {
-	s.RegisterService(&SpecificTransactionReponse_ServiceDesc, srv)
+func RegisterItemServiceServer(s grpc.ServiceRegistrar, srv ItemServiceServer) {
+	s.RegisterService(&ItemService_ServiceDesc, srv)
 }
 
-func _SpecificTransactionReponse_GetSpecificTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ItemService_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).Remove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/administrator.ItemService/Remove",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).Remove(ctx, req.(*RemoveItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_All_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).All(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/administrator.ItemService/All",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).All(ctx, req.(*VoidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ItemService_ServiceDesc is the grpc.ServiceDesc for ItemService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ItemService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "administrator.ItemService",
+	HandlerType: (*ItemServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Remove",
+			Handler:    _ItemService_Remove_Handler,
+		},
+		{
+			MethodName: "All",
+			Handler:    _ItemService_All_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "administrator.proto",
+}
+
+// TransactionServiceClient is the client API for TransactionService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TransactionServiceClient interface {
+	All(ctx context.Context, in *VoidRequest, opts ...grpc.CallOption) (*AllTransactionResponse, error)
+	ById(ctx context.Context, in *SpecificTransactionRequest, opts ...grpc.CallOption) (*SpecificTransactionResponse, error)
+	RegisterTrackingId(ctx context.Context, in *RegisterTrackingIdRequest, opts ...grpc.CallOption) (*VoidResponse, error)
+	RegisterStatus(ctx context.Context, in *UpdateTransactionStatusRequest, opts ...grpc.CallOption) (*VoidResponse, error)
+}
+
+type transactionServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTransactionServiceClient(cc grpc.ClientConnInterface) TransactionServiceClient {
+	return &transactionServiceClient{cc}
+}
+
+func (c *transactionServiceClient) All(ctx context.Context, in *VoidRequest, opts ...grpc.CallOption) (*AllTransactionResponse, error) {
+	out := new(AllTransactionResponse)
+	err := c.cc.Invoke(ctx, "/administrator.TransactionService/All", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transactionServiceClient) ById(ctx context.Context, in *SpecificTransactionRequest, opts ...grpc.CallOption) (*SpecificTransactionResponse, error) {
+	out := new(SpecificTransactionResponse)
+	err := c.cc.Invoke(ctx, "/administrator.TransactionService/ById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transactionServiceClient) RegisterTrackingId(ctx context.Context, in *RegisterTrackingIdRequest, opts ...grpc.CallOption) (*VoidResponse, error) {
+	out := new(VoidResponse)
+	err := c.cc.Invoke(ctx, "/administrator.TransactionService/RegisterTrackingId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transactionServiceClient) RegisterStatus(ctx context.Context, in *UpdateTransactionStatusRequest, opts ...grpc.CallOption) (*VoidResponse, error) {
+	out := new(VoidResponse)
+	err := c.cc.Invoke(ctx, "/administrator.TransactionService/RegisterStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TransactionServiceServer is the server API for TransactionService service.
+// All implementations must embed UnimplementedTransactionServiceServer
+// for forward compatibility
+type TransactionServiceServer interface {
+	All(context.Context, *VoidRequest) (*AllTransactionResponse, error)
+	ById(context.Context, *SpecificTransactionRequest) (*SpecificTransactionResponse, error)
+	RegisterTrackingId(context.Context, *RegisterTrackingIdRequest) (*VoidResponse, error)
+	RegisterStatus(context.Context, *UpdateTransactionStatusRequest) (*VoidResponse, error)
+	mustEmbedUnimplementedTransactionServiceServer()
+}
+
+// UnimplementedTransactionServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedTransactionServiceServer struct {
+}
+
+func (UnimplementedTransactionServiceServer) All(context.Context, *VoidRequest) (*AllTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method All not implemented")
+}
+func (UnimplementedTransactionServiceServer) ById(context.Context, *SpecificTransactionRequest) (*SpecificTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ById not implemented")
+}
+func (UnimplementedTransactionServiceServer) RegisterTrackingId(context.Context, *RegisterTrackingIdRequest) (*VoidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterTrackingId not implemented")
+}
+func (UnimplementedTransactionServiceServer) RegisterStatus(context.Context, *UpdateTransactionStatusRequest) (*VoidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterStatus not implemented")
+}
+func (UnimplementedTransactionServiceServer) mustEmbedUnimplementedTransactionServiceServer() {}
+
+// UnsafeTransactionServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TransactionServiceServer will
+// result in compilation errors.
+type UnsafeTransactionServiceServer interface {
+	mustEmbedUnimplementedTransactionServiceServer()
+}
+
+func RegisterTransactionServiceServer(s grpc.ServiceRegistrar, srv TransactionServiceServer) {
+	s.RegisterService(&TransactionService_ServiceDesc, srv)
+}
+
+func _TransactionService_All_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VoidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransactionServiceServer).All(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/administrator.TransactionService/All",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransactionServiceServer).All(ctx, req.(*VoidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TransactionService_ById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SpecificTransactionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SpecificTransactionReponseServer).GetSpecificTransaction(ctx, in)
+		return srv.(TransactionServiceServer).ById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.SpecificTransactionReponse/GetSpecificTransaction",
+		FullMethod: "/administrator.TransactionService/ById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SpecificTransactionReponseServer).GetSpecificTransaction(ctx, req.(*SpecificTransactionRequest))
+		return srv.(TransactionServiceServer).ById(ctx, req.(*SpecificTransactionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// SpecificTransactionReponse_ServiceDesc is the grpc.ServiceDesc for SpecificTransactionReponse service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var SpecificTransactionReponse_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.SpecificTransactionReponse",
-	HandlerType: (*SpecificTransactionReponseServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetSpecificTransaction",
-			Handler:    _SpecificTransactionReponse_GetSpecificTransaction_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// RegisterTrackingIdServiceClient is the client API for RegisterTrackingIdService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RegisterTrackingIdServiceClient interface {
-	Register(ctx context.Context, in *RegisterTrackingIdRequest, opts ...grpc.CallOption) (*RegisterTrackingIdResponse, error)
-}
-
-type registerTrackingIdServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewRegisterTrackingIdServiceClient(cc grpc.ClientConnInterface) RegisterTrackingIdServiceClient {
-	return &registerTrackingIdServiceClient{cc}
-}
-
-func (c *registerTrackingIdServiceClient) Register(ctx context.Context, in *RegisterTrackingIdRequest, opts ...grpc.CallOption) (*RegisterTrackingIdResponse, error) {
-	out := new(RegisterTrackingIdResponse)
-	err := c.cc.Invoke(ctx, "/administrator.RegisterTrackingIdService/Register", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// RegisterTrackingIdServiceServer is the server API for RegisterTrackingIdService service.
-// All implementations must embed UnimplementedRegisterTrackingIdServiceServer
-// for forward compatibility
-type RegisterTrackingIdServiceServer interface {
-	Register(context.Context, *RegisterTrackingIdRequest) (*RegisterTrackingIdResponse, error)
-	mustEmbedUnimplementedRegisterTrackingIdServiceServer()
-}
-
-// UnimplementedRegisterTrackingIdServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedRegisterTrackingIdServiceServer struct {
-}
-
-func (UnimplementedRegisterTrackingIdServiceServer) Register(context.Context, *RegisterTrackingIdRequest) (*RegisterTrackingIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
-}
-func (UnimplementedRegisterTrackingIdServiceServer) mustEmbedUnimplementedRegisterTrackingIdServiceServer() {
-}
-
-// UnsafeRegisterTrackingIdServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RegisterTrackingIdServiceServer will
-// result in compilation errors.
-type UnsafeRegisterTrackingIdServiceServer interface {
-	mustEmbedUnimplementedRegisterTrackingIdServiceServer()
-}
-
-func RegisterRegisterTrackingIdServiceServer(s grpc.ServiceRegistrar, srv RegisterTrackingIdServiceServer) {
-	s.RegisterService(&RegisterTrackingIdService_ServiceDesc, srv)
-}
-
-func _RegisterTrackingIdService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TransactionService_RegisterTrackingId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterTrackingIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RegisterTrackingIdServiceServer).Register(ctx, in)
+		return srv.(TransactionServiceServer).RegisterTrackingId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.RegisterTrackingIdService/Register",
+		FullMethod: "/administrator.TransactionService/RegisterTrackingId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegisterTrackingIdServiceServer).Register(ctx, req.(*RegisterTrackingIdRequest))
+		return srv.(TransactionServiceServer).RegisterTrackingId(ctx, req.(*RegisterTrackingIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RegisterTrackingIdService_ServiceDesc is the grpc.ServiceDesc for RegisterTrackingIdService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var RegisterTrackingIdService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.RegisterTrackingIdService",
-	HandlerType: (*RegisterTrackingIdServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Register",
-			Handler:    _RegisterTrackingIdService_Register_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "administrator.proto",
-}
-
-// UpdateTransactionStatusServiceClient is the client API for UpdateTransactionStatusService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UpdateTransactionStatusServiceClient interface {
-	Update(ctx context.Context, in *UpdateTransactionStatusRequest, opts ...grpc.CallOption) (*UpdateTransactionStatusResponse, error)
-}
-
-type updateTransactionStatusServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewUpdateTransactionStatusServiceClient(cc grpc.ClientConnInterface) UpdateTransactionStatusServiceClient {
-	return &updateTransactionStatusServiceClient{cc}
-}
-
-func (c *updateTransactionStatusServiceClient) Update(ctx context.Context, in *UpdateTransactionStatusRequest, opts ...grpc.CallOption) (*UpdateTransactionStatusResponse, error) {
-	out := new(UpdateTransactionStatusResponse)
-	err := c.cc.Invoke(ctx, "/administrator.UpdateTransactionStatusService/Update", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// UpdateTransactionStatusServiceServer is the server API for UpdateTransactionStatusService service.
-// All implementations must embed UnimplementedUpdateTransactionStatusServiceServer
-// for forward compatibility
-type UpdateTransactionStatusServiceServer interface {
-	Update(context.Context, *UpdateTransactionStatusRequest) (*UpdateTransactionStatusResponse, error)
-	mustEmbedUnimplementedUpdateTransactionStatusServiceServer()
-}
-
-// UnimplementedUpdateTransactionStatusServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedUpdateTransactionStatusServiceServer struct {
-}
-
-func (UnimplementedUpdateTransactionStatusServiceServer) Update(context.Context, *UpdateTransactionStatusRequest) (*UpdateTransactionStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
-}
-func (UnimplementedUpdateTransactionStatusServiceServer) mustEmbedUnimplementedUpdateTransactionStatusServiceServer() {
-}
-
-// UnsafeUpdateTransactionStatusServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UpdateTransactionStatusServiceServer will
-// result in compilation errors.
-type UnsafeUpdateTransactionStatusServiceServer interface {
-	mustEmbedUnimplementedUpdateTransactionStatusServiceServer()
-}
-
-func RegisterUpdateTransactionStatusServiceServer(s grpc.ServiceRegistrar, srv UpdateTransactionStatusServiceServer) {
-	s.RegisterService(&UpdateTransactionStatusService_ServiceDesc, srv)
-}
-
-func _UpdateTransactionStatusService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TransactionService_RegisterStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateTransactionStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UpdateTransactionStatusServiceServer).Update(ctx, in)
+		return srv.(TransactionServiceServer).RegisterStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/administrator.UpdateTransactionStatusService/Update",
+		FullMethod: "/administrator.TransactionService/RegisterStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UpdateTransactionStatusServiceServer).Update(ctx, req.(*UpdateTransactionStatusRequest))
+		return srv.(TransactionServiceServer).RegisterStatus(ctx, req.(*UpdateTransactionStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// UpdateTransactionStatusService_ServiceDesc is the grpc.ServiceDesc for UpdateTransactionStatusService service.
+// TransactionService_ServiceDesc is the grpc.ServiceDesc for TransactionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var UpdateTransactionStatusService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "administrator.UpdateTransactionStatusService",
-	HandlerType: (*UpdateTransactionStatusServiceServer)(nil),
+var TransactionService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "administrator.TransactionService",
+	HandlerType: (*TransactionServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Update",
-			Handler:    _UpdateTransactionStatusService_Update_Handler,
+			MethodName: "All",
+			Handler:    _TransactionService_All_Handler,
+		},
+		{
+			MethodName: "ById",
+			Handler:    _TransactionService_ById_Handler,
+		},
+		{
+			MethodName: "RegisterTrackingId",
+			Handler:    _TransactionService_RegisterTrackingId_Handler,
+		},
+		{
+			MethodName: "RegisterStatus",
+			Handler:    _TransactionService_RegisterStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

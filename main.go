@@ -37,9 +37,11 @@ func main() {
 		return
 	}
 	s := grpc.NewServer(
-		grpc.UnaryInterceptor(admin.AuthUnaryServerInterceptor),
+	//grpc.UnaryInterceptor(admin.AuthUnaryServerInterceptor),
 	)
-	userpb.RegisterGetAllUserServiceServer(s, &admin.GetAllUserServiceServer{})
+	userpb.RegisterUserServiceServer(s, &admin.UserServiceServer{})
+	userpb.RegisterItemServiceServer(s, &admin.ItemServiceServer{})
+
 	go func() {
 		port := 8081
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))

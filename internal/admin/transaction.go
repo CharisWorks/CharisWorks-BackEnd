@@ -1,0 +1,86 @@
+package admin
+
+import (
+	"context"
+	"encoding/json"
+
+	"github.com/charisworks/charisworks-backend/internal/transaction"
+
+	"github.com/charisworks/charisworks-backend/internal/utils"
+	transactionpb "github.com/charisworks/charisworks-backend/pkg/grpc"
+)
+
+type TransactionServiceServer struct {
+	transactionpb.UnimplementedTransactionServiceServer
+}
+
+func (r *TransactionServiceServer) All(ctx context.Context, rep *transactionpb.VoidRequest) (res *transactionpb.AllTransactionResponse, err error) {
+	db, err := utils.DBInit()
+	res = new(transactionpb.AllTransactionResponse)
+	if err != nil {
+		return res, err
+	}
+	users := new([]string)
+	transactionList := new([]transaction.TransactionPreview)
+	db.Table("users").Where("1=1").Select("id").Find(&users)
+	for _, user := range *users {
+		transactionRepository := transaction.Repository{DB: db}
+		transaction, err := transactionRepository.GetList(user)
+		if err != nil {
+			return res, err
+		}
+		for _, t := range transaction {
+			*transactionList = append(*transactionList, t)
+		}
+
+	}
+	bytes, err := json.Marshal(transactionList)
+	if err != nil {
+		return res, err
+	}
+	res.Transaction = string(bytes)
+	return res, nil
+
+}
+
+func (r *TransactionServiceServer) ById(ctx context.Context, req *transactionpb.SpecificTransactionRequest) (res *transactionpb.SpecificTransactionResponse, err error) {
+	db, err := utils.DBInit()
+	res = new(transactionpb.SpecificTransactionResponse)
+	if err != nil {
+		return res, err
+	}
+	transactionRepository := transaction.Repository{DB: db}
+	transaction, _, _, err := transactionRepository.GetDetails(req.GetTransaction())
+	if err != nil {
+		return res, err
+	}
+	bytes, err := json.Marshal(transaction)
+	if err != nil {
+		return res, err
+	}
+	res.Transaction = string(bytes)
+	return res, nil
+}
+
+func (r *TransactionServiceServer) RegisterTrackingId(ctx context.Context, req *transactionpb.RegisterTrackingIdRequest) (res *transactionpb.VoidResponse, err error) {
+	res = new(transactionpb.VoidResponse)
+	db, err := utils.DBInit()
+	if err != nil {
+		return res, err
+	}
+	if err := db.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
+		return res, err
+	}
+	return res, nil
+}
+func (r *TransactionServiceServer) RegisterStatus(ctx context.Context, req *transactionpb.UpdateTransactionStatusRequest) (res *transactionpb.VoidResponse, err error) {
+	res = new(transactionpb.VoidResponse)
+	db, err := utils.DBInit()
+	if err != nil {
+		return res, err
+	}
+	if err := db.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"status": req.GetStatus()}).Error; err != nil {
+		return res, err
+	}
+	return res, nil
+}

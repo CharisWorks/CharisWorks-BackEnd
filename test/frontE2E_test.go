@@ -24,6 +24,7 @@ func TestE2E(t *testing.T) {
 		profile users.UserProfile
 		address users.AddressRegisterPayload
 	}{
+
 		{
 			userId: "WQElviFCW3TEV77prNZB7Q2TwGt2",
 			profile: users.UserProfile{
@@ -85,6 +86,7 @@ func TestE2E(t *testing.T) {
 			},
 		},
 	}
+
 	for _, item := range item_data {
 		err = manufacturerRequests.Register(item, "WQElviFCW3TEV77prNZB7Q2TwGt2", item.Name)
 		if err != nil {
