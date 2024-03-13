@@ -1,7 +1,6 @@
 package cart
 
 import (
-	"log"
 	"sort"
 
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -43,7 +42,6 @@ func (r Utils) Convert(internalCarts map[string]InternalCart) (result []Cart) {
 		sortedCart = append(sortedCart, inteinternalCart)
 	}
 	sort.Slice(sortedCart, func(i, j int) bool { return sortedCart[i].Index < sortedCart[j].Index })
-	log.Print("sortedCart: ", sortedCart)
 	for _, inteinternalCart := range sortedCart {
 		Cart := new(Cart)
 		Cart = &inteinternalCart.Cart

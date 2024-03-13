@@ -89,6 +89,7 @@ func (r GetStatus) GetItem(itemId string) (status ItemStatus, err error) {
 		log.Print("DB error: ", err)
 		return status, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
+	status = *new(ItemStatus)
 	status.Stock = ItemRepository.Stock
 	status.Status = Status(ItemRepository.Status)
 	return status, nil

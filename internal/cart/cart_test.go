@@ -169,13 +169,14 @@ func TestCartRequests(t *testing.T) {
 				}
 			}
 			result, err := CartRequests.Get("aaa")
-			if !reflect.DeepEqual(result, tt.want) {
+			if !reflect.DeepEqual(&result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
 			if err != nil {
 				if err.Error() != tt.err.Error() {
 					t.Errorf("%v,got,%v,want%v", tt.name, err, tt.err)
 				}
+				return
 			}
 			for _, p := range tt.payload {
 				CartRequests.Delete("aaa", p.ItemId)

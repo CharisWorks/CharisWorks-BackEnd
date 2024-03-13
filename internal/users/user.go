@@ -12,10 +12,10 @@ func (r Requests) Create(userId string) error {
 	}
 	return nil
 }
-func (r Requests) Get(userId string) (*User, error) {
+func (r Requests) Get(userId string) (User, error) {
 	User, err := r.UserRepository.Get(userId)
 	if err != nil {
-		return nil, err
+		return User, err
 	}
 	return User, nil
 }

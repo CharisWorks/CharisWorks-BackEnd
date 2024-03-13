@@ -1,0 +1,89 @@
+// protoのバージョンの宣言
+syntax = "proto3";
+
+// protoファイルから自動生成させるGoのコードの置き先
+// (詳細は4章にて)
+option go_package = "pkg/grpc";
+
+// packageの宣言
+package administrator;
+
+// サービスの定義
+service UserService {
+	// サービスが持つメソッドの定義
+	rpc All (VoidRequest) returns (AllUserResponse); 
+    rpc Remove (RemoveUserRequest) returns (VoidResponse);
+    rpc Privilege (PrivilegeUserRequest) returns (VoidResponse);
+    rpc Transaction (SpecificUserTransactionRequest) returns (SpecificUserTransactionResponse);
+}
+
+message AllUserResponse {
+    string user = 1;
+}
+
+message RemoveUserRequest {
+    string user = 1;
+}
+
+message PrivilegeUserRequest {
+    string user = 1;
+    string privilege = 2;
+}
+
+message SpecificUserTransactionRequest {
+    string user = 1;
+}
+
+message SpecificUserTransactionResponse {
+    string transaction = 1;
+}
+
+
+service ItemService {
+    rpc Remove (RemoveItemRequest) returns (VoidResponse);
+    rpc All (VoidRequest) returns (AllItemResponse);
+}
+
+message RemoveItemRequest {
+    string item = 1;
+}
+
+message AllItemResponse {
+    string item = 1;
+}
+
+service TransactionService {
+    rpc All (VoidRequest) returns (AllTransactionResponse);
+    rpc ById (SpecificTransactionRequest) returns (SpecificTransactionResponse);
+    rpc RegisterTrackingId (RegisterTrackingIdRequest) returns (VoidResponse);
+    rpc RegisterStatus (UpdateTransactionStatusRequest) returns (VoidResponse);
+}
+
+
+message AllTransactionResponse {
+    string transaction = 1;
+}
+
+message SpecificTransactionRequest {
+    string transaction = 1;
+}
+
+message SpecificTransactionResponse {
+    string transaction = 1;
+}
+
+message RegisterTrackingIdRequest {
+    string transaction = 1;
+    string tracking_id = 2;
+}
+
+message UpdateTransactionStatusRequest {
+    string transaction = 1;
+    string status = 2;
+}
+
+message VoidRequest {
+}
+
+message VoidResponse {
+}

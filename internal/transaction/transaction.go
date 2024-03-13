@@ -40,10 +40,10 @@ func (r TransactionRequests) Purchase(userId string) (clientSecret string, trans
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
-	if len(*internalCart) == 0 {
+	if len(internalCart) == 0 {
 		return clientSecret, transactionId, &utils.InternalError{Message: utils.InternalErrorCartIsEmpty}
 	}
-	mappedInspectedCart, err := r.CartUtils.Inspect(*internalCart)
+	mappedInspectedCart, err := r.CartUtils.Inspect(internalCart)
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
@@ -56,11 +56,10 @@ func (r TransactionRequests) Purchase(userId string) (clientSecret string, trans
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
-	err = r.TransactionRepository.Register(userId, transactionId, *internalCart)
+	err = r.TransactionRepository.Register(userId, transactionId, internalCart)
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
-
 	return clientSecret, transactionId, nil
 }
 func (r TransactionRequests) PurchaseRefund(stripeTransferId string, stripeTransactionId string) error {

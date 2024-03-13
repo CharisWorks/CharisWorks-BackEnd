@@ -89,6 +89,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -112,6 +115,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test2",
 							Price: 3000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -141,6 +147,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test1",
 							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -165,6 +174,9 @@ func Test_CartCRUD(t *testing.T) {
 						ItemProperties: CartItemPreviewProperties{
 							Name:  "test2",
 							Price: 3000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
 						},
 					},
 					Item: InternalItem{
@@ -196,8 +208,8 @@ func Test_CartCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if Cart == &tt.want {
-				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.want)
+			if &Cart == &tt.want {
+				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.want)
 			}
 
 			err = cartRepository.Update("aaa", tt.updatePayload)
@@ -208,8 +220,8 @@ func Test_CartCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if !reflect.DeepEqual(*Cart, tt.wantUpdated) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *Cart, tt.wantUpdated)
+			if !reflect.DeepEqual(Cart, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.wantUpdated)
 			}
 			for _, p := range tt.payload {
 				err := cartRepository.Delete("aaa", p.ItemId)

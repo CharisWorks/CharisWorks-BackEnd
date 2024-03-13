@@ -44,7 +44,7 @@ type AddressRegisterPayload struct {
 
 type IRequests interface {
 	Create(userId string) error
-	Get(userId string) (*User, error)
+	Get(userId string) (User, error)
 	Delete(userId string) error
 	ProfileUpdate(userId string, userProfile UserProfile) error
 	AddressRegister(userId string, AddressRegisterPayload AddressRegisterPayload) error
@@ -57,7 +57,7 @@ type IUtils interface {
 }
 type IRepository interface {
 	Create(UserId string) error
-	Get(UserId string) (user *User, err error)
+	Get(UserId string) (user User, err error)
 	Delete(UserId string) error
 	UpdateProfile(string, map[string]interface{}) error
 	RegisterAddress(string, AddressRegisterPayload) error

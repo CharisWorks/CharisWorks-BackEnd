@@ -11,17 +11,17 @@ type Requests struct {
 	ItemGetStatus  items.IGetStatus
 }
 
-func (r Requests) Get(userId string) (cart *[]Cart, err error) {
+func (r Requests) Get(userId string) (cart []Cart, err error) {
 	internalCart, err := r.CartRepository.Get(userId)
 	if err != nil {
 		return nil, err
 	}
-	inspectedCart, err := r.CartUtils.Inspect(*internalCart)
+	inspectedCart, err := r.CartUtils.Inspect(internalCart)
 	resultCart := r.CartUtils.Convert(inspectedCart)
 	if err != nil {
-		return &resultCart, err
+		return resultCart, err
 	}
-	return &resultCart, nil
+	return resultCart, nil
 }
 
 func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload) error {
@@ -29,8 +29,7 @@ func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload)
 	if err != nil {
 		return err
 	}
-
-	inspectedCart, _ := r.CartUtils.Inspect(*internalCart)
+	inspectedCart, _ := r.CartUtils.Inspect(internalCart)
 	_, exist := inspectedCart[cartRequestPayload.ItemId]
 	itemStatus, err := r.ItemGetStatus.GetItem(cartRequestPayload.ItemId)
 	if err != nil {
@@ -59,7 +58,7 @@ func (r Requests) Delete(userId string, itemId string) error {
 	if err != nil {
 		return err
 	}
-	inspectedCart, _ := r.CartUtils.Inspect(*internalCart)
+	inspectedCart, _ := r.CartUtils.Inspect(internalCart)
 
 	_, exist := inspectedCart[itemId]
 	if !exist {

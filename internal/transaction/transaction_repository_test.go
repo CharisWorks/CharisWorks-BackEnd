@@ -16,11 +16,15 @@ func Test_Transaction_Repository(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
 	UserRepository := users.UserRepository{DB: db}
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
 	manufacturerRepository := manufacturer.Repository{DB: db}
 	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
-	transactionRepository := Repository{DB: db, UserRepository: UserRepository}
+	transactionRepository := Repository{DB: trdb, UserRepository: UserRepository}
 	cartRepository := cart.Repository{DB: db}
 	Items := []manufacturer.RegisterPayload{
 		{
@@ -102,7 +106,7 @@ func Test_Transaction_Repository(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	transactionRepository.Register("aaa", "test", *c)
+	transactionRepository.Register("aaa", "test", c)
 	transaction, err := transactionRepository.GetList("aaa")
 	if err != nil {
 		t.Errorf(err.Error())
@@ -187,8 +191,8 @@ func Test_Transaction_Repository(t *testing.T) {
 	if !reflect.DeepEqual(transactionDetails, details) {
 		t.Errorf("got %v, want %v", transactionDetails, details)
 	}
-	db.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
-	db.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
+	trdb.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
+	trdb.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
 
 	for _, item := range Items {
 		err = manufacturerRequests.Delete(item.Name, "aaa")

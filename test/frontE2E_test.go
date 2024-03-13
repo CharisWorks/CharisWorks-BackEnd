@@ -4,8 +4,11 @@ import (
 	"log"
 	"testing"
 
+	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
+	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
@@ -15,16 +18,23 @@ func TestE2E(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
 	UserRepository := users.UserRepository{DB: db}
 	userRequests := users.Requests{UserRepository: UserRepository, UserUtils: users.UserUtils{}}
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
+	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
+	transactionRequests := transaction.TransactionRequests{TransactionRepository: transaction.Repository{DB: trdb, UserRepository: UserRepository}, CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, StripeRequests: cash.Requests{CartRequests: cartRequests, UserRequests: userRequests}, StripeUtils: cash.Utils{}}
+	webhook := transaction.Webhook{StripeUtils: cash.Utils{}, TransactionRepository: transaction.Repository{DB: trdb, UserRepository: UserRepository}, ItemUpdater: items.Updater{DB: db}}
 
 	user_data := []struct {
 		userId  string
 		profile users.UserProfile
 		address users.AddressRegisterPayload
 	}{
+
 		{
 			userId: "WQElviFCW3TEV77prNZB7Q2TwGt2",
 			profile: users.UserProfile{
@@ -51,6 +61,7 @@ func TestE2E(t *testing.T) {
 			After(t)
 			return
 		}
+
 		if u.profile.StripeAccountId != "skip" {
 			if err = userRequests.AddressRegister(u.userId, u.address); err != nil {
 				t.Errorf(err.Error())
@@ -86,6 +97,7 @@ func TestE2E(t *testing.T) {
 			},
 		},
 	}
+
 	for _, item := range item_data {
 		err = manufacturerRequests.Register(item, "WQElviFCW3TEV77prNZB7Q2TwGt2", item.Name)
 		if err != nil {
@@ -102,9 +114,42 @@ func TestE2E(t *testing.T) {
 			return
 		}
 	}
+	carts := []struct {
+		userId string
+		cart   cart.CartRequestPayload
+	}{
+		{
+			userId: "WQElviFCW3TEV77prNZB7Q2TwGt2",
+			cart: cart.CartRequestPayload{
+				ItemId:   "test1",
+				Quantity: 1,
+			},
+		},
+	}
+	for _, c := range carts {
+		err = cartRequests.Register(c.userId, c.cart)
+		if err != nil {
+			t.Errorf(err.Error())
+			After(t)
+			return
+		}
+	}
+
+	clientSecret, transactionId, err := transactionRequests.Purchase("WQElviFCW3TEV77prNZB7Q2TwGt2")
+	if err != nil {
+		t.Errorf(err.Error())
+		After(t)
+		return
+	}
+	log.Print("clientSecret: ", clientSecret)
+	log.Print("transactionId: ", transactionId)
+	err = webhook.PurchaseComplete(transactionId)
+	if err != nil {
+		t.Errorf("got %v", err)
+		After(t)
+	}
 
 	log.Print("test finished")
-
 }
 func After(t *testing.T) {
 	db, err := utils.DBInitTest()
