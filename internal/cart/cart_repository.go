@@ -15,9 +15,9 @@ type Repository struct {
 	DB *gorm.DB
 }
 
-func (r Repository) Get(UserId string) (*[]InternalCart, error) {
+func (r Repository) Get(UserId string) (internalCart []InternalCart, err error) {
 	InternalCarts := new([]utils.InternalCart)
-	resultCart := new([]InternalCart)
+	internalCart = *new([]InternalCart)
 	if err := r.DB.Table("carts").
 		Select("carts.*, items.*,users.*").
 		Joins("JOIN items ON carts.item_id = items.id").
@@ -25,7 +25,7 @@ func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return internalCart, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 
 	for i, icart := range *InternalCarts {
@@ -37,12 +37,13 @@ func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 		err := json.Unmarshal([]byte(icart.Item.Tags), &tags)
 		if err != nil {
 			log.Print("DB error: ", err)
-			return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+			return internalCart, &utils.InternalError{Message: utils.InternalErrorDB}
 		}
 		cart.Cart.ItemId = icart.Cart.ItemId
 		cart.Cart.Quantity = icart.Cart.Quantity
 		cart.Cart.ItemProperties.Name = icart.Item.Name
 		cart.Cart.ItemProperties.Price = icart.Item.Price
+		cart.Cart.ItemProperties.Details.Status = ItemStatus(cart.Status)
 		cart.Item.Name = icart.Item.Name
 		cart.Item.Price = icart.Item.Price
 		cart.Item.Description = icart.Item.Description
@@ -52,9 +53,9 @@ func (r Repository) Get(UserId string) (*[]InternalCart, error) {
 		cart.Item.ManufacturerName = icart.User.DisplayName
 		cart.Item.ManufacturerUserId = icart.User.Id
 		cart.Item.ManufacturerStripeId = icart.User.StripeAccountId
-		*resultCart = append(*resultCart, *cart)
+		internalCart = append(internalCart, *cart)
 	}
-	return resultCart, nil
+	return internalCart, nil
 }
 
 func (r Repository) Register(UserId string, CartRequestPayload CartRequestPayload) error {

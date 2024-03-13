@@ -169,7 +169,7 @@ func TestCartRequests(t *testing.T) {
 				}
 			}
 			result, err := CartRequests.Get("aaa")
-			if !reflect.DeepEqual(result, tt.want) {
+			if !reflect.DeepEqual(&result, tt.want) {
 				t.Errorf("%v,got,%v,want%v", tt.name, result, tt.want)
 			}
 			if err != nil {

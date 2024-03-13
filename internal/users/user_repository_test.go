@@ -52,9 +52,9 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 				t.Errorf(err.Error())
 			}
 
-			log.Print("got: ", *User, "want: ", tt.want)
-			if CompareUser(*User, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.want)
+			log.Print("got: ", User, "want: ", tt.want)
+			if CompareUser(User, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, User, tt.want)
 			}
 			err = UserDB.UpdateProfile(tt.userId, tt.payload)
 			log.Print(err)
@@ -66,10 +66,10 @@ func Test_UserDB_Update_Profile(t *testing.T) {
 				t.Errorf(err.Error())
 			}
 
-			log.Print("got: ", *User, "want: ", tt.wantUpdated)
+			log.Print("got: ", User, "want: ", tt.wantUpdated)
 
-			if CompareUser(*User, tt.wantUpdated) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.wantUpdated)
+			if CompareUser(User, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, User, tt.wantUpdated)
 			}
 			err = UserDB.Delete(tt.userId)
 			if err != nil {
@@ -246,8 +246,8 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if CompareUser(*User, tt.want) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.want)
+			if CompareUser(User, tt.want) {
+				t.Errorf("%v,got,%v,want%v", tt.name, User, tt.want)
 			}
 			err = UserDB.UpdateAddress(tt.userId, tt.updatePayload)
 			if err != nil {
@@ -258,8 +258,8 @@ func Test_UserDB_Register_Update_Address(t *testing.T) {
 			if err != nil {
 				t.Errorf(err.Error())
 			}
-			if CompareUser(*User, tt.wantUpdated) {
-				t.Errorf("%v,got,%v,want%v", tt.name, *User, tt.wantUpdated)
+			if CompareUser(User, tt.wantUpdated) {
+				t.Errorf("%v,got,%v,want%v", tt.name, User, tt.wantUpdated)
 			}
 			err = UserDB.Delete(tt.userId)
 			if err != nil {

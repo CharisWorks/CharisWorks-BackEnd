@@ -711,6 +711,10 @@ func After(t *testing.T) {
 		t.Errorf("error")
 	}
 	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
+
 	trdb.Table("transactions").Where("1=1").Delete(utils.Transaction{})
 	trdb.Table("transaction_items").Where("1=1").Delete(utils.TransactionItem{})
 	db.Table("users").Where("1=1").Delete(utils.User{})

@@ -1,8 +1,6 @@
 package transaction
 
 import (
-	"log"
-
 	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/items"
 )
@@ -18,7 +16,6 @@ func (r Webhook) PurchaseComplete(stripeTransactionId string) error {
 	if err != nil {
 		return err
 	}
-	log.Print("t", transferList)
 	for _, t := range transferList {
 		transferId := r.StripeUtils.Transfer(t.amount, t.stripeAccountId, stripeTransactionId)
 		if err != nil {

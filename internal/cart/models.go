@@ -50,12 +50,12 @@ type InternalItem struct {
 	ManufacturerStripeId    string   `gorm:"manufacturer_stripe_account_id"`
 }
 type IRequests interface {
-	Get(userId string) (*[]Cart, error)
+	Get(userId string) ([]Cart, error)
 	Register(userId string, cartRequestPayload CartRequestPayload) error
 	Delete(userId string, itemId string) error
 }
 type IRepository interface {
-	Get(UserId string) (*[]InternalCart, error)
+	Get(UserId string) ([]InternalCart, error)
 	Register(UserId string, c CartRequestPayload) error
 	Update(UserId string, c CartRequestPayload) error
 	Delete(UserId string, itemId string) error

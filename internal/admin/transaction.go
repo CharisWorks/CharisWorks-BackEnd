@@ -20,11 +20,15 @@ func (r *TransactionServiceServer) All(ctx context.Context, rep *transactionpb.V
 	if err != nil {
 		return res, err
 	}
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		return res, err
+	}
 	users := new([]string)
 	transactionList := new([]transaction.TransactionPreview)
 	db.Table("users").Where("1=1").Select("id").Find(&users)
 	for _, user := range *users {
-		transactionRepository := transaction.Repository{DB: db}
+		transactionRepository := transaction.Repository{DB: trdb}
 		transaction, err := transactionRepository.GetList(user)
 		if err != nil {
 			return res, err
@@ -44,12 +48,13 @@ func (r *TransactionServiceServer) All(ctx context.Context, rep *transactionpb.V
 }
 
 func (r *TransactionServiceServer) ById(ctx context.Context, req *transactionpb.SpecificTransactionRequest) (res *transactionpb.SpecificTransactionResponse, err error) {
-	db, err := utils.DBInit()
-	res = new(transactionpb.SpecificTransactionResponse)
+
+	trdb, err := utils.HistoryDBInitTest()
 	if err != nil {
 		return res, err
 	}
-	transactionRepository := transaction.Repository{DB: db}
+	res = new(transactionpb.SpecificTransactionResponse)
+	transactionRepository := transaction.Repository{DB: trdb}
 	transaction, _, _, err := transactionRepository.GetDetails(req.GetTransaction())
 	if err != nil {
 		return res, err
@@ -64,22 +69,22 @@ func (r *TransactionServiceServer) ById(ctx context.Context, req *transactionpb.
 
 func (r *TransactionServiceServer) RegisterTrackingId(ctx context.Context, req *transactionpb.RegisterTrackingIdRequest) (res *transactionpb.VoidResponse, err error) {
 	res = new(transactionpb.VoidResponse)
-	db, err := utils.DBInit()
+	trdb, err := utils.HistoryDBInitTest()
 	if err != nil {
 		return res, err
 	}
-	if err := db.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
+	if err := trdb.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
 		return res, err
 	}
 	return res, nil
 }
 func (r *TransactionServiceServer) RegisterStatus(ctx context.Context, req *transactionpb.UpdateTransactionStatusRequest) (res *transactionpb.VoidResponse, err error) {
 	res = new(transactionpb.VoidResponse)
-	db, err := utils.DBInit()
+	trdb, err := utils.HistoryDBInitTest()
 	if err != nil {
 		return res, err
 	}
-	if err := db.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"status": req.GetStatus()}).Error; err != nil {
+	if err := trdb.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"status": req.GetStatus()}).Error; err != nil {
 		return res, err
 	}
 	return res, nil

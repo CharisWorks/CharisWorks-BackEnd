@@ -29,7 +29,7 @@ func (r *UserServiceServer) All(ctx context.Context, req *userpb.VoidRequest) (r
 		if err != nil {
 			return res, err
 		}
-		*userList = append(*userList, *user)
+		*userList = append(*userList, user)
 	}
 	jsonBytes, err := json.Marshal(userList)
 	if err != nil {

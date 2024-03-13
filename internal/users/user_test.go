@@ -256,7 +256,7 @@ func TestUserCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if CompareUser(*user, tt.want) {
+			if CompareUser(user, tt.want) {
 				t.Errorf("got: %v, want: %v", user, tt.want)
 			}
 			// update
@@ -268,7 +268,7 @@ func TestUserCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if CompareUser(*user, tt.wantProfileUpdated) {
+			if CompareUser(user, tt.wantProfileUpdated) {
 				t.Errorf("got: %v, want: %v", user, tt.wantProfileUpdated)
 			}
 			err = UserRequests.AddressRegister(tt.userId, tt.registerAddress)
@@ -279,7 +279,7 @@ func TestUserCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if CompareUser(*user, tt.wantAddressRegistered) {
+			if CompareUser(user, tt.wantAddressRegistered) {
 				t.Errorf("got: %v, want: %v", user, tt.wantAddressRegistered)
 			}
 			err = UserRequests.AddressUpdate(tt.userId, tt.updateAddress)
@@ -290,7 +290,7 @@ func TestUserCRUD(t *testing.T) {
 			if err != nil {
 				t.Errorf("error")
 			}
-			if CompareUser(*user, tt.wantAddressUpdated) {
+			if CompareUser(user, tt.wantAddressUpdated) {
 				t.Errorf("got: %v, want: %v", user, tt.wantAddressUpdated)
 			}
 

@@ -56,6 +56,7 @@ func (r Repository) GetList(userId string) (transactionPreviewList map[string]Tr
 }
 func (r Repository) GetDetails(TransactionId string) (transactionDetails TransactionDetails, userId string, transferList []transfer, err error) {
 	internalTransaction := new([]utils.InternalTransaction)
+	transactionDetails = *new(TransactionDetails)
 	if err := r.DB.Table("transactions").
 		Select("transactions.*, transaction_items.*").
 		Joins("JOIN transaction_items ON transactions.transaction_id = transaction_items.transaction_id").
@@ -97,7 +98,6 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 		transferList = append(transferList, tr)
 
 	}
-
 	return transactionDetails, userId, transferList, nil
 }
 

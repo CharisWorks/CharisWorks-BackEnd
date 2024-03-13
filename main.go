@@ -41,6 +41,7 @@ func main() {
 	)
 	userpb.RegisterUserServiceServer(s, &admin.UserServiceServer{})
 	userpb.RegisterItemServiceServer(s, &admin.ItemServiceServer{})
+	userpb.RegisterTransactionServiceServer(s, &admin.TransactionServiceServer{})
 
 	go func() {
 		port := 8081

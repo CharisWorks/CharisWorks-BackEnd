@@ -24,16 +24,16 @@ func (r UserRepository) Create(UserId string) error {
 	}
 	return nil
 }
-func (r UserRepository) Get(UserId string) (*User, error) {
+func (r UserRepository) Get(UserId string) (user User, err error) {
 	DBUser := new(utils.User)
-	if err := r.DB.Table("users").Where("id = ?", UserId).First(DBUser).Error; err != nil {
+	user = *new(User)
+	if err := r.DB.Table("users").Where("id = ?", UserId).First(&DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
 		if err.Error() == string(utils.InternalErrorNotFound) {
-			return nil, err
+			return user, err
 		}
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		return user, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
-	user := new(User)
 	user.UserId = DBUser.Id
 	user.UserProfile = UserProfile{
 		DisplayName:     DBUser.DisplayName,
@@ -42,7 +42,7 @@ func (r UserRepository) Get(UserId string) (*User, error) {
 		CreatedAt:       DBUser.CreatedAt,
 	}
 	Address := new(utils.Shipping)
-	_ = r.DB.Table("shippings").Where("id = ?", UserId).First(Address)
+	_ = r.DB.Table("shippings").Where("id = ?", UserId).First(&Address)
 	user.UserAddress = UserAddress{
 		FirstName:     Address.FirstName,
 		FirstNameKana: Address.FirstNameKana,
