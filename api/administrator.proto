@@ -9,46 +9,20 @@ option go_package = "pkg/grpc";
 package administrator;
 
 // サービスの定義
-service GetAllUserService {
+service UserService {
 	// サービスが持つメソッドの定義
-	rpc GetAll (AllUserRequest) returns (AllUserResponse); 
-}
-
-// 型の定義
-message AllUserRequest {
+	rpc All (VoidRequest) returns (AllUserResponse); 
+    rpc Remove (RemoveUserRequest) returns (VoidResponse);
+    rpc Privilege (PrivilegeUserRequest) returns (VoidResponse);
+    rpc Transaction (SpecificUserTransactionRequest) returns (SpecificUserTransactionResponse);
 }
 
 message AllUserResponse {
-	string message = 1;
-    string user = 2;
-}
-
-service RemoveUserService {
-    rpc Remove (RemoveUserRequest) returns (RemoveUserResponse);
+    string user = 1;
 }
 
 message RemoveUserRequest {
     string user = 1;
-}
-
-message RemoveUserResponse {
-    string message = 1;
-}
-
-service RemoveItemService {
-    rpc Remove (RemoveItemRequest) returns (RemoveItemResponse);
-}
-
-message RemoveItemRequest {
-    string item = 1;
-}
-
-message RemoveItemResponse {
-    string message = 1;
-}
-
-service PrivilegeUserService {
-    rpc Privilege (PrivilegeUserRequest) returns (PrivilegeUserResponse);
 }
 
 message PrivilegeUserRequest {
@@ -56,48 +30,38 @@ message PrivilegeUserRequest {
     string privilege = 2;
 }
 
-message PrivilegeUserResponse {
-    string message = 1;
-}
-
-service GetAllItemService {
-    rpc GetAllItem (AllItemRequest) returns (AllItemResponse);
-}
-
-message AllItemRequest {
-}
-
-message AllItemResponse {
-    string message = 1;
-    string item = 2;
-}
-service GetAllTransactionService {
-    rpc GetAllTransaction (AllTransactionRequest) returns (AllTransactionResponse);
-}
-
-message AllTransactionRequest {
-}
-
-message AllTransactionResponse {
-    string message = 1;
-    string transaction = 2;
-}
-
-service GetSpecificUserTransactionService {
-    rpc GetSpecificUser (SpecificUserTransactionRequest) returns (SpecificUserTransactionResponse);
-}
-
 message SpecificUserTransactionRequest {
     string user = 1;
 }
 
 message SpecificUserTransactionResponse {
-    string message = 1;
-    string transaction = 2;
+    string transaction = 1;
 }
 
-service SpecificTransactionReponse{
-    rpc GetSpecificTransaction (SpecificTransactionRequest) returns (SpecificTransactionResponse);
+
+service ItemService {
+    rpc Remove (RemoveItemRequest) returns (VoidResponse);
+    rpc All (VoidRequest) returns (AllItemResponse);
+}
+
+message RemoveItemRequest {
+    string item = 1;
+}
+
+message AllItemResponse {
+    string item = 1;
+}
+
+service TransactionService {
+    rpc All (VoidRequest) returns (AllTransactionResponse);
+    rpc ById (SpecificTransactionRequest) returns (SpecificTransactionResponse);
+    rpc RegisterTrackingId (RegisterTrackingIdRequest) returns (VoidResponse);
+    rpc RegisterStatus (UpdateTransactionStatusRequest) returns (VoidResponse);
+}
+
+
+message AllTransactionResponse {
+    string transaction = 1;
 }
 
 message SpecificTransactionRequest {
@@ -105,12 +69,7 @@ message SpecificTransactionRequest {
 }
 
 message SpecificTransactionResponse {
-    string message = 1;
-    string transaction = 2;
-}
-
-service RegisterTrackingIdService {
-    rpc Register (RegisterTrackingIdRequest) returns (RegisterTrackingIdResponse);
+    string transaction = 1;
 }
 
 message RegisterTrackingIdRequest {
@@ -118,20 +77,13 @@ message RegisterTrackingIdRequest {
     string tracking_id = 2;
 }
 
-message RegisterTrackingIdResponse {
-    string message = 1;
-}
-
-service UpdateTransactionStatusService {
-    rpc Update (UpdateTransactionStatusRequest) returns (UpdateTransactionStatusResponse);
-}
-
 message UpdateTransactionStatusRequest {
     string transaction = 1;
     string status = 2;
 }
 
-message UpdateTransactionStatusResponse {
-    string message = 1;
+message VoidRequest {
 }
 
+message VoidResponse {
+}
