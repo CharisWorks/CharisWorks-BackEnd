@@ -27,7 +27,6 @@ message RemoveUserRequest {
 
 message PrivilegeUserRequest {
     string user = 1;
-    string privilege = 2;
 }
 
 message SpecificUserTransactionRequest {
