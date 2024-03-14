@@ -40,6 +40,7 @@ func (r Repository) GetList(userId string) (transactionPreviewList map[string]Tr
 		transactionPreview.TransactionId = t.Transaction.TransactionId
 		transactionPreview.Status = TransactionStatus(t.Transaction.Status)
 		transactionPreview.TransactionAt = t.Transaction.CreatedAt
+		transactionPreview.Email = t.Transaction.Email
 		_, exist := transactionPreviewList[t.Transaction.TransactionId]
 		list := make([]TransactionItem, 0)
 		if exist {
@@ -88,6 +89,7 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 			PhoneNumber: t.Transaction.PhoneNumber,
 			RealName:    t.Transaction.RealName,
 		}
+		transactionDetails.Email = t.Transaction.Email
 
 		tr := transfer{
 			amount:          t.TransactionItems.Price * t.TransactionItems.Quantity,
@@ -101,7 +103,7 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 	return transactionDetails, userId, transferList, nil
 }
 
-func (r Repository) Register(userId string, transactionId string, internalCartList []cart.InternalCart) error {
+func (r Repository) Register(userId string, email string, transactionId string, internalCartList []cart.InternalCart) error {
 	totalPrice := 0
 	totalAmount := 0
 	transactionItemList := make([]utils.TransactionItem, 0)
@@ -141,6 +143,7 @@ func (r Repository) Register(userId string, transactionId string, internalCartLi
 	name := user.UserAddress.FirstName + user.UserAddress.LastName
 	if err := r.DB.Create(utils.Transaction{
 		TransactionId:   transactionId,
+		Email:           email,
 		PurchaserUserId: userId,
 		CreatedAt:       time.Now(),
 		ZipCode:         user.UserAddress.ZipCode,

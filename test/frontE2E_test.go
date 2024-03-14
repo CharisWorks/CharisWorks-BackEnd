@@ -135,7 +135,7 @@ func TestE2E(t *testing.T) {
 		}
 	}
 
-	clientSecret, transactionId, err := transactionRequests.Purchase("WQElviFCW3TEV77prNZB7Q2TwGt2")
+	clientSecret, transactionId, err := transactionRequests.Purchase("WQElviFCW3TEV77prNZB7Q2TwGt2", "cowatanabe26@gmail.com")
 	if err != nil {
 		t.Errorf(err.Error())
 		After(t)

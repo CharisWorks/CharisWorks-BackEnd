@@ -33,6 +33,7 @@ func Test_Transaction(t *testing.T) {
 		profile users.UserProfile
 		address users.AddressRegisterPayload
 	}{
+
 		{
 			userId: "test_user_1",
 			profile: users.UserProfile{
@@ -173,6 +174,7 @@ func Test_Transaction(t *testing.T) {
 				},
 			},
 			transactionDetails: TransactionDetails{
+				Email: "hoge@example.com",
 				UserAddress: TransactionAddress{
 					ZipCode:     "123-4567",
 					Address:     "testtesttest",
@@ -199,6 +201,7 @@ func Test_Transaction(t *testing.T) {
 			transactionPreview: []TransactionPreview{
 				{
 					TransactionId: "test",
+					Email:         "hoge@example.com",
 					Items: []TransactionItem{
 						{
 							ItemId:   "test1",
@@ -281,7 +284,7 @@ func Test_Transaction(t *testing.T) {
 					return
 				}
 			}
-			_, transactionId, err := transactionRequests.Purchase(c.userId)
+			_, transactionId, err := transactionRequests.Purchase(c.userId, "hoge@example.com")
 			if err != nil {
 				if err.Error() != c.err.Error() {
 					t.Errorf("got %v, want %v", err, c.err)
@@ -492,7 +495,7 @@ func Test_Transaction_Cancelled(t *testing.T) {
 			ItemId:   "test2",
 			Quantity: 2,
 		})
-		_, transactionId, err := transactionRequests.Purchase("test_user_1")
+		_, transactionId, err := transactionRequests.Purchase("test_user_1", "hoge@example.com")
 		if err != nil {
 			t.Errorf(err.Error())
 			After(t)
@@ -519,6 +522,7 @@ func Test_Transaction_Cancelled(t *testing.T) {
 		log.Print(transactionDetails)
 		failedTransaction := TransactionDetails{
 			TransactionAt: transactionDetails.TransactionAt,
+			Email:         "hoge@example.com",
 			TransactionId: transactionId,
 			Status:        Cancelled,
 			Items: []TransactionItem{

@@ -106,7 +106,7 @@ func Test_Transaction_Repository(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	transactionRepository.Register("aaa", "test", c)
+	transactionRepository.Register("aaa", "hoge@example.com", "test", c)
 	transaction, err := transactionRepository.GetList("aaa")
 	if err != nil {
 		t.Errorf(err.Error())
@@ -141,6 +141,7 @@ func Test_Transaction_Repository(t *testing.T) {
 	}
 	details := TransactionDetails{
 		TransactionId: "test",
+		Email:         "hoge@example.com",
 		TrackingId:    "",
 		UserAddress: TransactionAddress{
 			ZipCode:     "123-4567",

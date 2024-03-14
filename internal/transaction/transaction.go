@@ -35,7 +35,7 @@ func (r TransactionRequests) GetDetails(userId string, transactionId string) (tr
 	}
 	return transactionDetails, nil
 }
-func (r TransactionRequests) Purchase(userId string) (clientSecret string, transactionId string, err error) {
+func (r TransactionRequests) Purchase(userId string, email string) (clientSecret string, transactionId string, err error) {
 	internalCart, err := r.CartRepository.Get(userId)
 	if err != nil {
 		return clientSecret, transactionId, err
@@ -56,7 +56,7 @@ func (r TransactionRequests) Purchase(userId string) (clientSecret string, trans
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
-	err = r.TransactionRepository.Register(userId, transactionId, internalCart)
+	err = r.TransactionRepository.Register(userId, email, transactionId, internalCart)
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
