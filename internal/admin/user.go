@@ -8,6 +8,7 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	userpb "github.com/charisworks/charisworks-backend/pkg/grpc"
+	"github.com/charisworks/charisworks-backend/validation"
 )
 
 type UserServiceServer struct {
@@ -63,12 +64,17 @@ func (r *UserServiceServer) Privilege(ctx context.Context, req *userpb.Privilege
 		return res, err
 	}
 	userId := req.GetUser()
-	privilege := req.GetPrivilege()
 	userRepository := users.UserRepository{DB: db}
-	err = userRepository.UpdateProfile(userId, map[string]interface{}{"stripe_account_id": privilege})
+	err = userRepository.UpdateProfile(userId, map[string]interface{}{"stripe_account_id": "acct_unregistered"})
 	if err != nil {
 		return res, err
 	}
+	app, err := validation.NewFirebaseApp()
+	if err != nil {
+		return res, err
+	}
+
+	SendPrivilegedEmail(userId, app)
 	return res, nil
 }
 
