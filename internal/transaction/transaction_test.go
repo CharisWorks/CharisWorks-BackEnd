@@ -14,6 +14,8 @@ import (
 )
 
 func Test_Transaction(t *testing.T) {
+	After(t)
+
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -185,18 +187,22 @@ func Test_Transaction(t *testing.T) {
 				},
 				Items: []TransactionItem{
 					{
-						ItemId:   "test1",
-						Quantity: 2,
-						Name:     "test1",
-						Price:    2000,
-						Status:   string(Pending),
+						ItemId:             "test1",
+						Quantity:           2,
+						Name:               "test1",
+						Price:              2000,
+						Status:             string(Pending),
+						ManufacturerUserId: "test_user_1",
+						ManufacturerName:   "test_user_1",
 					},
 					{
-						ItemId:   "test2",
-						Quantity: 2,
-						Name:     "test2",
-						Price:    3000,
-						Status:   string(Pending),
+						ItemId:             "test2",
+						Quantity:           2,
+						Name:               "test2",
+						Price:              3000,
+						Status:             string(Pending),
+						ManufacturerUserId: "test_user_1",
+						ManufacturerName:   "test_user_1",
 					},
 				},
 			},
@@ -206,16 +212,20 @@ func Test_Transaction(t *testing.T) {
 					Email:         "hoge@example.com",
 					Items: []TransactionItem{
 						{
-							ItemId:   "test1",
-							Quantity: 2,
-							Name:     "test1",
-							Price:    2000,
+							ItemId:             "test1",
+							Quantity:           2,
+							Name:               "test1",
+							Price:              2000,
+							ManufacturerUserId: "test_user_1",
+							ManufacturerName:   "test_user_1",
 						},
 						{
-							ItemId:   "test2",
-							Quantity: 2,
-							Name:     "test2",
-							Price:    3000,
+							ItemId:             "test2",
+							Quantity:           2,
+							Name:               "test2",
+							Price:              3000,
+							ManufacturerUserId: "test_user_1",
+							ManufacturerName:   "test_user_1",
 						},
 					},
 				},
@@ -531,20 +541,24 @@ func Test_Transaction_Cancelled(t *testing.T) {
 			TotalPrice:    10000,
 			Items: []TransactionItem{
 				{
-					ItemId:     "test1",
-					Quantity:   2,
-					Name:       "test1",
-					Price:      2000,
-					Status:     string(Cancelled),
-					TransferId: transactionDetails.Items[0].TransferId,
+					ItemId:             "test1",
+					Quantity:           2,
+					Name:               "test1",
+					Price:              2000,
+					Status:             string(Cancelled),
+					TransferId:         transactionDetails.Items[0].TransferId,
+					ManufacturerUserId: "test_user_1",
+					ManufacturerName:   "test1",
 				},
 				{
-					ItemId:     "test2",
-					Quantity:   2,
-					Name:       "test2",
-					Price:      3000,
-					Status:     string(Cancelled),
-					TransferId: transactionDetails.Items[1].TransferId,
+					ItemId:             "test2",
+					Quantity:           2,
+					Name:               "test2",
+					Price:              3000,
+					Status:             string(Cancelled),
+					TransferId:         transactionDetails.Items[1].TransferId,
+					ManufacturerUserId: "test_user_1",
+					ManufacturerName:   "test1",
 				},
 			},
 			UserAddress: TransactionAddress{

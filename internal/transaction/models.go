@@ -48,12 +48,14 @@ type TransactionAddress struct {
 	RealName    string `json:"real_name"`
 }
 type TransactionItem struct {
-	ItemId     string `json:"item_id"`
-	Quantity   int    `json:"quantity"`
-	Name       string `json:"name"`
-	Price      int    `json:"price"`
-	TransferId string `json:"transfer_id"`
-	Status     string `json:"status"`
+	ItemId             string `json:"item_id"`
+	Quantity           int    `json:"quantity"`
+	Name               string `json:"name"`
+	Price              int    `json:"price"`
+	TransferId         string `json:"transfer_id"`
+	Status             string `json:"status"`
+	ManufacturerUserId string `json:"manufacturer_user_id"`
+	ManufacturerName   string `gorm:"manufacturer_name"`
 }
 type InternalTransactionItem struct {
 	ItemId                  string `gorm:"item_id"`

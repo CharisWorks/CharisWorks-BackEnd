@@ -1,9 +1,11 @@
 package e2e
 
 import (
+	"context"
 	"log"
 	"testing"
 
+	firebase "firebase.google.com/go/v4"
 	"github.com/charisworks/charisworks-backend/internal/admin"
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
@@ -12,10 +14,12 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
+	"github.com/charisworks/charisworks-backend/validation"
+	"google.golang.org/api/option"
 )
 
 func TestE2E(t *testing.T) {
-
+	After(t)
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -127,6 +131,13 @@ func TestE2E(t *testing.T) {
 				Quantity: 1,
 			},
 		},
+		{
+			userId: "WQElviFCW3TEV77prNZB7Q2TwGt2",
+			cart: cart.CartRequestPayload{
+				ItemId:   "test2",
+				Quantity: 1,
+			},
+		},
 	}
 	for _, c := range carts {
 		err = cartRequests.Register(c.userId, c.cart)
@@ -150,7 +161,13 @@ func TestE2E(t *testing.T) {
 		t.Errorf("got %v", err)
 		After(t)
 	}
-	admin.SendPurchasedEmail(transactionDetails)
+	opt := option.WithCredentialsFile("../serviceAccountKey.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Printf("error initializing app: %v\n", err)
+	}
+	vapp := validation.FirebaseApp{App: app}
+	admin.SendPurchasedEmail(transactionDetails, &vapp)
 	log.Print("test finished")
 }
 func After(t *testing.T) {

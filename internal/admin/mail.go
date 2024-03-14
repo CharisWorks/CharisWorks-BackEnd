@@ -8,9 +8,11 @@ import (
 	"os"
 
 	"github.com/charisworks/charisworks-backend/internal/transaction"
+	"github.com/charisworks/charisworks-backend/internal/utils"
+	"github.com/charisworks/charisworks-backend/validation"
 )
 
-func SendPurchasedEmail(transactionDetails transaction.TransactionDetails) {
+func SendPurchasedEmail(transactionDetails transaction.TransactionDetails, firebaseApp validation.IFirebaseApp) {
 	data, err := os.ReadFile("../auth_address.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
@@ -35,6 +37,7 @@ func SendPurchasedEmail(transactionDetails transaction.TransactionDetails) {
 		for i, item := range transactionDetails.Items {
 			body += fmt.Sprintf(`
 --------------------------
+
 %d 品目：
 商品情報：
 商品名： %v 
@@ -53,26 +56,103 @@ func SendPurchasedEmail(transactionDetails transaction.TransactionDetails) {
 	{
 		body := fmt.Sprintf(`
 %v 様 
+
+
 この度はお買い上げいただき、誠にありがとうございます。
 お客様のご注文を確認いたしましたので、ご連絡いたします。
 以下に、ご注文の詳細情報を記載いたします。
-		`, transactionDetails.UserAddress.RealName)
+
+注文ID： %v
+
+--------------------------
+
+【ご注文情報】
+商品名		値段		数量
+		`, transactionDetails.UserAddress.RealName, transactionDetails.TransactionId)
 		for _, item := range transactionDetails.Items {
 			body += fmt.Sprintf(`
---------------------------
-【ご注文情報】
-商品名： %v 
-値段： %v 
-数量： %v 
+%v		%v円		%v個
 			`, item.Name, item.Price, item.Quantity)
 		}
 		body += fmt.Sprintf(`
---------------------------
-合計金額： %v 
+送料： %v円
+合計金額： %v 円
 購入日時： %v 
-		`, transactionDetails.TotalAmount, transactionDetails.TransactionAt)
+		`, 350, transactionDetails.TotalPrice+350, utils.ConvertToJST(transactionDetails.TransactionAt))
+		body += fmt.Sprintf(`
+--------------------------
+
+【お届け先】
+お名前： %v様
+住所： %v`, transactionDetails.UserAddress.RealName, transactionDetails.UserAddress.Address)
+		body +=
+			`
+
+--------------------------
+
+商品の発送準備が整いましたら、別途メールにてご連絡いたします。通常、商品の発送には、2,3日程度かかりますので、ご了承ください。
+
+ご質問やご不明な点がございましたら、いつでもお気軽にお客様相談室からお問い合わせください。お手続きや配送に関する詳細情報は、ご注文IDを教えていただくとスムーズに対応できます。
+
+また、商品の受け取り後に何かお気づきの点やご意見がございましたら、お知らせいただけると幸いです。お客様のご意見は、弊社のサービス向上につながりますので、ぜひお聞かせください。
+
+改めまして、ご購入いただきありがとうございます。今後とも、より良い商品とサービスをご提供できるよう努めてまいりますので、どうぞよろしくお願い申し上げます。
+
+
+--------------------------
+CharisWorks
+
+お客様相談室:contact@charis.works
+
+`
 		SendEmail(transactionDetails.Email, "【決済完了通知】ご購入ありがとうございます。", body)
 
+	}
+	{
+		margin := 0.05
+		itemsByManufacturer := make(map[string][]transaction.TransactionItem)
+		for _, item := range transactionDetails.Items {
+			itemsByManufacturer[item.ManufacturerUserId] = append(itemsByManufacturer[item.ManufacturerUserId], item)
+		}
+
+		for manufacturerUserId, item := range itemsByManufacturer {
+			body := fmt.Sprintf(`
+%v 様
+出品された商品が購入されました。
+以下に、ご注文の詳細情報を記載いたします。
+
+--------------------------
+
+【商品情報】
+商品名		値段		数量
+`, item[0].ManufacturerName)
+			email, err := firebaseApp.GetEmail(manufacturerUserId)
+			if err != nil {
+				log.Fatalf("メールアドレスの取得に失敗しました：%v", err)
+				return
+			}
+			benefit := 0.0
+			for _, item := range item {
+
+				body += fmt.Sprintf(`
+%v		%v円		%v個
+`, item.Name, item.Price, item.Quantity)
+				benefit += float64(item.Price) * float64(item.Quantity) * float64(1-margin)
+			}
+
+			body += fmt.Sprintf(`
+売上： %v 円
+購入日時： %v
+`, benefit, utils.ConvertToJST(transactionDetails.TransactionAt))
+			body += `
+--------------------------
+CharisWorks
+
+お客様相談室:contact@charis.works
+`
+			SendEmail(email, "商品が購入されました", body)
+
+		}
 	}
 	log.Print("Email sent successfully!")
 }
@@ -89,13 +169,11 @@ func SendEmail(to string, subject string, body string) error {
 		log.Fatalf("JSONデータの解析に失敗しました：%v", err)
 		return err
 	}
-	log.Print(emailCredentials)
 	authmail := emailCredentials["auth_mail"]
 	from := emailCredentials["mail_from"]
 	password := emailCredentials["mail_auth_pass"]
 	smtp_server_addr := emailCredentials["smtp_server_addr"]
 	smtp_server := emailCredentials["smtp_server"]
-	log.Print(authmail, from, password, smtp_server_addr, smtp_server)
 	// メールヘッダーの作成
 	header := make(map[string]string)
 	header["From"] = "CharisWorks本部" + " <" + from + ">"

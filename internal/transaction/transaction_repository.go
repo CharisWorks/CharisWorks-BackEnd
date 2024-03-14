@@ -36,6 +36,8 @@ func (r Repository) GetList(userId string) (transactionPreviewList map[string]Tr
 		transactionItem.Name = t.TransactionItems.Name
 		transactionItem.TransferId = t.TransactionItems.StripeTransferId
 		transactionItem.Status = t.TransactionItems.Status
+		transactionItem.ManufacturerUserId = t.TransactionItems.ManufacturerUserId
+		transactionItem.ManufacturerName = t.TransactionItems.ManufacturerName
 
 		transactionPreview.TransactionId = t.Transaction.TransactionId
 		transactionPreview.Status = TransactionStatus(t.Transaction.Status)
@@ -70,12 +72,14 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 	itemList := []TransactionItem{}
 	for _, t := range *internalTransaction {
 		itemList = append(itemList, TransactionItem{
-			ItemId:     t.TransactionItems.ItemId,
-			Quantity:   t.TransactionItems.Quantity,
-			Name:       t.TransactionItems.Name,
-			Price:      t.TransactionItems.Price,
-			TransferId: t.TransactionItems.StripeTransferId,
-			Status:     t.TransactionItems.Status,
+			ItemId:             t.TransactionItems.ItemId,
+			Quantity:           t.TransactionItems.Quantity,
+			Name:               t.TransactionItems.Name,
+			Price:              t.TransactionItems.Price,
+			TransferId:         t.TransactionItems.StripeTransferId,
+			Status:             t.TransactionItems.Status,
+			ManufacturerUserId: t.TransactionItems.ManufacturerUserId,
+			ManufacturerName:   t.TransactionItems.ManufacturerName,
 		})
 		userId = t.Transaction.PurchaserUserId
 		transactionDetails.TotalAmount = t.Transaction.TotalAmount

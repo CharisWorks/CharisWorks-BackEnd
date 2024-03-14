@@ -8,11 +8,12 @@ import (
 
 	"github.com/charisworks/charisworks-backend/internal/admin"
 	"github.com/charisworks/charisworks-backend/internal/transaction"
+	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 )
 
-func (h *Handler) SetupRoutesForWebhook(webhookRequests transaction.IWebhook) {
+func (h *Handler) SetupRoutesForWebhook(webhookRequests transaction.IWebhook, app validation.IFirebaseApp) {
 	UserRouter := h.Router.Group("/webhook")
 	UserRouter.Use(webhookMiddleware())
 	{
@@ -35,7 +36,7 @@ func (h *Handler) SetupRoutesForWebhook(webhookRequests transaction.IWebhook) {
 				if err != nil {
 					return
 				}
-				admin.SendPurchasedEmail(transactionDetails)
+				admin.SendPurchasedEmail(transactionDetails, app)
 
 			}
 			if event.Type == "checkout.session.cancelled" {

@@ -12,6 +12,7 @@ import (
 )
 
 func Test_Transaction_Repository(t *testing.T) {
+	After(t)
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -115,20 +116,24 @@ func Test_Transaction_Repository(t *testing.T) {
 		TransactionId: "test",
 		Items: []TransactionItem{
 			{
-				ItemId:     "test1",
-				Quantity:   2,
-				Name:       "test1",
-				Price:      2000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test1",
+				Quantity:           2,
+				Name:               "test1",
+				Price:              2000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 			{
-				ItemId:     "test2",
-				Quantity:   2,
-				Name:       "test2",
-				Price:      3000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test2",
+				Quantity:           2,
+				Name:               "test2",
+				Price:              3000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 		},
 	}
@@ -153,20 +158,24 @@ func Test_Transaction_Repository(t *testing.T) {
 		},
 		Items: []TransactionItem{
 			{
-				ItemId:     "test1",
-				Quantity:   2,
-				Name:       "test1",
-				Price:      2000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test1",
+				Quantity:           2,
+				Name:               "test1",
+				Price:              2000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 			{
-				ItemId:     "test2",
-				Quantity:   2,
-				Name:       "test2",
-				Price:      3000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test2",
+				Quantity:           2,
+				Name:               "test2",
+				Price:              3000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 		},
 		Status: "Pending",
