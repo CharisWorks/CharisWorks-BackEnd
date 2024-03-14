@@ -78,6 +78,8 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 			Status:     t.TransactionItems.Status,
 		})
 		userId = t.Transaction.PurchaserUserId
+		transactionDetails.TotalAmount = t.Transaction.TotalAmount
+		transactionDetails.TotalPrice = t.Transaction.TotalPrice
 		transactionDetails.TransactionId = TransactionId
 		transactionDetails.Status = TransactionStatus(t.Transaction.Status)
 		transactionDetails.TransactionAt = t.Transaction.CreatedAt

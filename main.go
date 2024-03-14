@@ -61,7 +61,7 @@ func main() {
 		manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
 		stripeRequests := cash.Requests{CartRequests: cartRequests, UserRequests: userRequests}
 		transactionRequests := transaction.TransactionRequests{TransactionRepository: transaction.Repository{DB: db}, CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, StripeRequests: cash.Requests{CartRequests: cartRequests, UserRequests: userRequests}, StripeUtils: cash.Utils{}}
-		webhookRequests := transaction.Webhook{StripeUtils: cash.Utils{}, TransactionRepository: transaction.Repository{DB: db}, ItemUpdater: items.Updater{DB: db}}
+		webhookRequests := transaction.Webhook{StripeUtils: cash.Utils{}, TransactionRepository: transaction.Repository{DB: db}, ItemUpdater: items.Updater{DB: db}, App: app.App}
 		h.SetupRoutesForWebhook(webhookRequests)
 		h.SetupRoutesForItem(itemRequests)
 		h.SetupRoutesForUser(app, userRequests)

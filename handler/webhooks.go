@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/charisworks/charisworks-backend/internal/admin"
 	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
@@ -30,10 +31,11 @@ func (h *Handler) SetupRoutesForWebhook(webhookRequests transaction.IWebhook) {
 				params.AddExpand("line_items")
 				log.Print(sessions.ID)
 
-				err = webhookRequests.PurchaseComplete(sessions.ID)
+				transactionDetails, err := webhookRequests.PurchaseComplete(sessions.ID)
 				if err != nil {
 					return
 				}
+				admin.SendPurchasedEmail(transactionDetails)
 
 			}
 			if event.Type == "checkout.session.cancelled" {

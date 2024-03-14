@@ -18,6 +18,8 @@ type TransactionDetails struct {
 	TransactionId string             `json:"transaction_id"`
 	TrackingId    string             `json:"tracking_id"`
 	Email         string             `json:"email"`
+	TotalAmount   int                `json:"total_amount"`
+	TotalPrice    int                `json:"total_price"`
 	UserAddress   TransactionAddress `json:"address"`
 	Items         []TransactionItem  `json:"items"`
 	TransactionAt time.Time          `json:"transaction_at"`
@@ -73,7 +75,7 @@ type IRequests interface {
 	PurchaseRefund(stripeTransferId string, transactionId string) error
 }
 type IWebhook interface {
-	PurchaseComplete(stripeTransactionId string) error
+	PurchaseComplete(stripeTransactionId string) (t TransactionDetails, err error)
 	PurchaseFail(stripeTransactionId string) error
 	PurchaseCanceled(stripeTransactionId string) error
 }

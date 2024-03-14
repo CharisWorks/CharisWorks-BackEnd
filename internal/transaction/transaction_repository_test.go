@@ -142,6 +142,8 @@ func Test_Transaction_Repository(t *testing.T) {
 	details := TransactionDetails{
 		TransactionId: "test",
 		Email:         "hoge@example.com",
+		TotalAmount:   4,
+		TotalPrice:    10000,
 		TrackingId:    "",
 		UserAddress: TransactionAddress{
 			ZipCode:     "123-4567",

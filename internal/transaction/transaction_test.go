@@ -174,7 +174,9 @@ func Test_Transaction(t *testing.T) {
 				},
 			},
 			transactionDetails: TransactionDetails{
-				Email: "hoge@example.com",
+				Email:       "hoge@example.com",
+				TotalAmount: 4,
+				TotalPrice:  10000,
 				UserAddress: TransactionAddress{
 					ZipCode:     "123-4567",
 					Address:     "testtesttest",
@@ -331,7 +333,7 @@ func Test_Transaction(t *testing.T) {
 			if !reflect.DeepEqual(transactionPreview, c.transactionPreview) {
 				t.Errorf("got %v, want %v", transactionPreview, c.transactionPreview)
 			}
-			err = webhook.PurchaseComplete(transactionId)
+			_, err = webhook.PurchaseComplete(transactionId)
 			if err != nil {
 				if err.Error() != c.err.Error() {
 					t.Errorf("got %v, want %v", err, c.err)
@@ -501,7 +503,7 @@ func Test_Transaction_Cancelled(t *testing.T) {
 			After(t)
 			return
 		}
-		err = webhook.PurchaseComplete(transactionId)
+		_, err = webhook.PurchaseComplete(transactionId)
 		if err != nil {
 			t.Errorf(err.Error())
 			After(t)
@@ -525,6 +527,8 @@ func Test_Transaction_Cancelled(t *testing.T) {
 			Email:         "hoge@example.com",
 			TransactionId: transactionId,
 			Status:        Cancelled,
+			TotalAmount:   4,
+			TotalPrice:    10000,
 			Items: []TransactionItem{
 				{
 					ItemId:     "test1",

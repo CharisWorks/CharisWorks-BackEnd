@@ -4,6 +4,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/charisworks/charisworks-backend/internal/admin"
 	"github.com/charisworks/charisworks-backend/internal/cart"
 	"github.com/charisworks/charisworks-backend/internal/cash"
 	"github.com/charisworks/charisworks-backend/internal/items"
@@ -14,6 +15,7 @@ import (
 )
 
 func TestE2E(t *testing.T) {
+
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -143,12 +145,12 @@ func TestE2E(t *testing.T) {
 	}
 	log.Print("clientSecret: ", clientSecret)
 	log.Print("transactionId: ", transactionId)
-	err = webhook.PurchaseComplete(transactionId)
+	transactionDetails, err := webhook.PurchaseComplete(transactionId)
 	if err != nil {
 		t.Errorf("got %v", err)
 		After(t)
 	}
-
+	admin.SendPurchasedEmail(transactionDetails)
 	log.Print("test finished")
 }
 func After(t *testing.T) {
