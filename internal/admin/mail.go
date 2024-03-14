@@ -157,8 +157,103 @@ CharisWorks
 	log.Print("Email sent successfully!")
 }
 
+func SendShippedEmail(transactionDetails transaction.TransactionDetails) {
+	data, err := os.ReadFile("./auth_address.json")
+	if err != nil {
+		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
+		return
+	}
+	authAddress := new([]string)
+	err = json.Unmarshal(data, &authAddress)
+	if err != nil {
+		log.Fatalf("JSONデータの解析に失敗しました：%v", err)
+		return
+	}
+	for _, to := range *authAddress {
+		body := `発送が完了しました。`
+		body += fmt.Sprintf(`
+購入者情報：
+名前： %v  
+メールアドレス： %v 
+住所： %v  `,
+			transactionDetails.UserAddress.RealName,
+			transactionDetails.Email,
+			transactionDetails.UserAddress.Address)
+		for i, item := range transactionDetails.Items {
+			body += fmt.Sprintf(`
+--------------------------
+
+%d 品目：
+商品情報：
+商品名： %v 
+値段： %v 
+数量： %v 
+合計金額： %v 
+			`, i+1, item.Name, item.Price, item.Quantity, item.Price*item.Quantity)
+		}
+		body += fmt.Sprintf(`
+--------------------------
+合計売上： %v 
+購入日時： %v 
+		`, transactionDetails.TotalPrice, transactionDetails.TransactionAt)
+		SendEmail(to, "発送完了通知", body)
+	}
+	{
+		body := fmt.Sprintf(`
+%v 様 
+
+
+この度はお買い上げいただき、誠にありがとうございます。
+お客様から注文のあった商品を発送しましたので、ご連絡いたします。
+以下に、ご注文の詳細情報を記載いたします。
+
+注文ID： %v
+追跡番号： %v
+--------------------------
+
+【ご注文情報】
+商品名		値段		数量
+		`, transactionDetails.UserAddress.RealName, transactionDetails.TransactionId, transactionDetails.TrackingId)
+		for _, item := range transactionDetails.Items {
+			body += fmt.Sprintf(`
+%v		%v円		%v個
+			`, item.Name, item.Price, item.Quantity)
+		}
+		body += fmt.Sprintf(`
+送料： %v円
+合計金額： %v 円
+購入日時： %v 
+		`, 350, transactionDetails.TotalPrice+350, utils.ConvertToJST(transactionDetails.TransactionAt))
+		body += fmt.Sprintf(`
+--------------------------
+
+【お届け先】
+お名前： %v様
+住所： %v`, transactionDetails.UserAddress.RealName, transactionDetails.UserAddress.Address)
+		body +=
+			`
+
+--------------------------
+
+商品の返品・返金に致しましては、商品到着後7日以内にお問い合わせフォームよりご連絡ください。商品の状態を確認の上、返品・返金の手続きをさせていただきます。
+
+また、お客様自身の都合による返品・返金については、致しかねる場合がございますので、予めご了承ください。
+
+--------------------------
+CharisWorks
+
+お客様相談室:contact@charis.works
+お問い合わせフォーム:[link]
+`
+		SendEmail(transactionDetails.Email, "【決済完了通知】ご購入ありがとうございます。", body)
+
+	}
+
+	log.Print("Email sent successfully!")
+}
+
 func SendEmail(to string, subject string, body string) error {
-	data, err := os.ReadFile("../email_credentials.json")
+	data, err := os.ReadFile("./email_credentials.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
 		return err

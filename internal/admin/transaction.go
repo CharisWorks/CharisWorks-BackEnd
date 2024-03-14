@@ -3,8 +3,10 @@ package admin
 import (
 	"context"
 	"encoding/json"
+	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/transaction"
+	"github.com/charisworks/charisworks-backend/internal/users"
 
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	transactionpb "github.com/charisworks/charisworks-backend/pkg/grpc"
@@ -71,11 +73,22 @@ func (r *TransactionServiceServer) RegisterTrackingId(ctx context.Context, req *
 	res = new(transactionpb.VoidResponse)
 	trdb, err := utils.HistoryDBInitTest()
 	if err != nil {
+		log.Print(err)
 		return res, err
 	}
-	if err := trdb.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
+	if err := trdb.Table("transactions").Where("transaction_id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
 		return res, err
 	}
+	db, err := utils.DBInitTest()
+	if err != nil {
+		return res, err
+	}
+	transactionDetails, _, _, err := transaction.Repository{DB: trdb, UserRepository: users.UserRepository{DB: db}}.GetDetails(req.GetTransaction())
+	if err != nil {
+
+		return res, err
+	}
+	SendShippedEmail(transactionDetails)
 	return res, nil
 }
 func (r *TransactionServiceServer) RegisterStatus(ctx context.Context, req *transactionpb.UpdateTransactionStatusRequest) (res *transactionpb.VoidResponse, err error) {
@@ -84,7 +97,7 @@ func (r *TransactionServiceServer) RegisterStatus(ctx context.Context, req *tran
 	if err != nil {
 		return res, err
 	}
-	if err := trdb.Table("transactions").Where("id = ?", req.GetTransaction()).Updates(map[string]interface{}{"status": req.GetStatus()}).Error; err != nil {
+	if err := trdb.Table("transactions").Where("transaction_id = ?", req.GetTransaction()).Updates(map[string]interface{}{"status": req.GetStatus()}).Error; err != nil {
 		return res, err
 	}
 	return res, nil
