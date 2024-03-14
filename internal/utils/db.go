@@ -101,6 +101,7 @@ type InternalTransaction struct {
 type Transaction struct {
 	TransactionId   string    `gorm:"column:transaction_id;type:varchar(100);primaryKey"`
 	PurchaserUserId string    `gorm:"purchaser_user_id;type:varchar(100)"`
+	Email           string    `gorm:"email"`
 	TrackingId      string    `gorm:"tracking_id;type:varchar(100)"`
 	CreatedAt       time.Time `gorm:"created_at"`
 	ZipCode         string    `gorm:"zip_code"`

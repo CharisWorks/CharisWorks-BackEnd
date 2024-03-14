@@ -11,6 +11,8 @@ import (
 
 type IFirebaseApp interface {
 	VerifyIDToken(*gin.Context) (string, error)
+	Verify(context.Context, string) (string, string, bool, error)
+	GetEmail(string) (string, error)
 }
 
 type FirebaseApp struct {
@@ -60,6 +62,20 @@ func (app *FirebaseApp) Verify(ctx context.Context, idToken string) (userId stri
 	emailVerified = token.Claims["email_verified"].(bool)
 
 	log.Printf("Verified ID token: %v\n", token)
-
 	return userId, email, emailVerified, nil
+}
+func (app *FirebaseApp) GetEmail(userId string) (string, error) {
+	client, err := app.App.Auth(context.Background())
+	if err != nil {
+		log.Printf("error getting Auth client: %v\n", err)
+		return "", err
+	}
+
+	user, err := client.GetUser(context.Background(), userId)
+	if err != nil {
+		log.Printf("error getting user: %v\n", err)
+		return "", err
+	}
+
+	return user.Email, nil
 }

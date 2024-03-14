@@ -36,10 +36,13 @@ func (r Repository) GetList(userId string) (transactionPreviewList map[string]Tr
 		transactionItem.Name = t.TransactionItems.Name
 		transactionItem.TransferId = t.TransactionItems.StripeTransferId
 		transactionItem.Status = t.TransactionItems.Status
+		transactionItem.ManufacturerUserId = t.TransactionItems.ManufacturerUserId
+		transactionItem.ManufacturerName = t.TransactionItems.ManufacturerName
 
 		transactionPreview.TransactionId = t.Transaction.TransactionId
 		transactionPreview.Status = TransactionStatus(t.Transaction.Status)
 		transactionPreview.TransactionAt = t.Transaction.CreatedAt
+		transactionPreview.Email = t.Transaction.Email
 		_, exist := transactionPreviewList[t.Transaction.TransactionId]
 		list := make([]TransactionItem, 0)
 		if exist {
@@ -69,14 +72,18 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 	itemList := []TransactionItem{}
 	for _, t := range *internalTransaction {
 		itemList = append(itemList, TransactionItem{
-			ItemId:     t.TransactionItems.ItemId,
-			Quantity:   t.TransactionItems.Quantity,
-			Name:       t.TransactionItems.Name,
-			Price:      t.TransactionItems.Price,
-			TransferId: t.TransactionItems.StripeTransferId,
-			Status:     t.TransactionItems.Status,
+			ItemId:             t.TransactionItems.ItemId,
+			Quantity:           t.TransactionItems.Quantity,
+			Name:               t.TransactionItems.Name,
+			Price:              t.TransactionItems.Price,
+			TransferId:         t.TransactionItems.StripeTransferId,
+			Status:             t.TransactionItems.Status,
+			ManufacturerUserId: t.TransactionItems.ManufacturerUserId,
+			ManufacturerName:   t.TransactionItems.ManufacturerName,
 		})
 		userId = t.Transaction.PurchaserUserId
+		transactionDetails.TotalAmount = t.Transaction.TotalAmount
+		transactionDetails.TotalPrice = t.Transaction.TotalPrice
 		transactionDetails.TransactionId = TransactionId
 		transactionDetails.Status = TransactionStatus(t.Transaction.Status)
 		transactionDetails.TransactionAt = t.Transaction.CreatedAt
@@ -88,6 +95,7 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 			PhoneNumber: t.Transaction.PhoneNumber,
 			RealName:    t.Transaction.RealName,
 		}
+		transactionDetails.Email = t.Transaction.Email
 
 		tr := transfer{
 			amount:          t.TransactionItems.Price * t.TransactionItems.Quantity,
@@ -101,7 +109,7 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 	return transactionDetails, userId, transferList, nil
 }
 
-func (r Repository) Register(userId string, transactionId string, internalCartList []cart.InternalCart) error {
+func (r Repository) Register(userId string, email string, transactionId string, internalCartList []cart.InternalCart) error {
 	totalPrice := 0
 	totalAmount := 0
 	transactionItemList := make([]utils.TransactionItem, 0)
@@ -141,6 +149,7 @@ func (r Repository) Register(userId string, transactionId string, internalCartLi
 	name := user.UserAddress.FirstName + user.UserAddress.LastName
 	if err := r.DB.Create(utils.Transaction{
 		TransactionId:   transactionId,
+		Email:           email,
 		PurchaserUserId: userId,
 		CreatedAt:       time.Now(),
 		ZipCode:         user.UserAddress.ZipCode,
