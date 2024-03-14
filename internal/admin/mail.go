@@ -13,7 +13,7 @@ import (
 )
 
 func SendPurchasedEmail(transactionDetails transaction.TransactionDetails, firebaseApp validation.IFirebaseApp) {
-	data, err := os.ReadFile("../auth_address.json")
+	data, err := os.ReadFile("./auth_address.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
 		return
@@ -246,6 +246,45 @@ CharisWorks
 お問い合わせフォーム:[link]
 `
 		SendEmail(transactionDetails.Email, "【決済完了通知】ご購入ありがとうございます。", body)
+
+	}
+
+	log.Print("Email sent successfully!")
+}
+
+func SendPrivilegedEmail(userId string, firebaseApp validation.IFirebaseApp) {
+	data, err := os.ReadFile("./auth_address.json")
+	if err != nil {
+		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
+		return
+	}
+	authAddress := new([]string)
+	err = json.Unmarshal(data, &authAddress)
+	if err != nil {
+		log.Fatalf("JSONデータの解析に失敗しました：%v", err)
+		return
+	}
+	email, err := firebaseApp.GetEmail(userId)
+	if err != nil {
+		log.Fatalf("メールアドレスの取得に失敗しました：%v", err)
+		return
+	}
+	for _, to := range *authAddress {
+		body := `出品者権限を付与しました。`
+		body += "\nemail: " + email
+		SendEmail(to, "出品者権限付与通知", body)
+	}
+	{
+		body := fmt.Sprintf(`
+%v 様
+
+
+出品者権限を付与しました。
+以下リンクより口座登録をお願いします。
+
+[link]
+`, email)
+		SendEmail(email, "出品者権限を付与しました。", body)
 
 	}
 
