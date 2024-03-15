@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -92,4 +93,15 @@ func GenerateRandomString() string {
 	}
 
 	return string(runes)
+}
+
+func ConvertToJST(utcTime time.Time) string {
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		// タイムゾーンの読み込みに失敗した場合のエラーハンドリング
+		fmt.Println("タイムゾーンの読み込みに失敗しました:", err)
+		return ""
+	}
+	jstTime := utcTime.In(loc)
+	return jstTime.Format("2006-01-02")
 }

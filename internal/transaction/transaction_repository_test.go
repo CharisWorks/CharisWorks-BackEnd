@@ -12,6 +12,7 @@ import (
 )
 
 func Test_Transaction_Repository(t *testing.T) {
+	After(t)
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -106,7 +107,7 @@ func Test_Transaction_Repository(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	transactionRepository.Register("aaa", "test", c)
+	transactionRepository.Register("aaa", "hoge@example.com", "test", c)
 	transaction, err := transactionRepository.GetList("aaa")
 	if err != nil {
 		t.Errorf(err.Error())
@@ -115,20 +116,24 @@ func Test_Transaction_Repository(t *testing.T) {
 		TransactionId: "test",
 		Items: []TransactionItem{
 			{
-				ItemId:     "test1",
-				Quantity:   2,
-				Name:       "test1",
-				Price:      2000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test1",
+				Quantity:           2,
+				Name:               "test1",
+				Price:              2000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 			{
-				ItemId:     "test2",
-				Quantity:   2,
-				Name:       "test2",
-				Price:      3000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test2",
+				Quantity:           2,
+				Name:               "test2",
+				Price:              3000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 		},
 	}
@@ -141,6 +146,9 @@ func Test_Transaction_Repository(t *testing.T) {
 	}
 	details := TransactionDetails{
 		TransactionId: "test",
+		Email:         "hoge@example.com",
+		TotalAmount:   4,
+		TotalPrice:    10000,
 		TrackingId:    "",
 		UserAddress: TransactionAddress{
 			ZipCode:     "123-4567",
@@ -150,20 +158,24 @@ func Test_Transaction_Repository(t *testing.T) {
 		},
 		Items: []TransactionItem{
 			{
-				ItemId:     "test1",
-				Quantity:   2,
-				Name:       "test1",
-				Price:      2000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test1",
+				Quantity:           2,
+				Name:               "test1",
+				Price:              2000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 			{
-				ItemId:     "test2",
-				Quantity:   2,
-				Name:       "test2",
-				Price:      3000,
-				TransferId: "",
-				Status:     "Pending",
+				ItemId:             "test2",
+				Quantity:           2,
+				Name:               "test2",
+				Price:              3000,
+				TransferId:         "",
+				Status:             "Pending",
+				ManufacturerUserId: "aaa",
+				ManufacturerName:   "test",
 			},
 		},
 		Status: "Pending",

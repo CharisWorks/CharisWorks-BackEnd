@@ -1,13 +1,11 @@
 package handler
 
 import (
-	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
 	Router *gin.Engine
-	App    *validation.IFirebaseApp
 }
 
 func NewHandler(router *gin.Engine) *Handler {

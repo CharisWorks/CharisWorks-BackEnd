@@ -9,6 +9,7 @@ import (
 
 type TransactionPreview struct {
 	TransactionId string            `json:"transaction_id"`
+	Email         string            `json:"email"`
 	Items         []TransactionItem `json:"items"`
 	TransactionAt time.Time         `json:"transaction_at"`
 	Status        TransactionStatus `json:"status"`
@@ -16,6 +17,9 @@ type TransactionPreview struct {
 type TransactionDetails struct {
 	TransactionId string             `json:"transaction_id"`
 	TrackingId    string             `json:"tracking_id"`
+	Email         string             `json:"email"`
+	TotalAmount   int                `json:"total_amount"`
+	TotalPrice    int                `json:"total_price"`
 	UserAddress   TransactionAddress `json:"address"`
 	Items         []TransactionItem  `json:"items"`
 	TransactionAt time.Time          `json:"transaction_at"`
@@ -44,12 +48,14 @@ type TransactionAddress struct {
 	RealName    string `json:"real_name"`
 }
 type TransactionItem struct {
-	ItemId     string `json:"item_id"`
-	Quantity   int    `json:"quantity"`
-	Name       string `json:"name"`
-	Price      int    `json:"price"`
-	TransferId string `json:"transfer_id"`
-	Status     string `json:"status"`
+	ItemId             string `json:"item_id"`
+	Quantity           int    `json:"quantity"`
+	Name               string `json:"name"`
+	Price              int    `json:"price"`
+	TransferId         string `json:"transfer_id"`
+	Status             string `json:"status"`
+	ManufacturerUserId string `json:"manufacturer_user_id"`
+	ManufacturerName   string `gorm:"manufacturer_name"`
 }
 type InternalTransactionItem struct {
 	ItemId                  string `gorm:"item_id"`
@@ -67,11 +73,11 @@ type InternalTransactionItem struct {
 type IRequests interface {
 	GetList(userId string) ([]TransactionPreview, error)
 	GetDetails(userId string, transactionId string) (TransactionDetails, error)
-	Purchase(userId string) (clientSecret string, transactionId string, err error)
+	Purchase(userId string, email string) (clientSecret string, transactionId string, err error)
 	PurchaseRefund(stripeTransferId string, transactionId string) error
 }
 type IWebhook interface {
-	PurchaseComplete(stripeTransactionId string) error
+	PurchaseComplete(stripeTransactionId string) (t TransactionDetails, err error)
 	PurchaseFail(stripeTransactionId string) error
 	PurchaseCanceled(stripeTransactionId string) error
 }
@@ -86,7 +92,7 @@ type transfer struct {
 type IRepository interface {
 	GetList(UserId string) (map[string]TransactionPreview, error)
 	GetDetails(transactionId string) (TransactionDetails, string, []transfer, error)
-	Register(userId string, transactionId string, internalCartList []cart.InternalCart) error
+	Register(userId string, email string, transactionId string, internalCartList []cart.InternalCart) error
 	StatusUpdate(transactionId string, conditions map[string]interface{}) error
 	StatusUpdateItems(transactionId string, itemId string, conditions map[string]interface{}) error
 }
