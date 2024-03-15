@@ -1,4 +1,6 @@
 serviceAccountKey.json
 test_run_with_cred.sh
 auth_address.json
+email_address.json
 email_credentials.json
+
