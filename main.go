@@ -26,6 +26,8 @@ import (
 func main() {
 	r := gin.Default()
 	r.ContextWithFallback = true
+	r.MaxMultipartMemory = 8 << 20 // 8 MiB
+
 	utils.CORS(r)
 	h := handler.NewHandler(r)
 	app, err := validation.NewFirebaseApp()
@@ -68,6 +70,7 @@ func main() {
 		h.SetupRoutesForCart(app, cartRequests, userRequests)
 		h.SetupRoutesForManufacturer(app, manufacturerRequests)
 		h.SetupRoutesForStripe(app, userRequests, stripeRequests, transactionRequests)
+		h.SetupRoutesForImages(app, manufacturerRequests, itemRequests)
 		h.Router.Run(":8080")
 	}()
 	// Ctrl+Cが入力されたらGraceful shutdownされるようにする
