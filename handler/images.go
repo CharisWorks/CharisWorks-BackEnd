@@ -11,13 +11,14 @@ import (
 	"github.com/charisworks/charisworks-backend/internal/images"
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manufacturerRequests manufacturer.IItemRequests, itemRequests items.IRequests) {
+func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manufacturerRequests manufacturer.IItemRequests, itemRequests items.IRequests, userRequests users.IRequests) {
 	Crud := images.R2Conns{Crud: nil}
 	Crud.Init()
 	UserRouter := h.Router.Group("/images")
@@ -28,7 +29,7 @@ func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manu
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
-
+			log.Print(*itemId)
 			items, err := Crud.GetImages(*itemId + "/")
 			if err != nil {
 				log.Print(err)
@@ -36,6 +37,7 @@ func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manu
 				utils.ReturnErrorResponse(ctx, err)
 				return
 			}
+			log.Print(items)
 			if len(items) == 0 {
 				utils.ReturnErrorResponse(ctx, &utils.InternalError{Message: utils.InternalErrorNotFound})
 				return
@@ -49,6 +51,7 @@ func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manu
 	}
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
+		UserRouter.Use((userMiddleware(userRequests)))
 		UserRouter.Use(manufacturerMiddleware())
 		{
 			UserRouter.POST("/:item_id", func(ctx *gin.Context) {
@@ -99,10 +102,10 @@ func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manu
 					}
 					// ファイルの保存先パス
 					if i == 0 {
-						destPath = filepath.Join("./src/images/"+*itemId, "thumb.png")
+						destPath = filepath.Join(*itemId, "/thumb.png")
 
 					} else {
-						destPath = filepath.Join("./src/images/"+*itemId, strconv.Itoa(i)+".png")
+						destPath = filepath.Join(*itemId, "/", strconv.Itoa(i)+".png")
 					}
 					Crud.Crud.UploadObject(ctx, b, destPath)
 				}

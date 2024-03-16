@@ -69,8 +69,10 @@ func (r *R2Conns) GetImages(path string) ([]string, error) {
 		err = &utils.InternalError{Message: utils.InternalErrorR2}
 		return nil, err
 	}
+	log.Print(objects)
 	var images []string
 	for _, obj := range objects.Contents {
+		log.Print(*obj.Key)
 		images = append(images, *obj.Key)
 	}
 	return images, nil

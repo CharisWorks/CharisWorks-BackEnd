@@ -70,7 +70,7 @@ func main() {
 		h.SetupRoutesForCart(app, cartRequests, userRequests)
 		h.SetupRoutesForManufacturer(app, manufacturerRequests)
 		h.SetupRoutesForStripe(app, userRequests, stripeRequests, transactionRequests)
-		h.SetupRoutesForImages(app, manufacturerRequests, itemRequests)
+		h.SetupRoutesForImages(app, manufacturerRequests, itemRequests, userRequests)
 		h.Router.Run(":8080")
 	}()
 	// Ctrl+Cが入力されたらGraceful shutdownされるようにする

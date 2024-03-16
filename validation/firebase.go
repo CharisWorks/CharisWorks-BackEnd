@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"log"
+	"strings"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,7 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 }
 
 func (app *FirebaseApp) VerifyIDToken(ctx *gin.Context) (string, error) {
-	userId, email, emailVerified, err := app.Verify(ctx.Request.Context(), ctx.GetHeader("Authorization"))
+	userId, email, emailVerified, err := app.Verify(ctx.Request.Context(), strings.TrimPrefix(ctx.GetHeader("Authorization"), "Bearer "))
 	if err != nil {
 		ctx.JSON(401, gin.H{"error": err.Error()})
 		ctx.Abort()
