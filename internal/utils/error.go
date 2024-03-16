@@ -82,3 +82,7 @@ const (
 const (
 	InternalErrorIncident InternalMessage = "incident"
 )
+
+const (
+	InternalErrorR2 InternalMessage = "r2 error"
+)

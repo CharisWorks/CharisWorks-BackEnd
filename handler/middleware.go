@@ -92,7 +92,7 @@ func stripeMiddleware() gin.HandlerFunc {
 
 func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		User := ctx.MustGet("User").(*users.User)
+		User := ctx.MustGet(string(user)).(users.User)
 		if User.UserProfile.StripeAccountId == "" {
 			err := utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
 			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})

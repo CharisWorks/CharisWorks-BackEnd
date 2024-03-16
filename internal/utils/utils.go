@@ -39,6 +39,8 @@ func CORS(r *gin.Engine) {
 		// アクセス許可するオリジン
 		AllowOrigins: []string{
 			"http://localhost:3001",
+			"http://localhost:3000",
+			"http://localhost:3002",
 		},
 		// アクセス許可するHTTPメソッド
 		AllowMethods: []string{
