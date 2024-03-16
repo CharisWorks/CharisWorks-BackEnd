@@ -34,12 +34,18 @@ func Code(i InternalMessage) int {
 		InternalErrorUnAuthorized:                http.StatusUnauthorized,
 		InternalErrorIncident:                    http.StatusInternalServerError,
 		InternalErrorCartIsEmpty:                 http.StatusBadRequest,
+		InternalErrorR2:                          http.StatusInternalServerError,
+		InternalErrorNotLogined:                  http.StatusUnauthorized,
 	}
 	return statusCode[i]
 }
 func ReturnErrorResponse(ctx *gin.Context, err error) {
 	internalError := err.(*InternalError)
 	ctx.JSON(Code(internalError.Message), gin.H{"message": internalError.Message})
+}
+func AbortContextWithError(ctx *gin.Context, err error) {
+	internalError := err.(*InternalError)
+	ctx.AbortWithStatusJSON(Code(internalError.Message), gin.H{"message": internalError.Message})
 }
 
 type InternalMessage string
@@ -62,6 +68,7 @@ const (
 	InternalErrorUnAuthorized           InternalMessage = "unauthorized"
 	InternalErrorEmailIsNotVerified     InternalMessage = "email is not verified"
 	InternalErrorAddressIsNotRegistered InternalMessage = "address is not registered"
+	InternalErrorNotLogined             InternalMessage = "not logined"
 )
 
 // DB系

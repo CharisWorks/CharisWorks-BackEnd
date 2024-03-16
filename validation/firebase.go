@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	firebase "firebase.google.com/go/v4"
+	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/option"
 )
@@ -35,8 +36,7 @@ func NewFirebaseApp() (*FirebaseApp, error) {
 func (app *FirebaseApp) VerifyIDToken(ctx *gin.Context) (string, error) {
 	userId, email, emailVerified, err := app.Verify(ctx.Request.Context(), strings.TrimPrefix(ctx.GetHeader("Authorization"), "Bearer "))
 	if err != nil {
-		ctx.JSON(401, gin.H{"error": err.Error()})
-		ctx.Abort()
+		err = &utils.InternalError{Message: utils.InternalErrorNotLogined}
 		return "", err
 	}
 

@@ -19,8 +19,8 @@ func firebaseMiddleware(app validation.IFirebaseApp) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		UserID, err := app.VerifyIDToken(ctx)
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, err)
-			ctx.Abort()
+			log.Print(err)
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 		ctx.Set(string(userId), UserID)
@@ -32,15 +32,13 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		EmailVerified, exist := ctx.Get(string(emailVerified))
 		if !exist {
-			err := utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
-			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-			ctx.Abort()
+			err := &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 		if !EmailVerified.(bool) {
-			err := utils.InternalError{Message: utils.InternalErrorEmailIsNotVerified}
-			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-			ctx.Abort()
+			err := &utils.InternalError{Message: utils.InternalErrorEmailIsNotVerified}
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 		userId := ctx.GetString(string(userId))
@@ -50,17 +48,14 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 				log.Print("creating user for DB")
 				err := UserRequests.Create(userId)
 				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					ctx.Abort()
+					utils.AbortContextWithError(ctx, err)
 					return
 				}
 				err = &utils.InternalError{Message: utils.InternalErrorNotFound}
-				ctx.JSON(http.StatusOK, gin.H{"message": "new user"})
-				ctx.Abort()
+				utils.AbortContextWithError(ctx, err)
 				return
 			}
-			utils.ReturnErrorResponse(ctx, err)
-			ctx.Abort()
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 
@@ -75,13 +70,11 @@ func stripeMiddleware() gin.HandlerFunc {
 		if !exist {
 			err := utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
 			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-			ctx.Abort()
 			return
 		}
 		if User.(*users.User).UserProfile.StripeAccountId == "" {
 			err := utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
 			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-			ctx.Abort()
 			return
 		}
 		//内部の実行タイミング
@@ -94,21 +87,18 @@ func manufacturerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		User := ctx.MustGet(string(user)).(users.User)
 		if User.UserProfile.StripeAccountId == "" {
-			err := utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
-			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-			ctx.Abort()
+			err := &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 		Account, err := cash.GetAccount(User.UserProfile.StripeAccountId)
 		if err != nil {
-			utils.ReturnErrorResponse(ctx, err)
-			ctx.Abort()
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 		if !Account.PayoutsEnabled {
-			err := utils.InternalError{Message: utils.InternalErrorManufacturerDoesNotHaveBank}
-			ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
-			ctx.Abort()
+			err := &utils.InternalError{Message: utils.InternalErrorManufacturerDoesNotHaveBank}
+			utils.AbortContextWithError(ctx, err)
 			return
 		}
 		ctx.Set(string(user), User)

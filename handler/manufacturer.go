@@ -4,15 +4,17 @@ import (
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
+	"github.com/charisworks/charisworks-backend/internal/users"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 	"github.com/charisworks/charisworks-backend/validation"
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp, manufacturerRequests manufacturer.IItemRequests) {
+func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp, manufacturerRequests manufacturer.IItemRequests, userRequests users.IRequests) {
 	UserRouter := h.Router.Group("/api/products")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
+		UserRouter.Use((userMiddleware(userRequests)))
 		UserRouter.Use(manufacturerMiddleware())
 		{
 			UserRouter.POST("/", func(ctx *gin.Context) {
@@ -48,13 +50,13 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 				}
 				ctx.JSON(http.StatusOK, "Item was successfuly updated")
 			})
-			UserRouter.DELETE("/", func(ctx *gin.Context) {
-				itemId, err := utils.GetQuery("item_id", ctx)
+			UserRouter.DELETE("/:item_id", func(ctx *gin.Context) {
+				itemId, err := utils.GetParams("item_id", ctx)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
-				userId := ctx.GetString("userId")
+				userId := ctx.GetString(string(userId))
 				err = manufacturerRequests.Delete(*itemId, userId)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)

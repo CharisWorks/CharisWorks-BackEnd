@@ -18,9 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manufacturerRequests manufacturer.IItemRequests, itemRequests items.IRequests, userRequests users.IRequests) {
-	Crud := images.R2Conns{Crud: nil}
-	Crud.Init()
+func (h *Handler) SetupRoutesForImages(firebaseApp validation.IFirebaseApp, manufacturerRequests manufacturer.IItemRequests, itemRequests items.IRequests, userRequests users.IRequests, Crud images.R2Conns) {
 	UserRouter := h.Router.Group("/images")
 	{
 		UserRouter.GET("/:item_id", func(ctx *gin.Context) {

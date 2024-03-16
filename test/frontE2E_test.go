@@ -20,6 +20,7 @@ import (
 
 func TestE2E(t *testing.T) {
 	After(t)
+
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
