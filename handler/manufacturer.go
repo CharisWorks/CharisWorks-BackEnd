@@ -24,7 +24,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 					return
 				}
 				userId := ctx.GetString("userId")
-				err = manufacturerRequests.Register(*payload, userId, utils.GenerateRandomString())
+				err = manufacturerRequests.Register(payload, userId, utils.GenerateRandomString())
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
@@ -43,7 +43,7 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
-				err = manufacturerRequests.Update(*payload, userId, *itemId)
+				err = manufacturerRequests.Update(payload, userId, *itemId)
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

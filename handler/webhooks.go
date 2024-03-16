@@ -19,8 +19,8 @@ func (h *Handler) SetupRoutesForWebhook(webhookRequests transaction.IWebhook, ap
 	{
 		UserRouter.POST("", func(ctx *gin.Context) {
 			event := ctx.MustGet(string(stripeEvent)).(stripe.Event)
-			// Handle the checkout.session.completed event
-			if event.Type == "checkout.session.completed" {
+
+			if event.Type == "payment_intent.succeeded" {
 				var sessions stripe.CheckoutSession
 				err := json.Unmarshal(event.Data.Raw, &sessions)
 				if err != nil {

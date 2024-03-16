@@ -72,6 +72,15 @@ func (r UserRepository) UpdateProfile(UserId string, payload map[string]interfac
 	return nil
 }
 func (r UserRepository) RegisterAddress(UserId string, payload AddressRegisterPayload) error {
+	s := new(utils.Shipping)
+	if err := r.DB.Table("shippings").Where("id = ?", UserId).First(&s).Error; err != nil {
+		log.Print("DB error: ", err)
+		if err.Error() != string(utils.InternalErrorNotFound) {
+			return &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+	} else {
+		return &utils.InternalError{Message: utils.InternalErrorInvalidUserRequest}
+	}
 	Shipping := new(utils.Shipping)
 	Shipping.Id = UserId
 	Shipping.ZipCode = payload.ZipCode

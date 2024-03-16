@@ -10,13 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetPayloadFromBody[T any](ctx *gin.Context, p *T) (*T, error) {
-	bind := new(T)
-	err := ctx.BindJSON(&bind)
+func GetPayloadFromBody[T any](ctx *gin.Context, p *T) (result T, err error) {
+	result = *new(T)
+	err = ctx.BindJSON(&result)
 	if err != nil {
-		return nil, &InternalError{Message: InternalErrorInvalidPayload}
+		return result, &InternalError{Message: InternalErrorInvalidPayload}
 	}
-	return bind, nil
+	return result, nil
 }
 
 func GetQuery(params string, ctx *gin.Context) (*string, error) {

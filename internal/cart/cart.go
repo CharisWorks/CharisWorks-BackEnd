@@ -29,8 +29,11 @@ func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload)
 	if err != nil {
 		return err
 	}
-	inspectedCart, _ := r.CartUtils.Inspect(internalCart)
-	_, exist := inspectedCart[cartRequestPayload.ItemId]
+	exist := false
+	if len(internalCart) != 0 {
+		inspectedCart, _ := r.CartUtils.Inspect(internalCart)
+		_, exist = inspectedCart[cartRequestPayload.ItemId]
+	}
 	itemStatus, err := r.ItemGetStatus.GetItem(cartRequestPayload.ItemId)
 	if err != nil {
 		return err
@@ -40,12 +43,12 @@ func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload)
 		return err
 	}
 	if exist {
-		err = r.CartRepository.Update(userId, *InspectedCartRequestPayload)
+		err = r.CartRepository.Update(userId, InspectedCartRequestPayload)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = r.CartRepository.Register(userId, *InspectedCartRequestPayload)
+		err = r.CartRepository.Register(userId, InspectedCartRequestPayload)
 		if err != nil {
 			return err
 		}

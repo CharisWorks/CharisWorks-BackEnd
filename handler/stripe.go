@@ -68,7 +68,7 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, User
 					ctx.JSON(utils.Code(utils.InternalMessage(err.Error())), gin.H{"message": err.Error()})
 					return
 				}
-				URL, err := stripeRequests.GetRegisterLink(email, *user.(*users.User))
+				URL, err := stripeRequests.GetRegisterLink(email, user.(users.User))
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return

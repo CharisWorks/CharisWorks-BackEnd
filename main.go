@@ -40,6 +40,10 @@ func main() {
 	if err != nil {
 		return
 	}
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		return
+	}
 	s := grpc.NewServer(
 		grpc.UnaryInterceptor(admin.AuthUnaryServerInterceptor),
 	)
@@ -59,13 +63,13 @@ func main() {
 		s.Serve(listener)
 	}()
 	go func() {
-		cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}}
+		cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
 		itemRequests := items.Requests{ItemRepository: items.ItemRepository{DB: db}, ItemUtils: items.ItemUtils{}}
 		userRequests := users.Requests{UserUtils: users.UserUtils{}, UserRepository: users.UserRepository{DB: db}}
 		manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db, Crud: R2Conns}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
 		stripeRequests := cash.Requests{CartRequests: cartRequests, UserRequests: userRequests}
-		transactionRequests := transaction.TransactionRequests{TransactionRepository: transaction.Repository{DB: db}, CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, StripeRequests: cash.Requests{CartRequests: cartRequests, UserRequests: userRequests}, StripeUtils: cash.Utils{}}
-		webhookRequests := transaction.Webhook{StripeUtils: cash.Utils{}, TransactionRepository: transaction.Repository{DB: db}, ItemUpdater: items.Updater{DB: db}, App: app.App}
+		transactionRequests := transaction.TransactionRequests{TransactionRepository: transaction.Repository{DB: trdb, UserRepository: users.UserRepository{DB: db}}, CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, StripeRequests: cash.Requests{CartRequests: cartRequests, UserRequests: userRequests}, StripeUtils: cash.Utils{}}
+		webhookRequests := transaction.Webhook{StripeUtils: cash.Utils{}, TransactionRepository: transaction.Repository{DB: trdb}, ItemUpdater: items.Updater{DB: db}, App: app.App}
 		h.SetupRoutesForWebhook(webhookRequests, app)
 		h.SetupRoutesForItem(itemRequests)
 		h.SetupRoutesForUser(app, userRequests)

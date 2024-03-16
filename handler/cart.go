@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
@@ -16,25 +17,27 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, cartRe
 	{
 		CartRouter.Use(userMiddleware(userRequests))
 		{
-			CartRouter.GET("/", func(ctx *gin.Context) {
+			CartRouter.GET("", func(ctx *gin.Context) {
 				userId := ctx.GetString("userId")
 				Cart, _ := cartRequests.Get(userId)
 				ctx.JSON(http.StatusOK, gin.H{"items": Cart})
 			})
-			CartRouter.POST("/", func(ctx *gin.Context) {
+			CartRouter.POST("", func(ctx *gin.Context) {
 				userId := ctx.GetString("userId")
+
 				cartRequestPayload, err := utils.GetPayloadFromBody(ctx, &cart.CartRequestPayload{})
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
-				err = cartRequests.Register(userId, *cartRequestPayload)
+				log.Print(cartRequestPayload)
+				err = cartRequests.Register(userId, cartRequestPayload)
 				if err != nil {
 					return
 				}
 				ctx.JSON(http.StatusOK, "Item was successfully registered")
 			})
-			CartRouter.DELETE("/", func(ctx *gin.Context) {
+			CartRouter.DELETE("", func(ctx *gin.Context) {
 				userId := ctx.GetString("userId")
 				itemId, err := utils.GetQuery("itemId", ctx)
 				if err != nil {

@@ -162,7 +162,7 @@ func TestE2E(t *testing.T) {
 		t.Errorf("got %v", err)
 		After(t)
 	}
-	opt := option.WithCredentialsFile("../serviceAccountKey.json")
+	opt := option.WithCredentialsFile("./serviceAccountKey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Printf("error initializing app: %v\n", err)

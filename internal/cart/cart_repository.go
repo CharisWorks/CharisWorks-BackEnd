@@ -21,7 +21,7 @@ func (r Repository) Get(UserId string) (internalCart []InternalCart, err error) 
 	if err := r.DB.Table("carts").
 		Select("carts.*, items.*,users.*").
 		Joins("JOIN items ON carts.item_id = items.id").
-		Joins("JOIN users ON carts.purchaser_user_id = users.id").
+		Joins("JOIN users ON items.manufacturer_user_id = users.id").
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
 		log.Print("DB error: ", err)
