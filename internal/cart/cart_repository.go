@@ -25,7 +25,12 @@ func (r Repository) Get(UserId string) (internalCart []InternalCart, err error) 
 		Where("carts.purchaser_user_id = ?", UserId).
 		Find(&InternalCarts).Error; err != nil {
 		log.Print("DB error: ", err)
-		return internalCart, &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return internalCart, err
 	}
 
 	for i, icart := range *InternalCarts {
@@ -65,14 +70,24 @@ func (r Repository) Register(UserId string, CartRequestPayload CartRequestPayloa
 	Cart.Quantity = CartRequestPayload.Quantity
 	if err := r.DB.Create(Cart).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
 func (r Repository) Update(UserId string, CartRequestPayload CartRequestPayload) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", CartRequestPayload.ItemId).Update("quantity", CartRequestPayload.Quantity).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
@@ -80,14 +95,24 @@ func (r Repository) Update(UserId string, CartRequestPayload CartRequestPayload)
 func (r Repository) Delete(UserId string, itemId string) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Where("item_id = ?", itemId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
 func (r Repository) DeleteAll(UserId string) error {
 	if err := r.DB.Table("carts").Where("purchaser_user_id = ?", UserId).Delete(utils.Cart{}).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }

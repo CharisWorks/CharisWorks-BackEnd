@@ -11,6 +11,7 @@ import (
 )
 
 func TestCartRequests(t *testing.T) {
+	After(t)
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
@@ -153,7 +154,7 @@ func TestCartRequests(t *testing.T) {
 				},
 			},
 			want: nil,
-			err:  &utils.InternalError{Message: utils.InternalErrorDB},
+			err:  &utils.InternalError{Message: utils.InternalErrorNotFound},
 		},
 	}
 
@@ -184,15 +185,23 @@ func TestCartRequests(t *testing.T) {
 
 		})
 	}
-	for _, item := range Items {
-		err = ManufacturerDB.Delete(item.Name)
-		if err != nil {
-			t.Errorf("error")
-		}
-	}
-	err = UserDB.Delete("aaa")
+
+}
+func After(t *testing.T) {
+	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
 	}
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
+
+	trdb.Table("transactions").Where("1=1").Delete(utils.Transaction{})
+	trdb.Table("transaction_items").Where("1=1").Delete(utils.TransactionItem{})
+	db.Table("users").Where("1=1").Delete(utils.User{})
+	db.Table("shippings").Where("1=1").Delete(utils.Shipping{})
+	db.Table("items").Where("1=1").Delete(utils.Item{})
+	db.Table("carts").Where("1=1").Delete(utils.Cart{})
 
 }

@@ -20,7 +20,12 @@ func (r UserRepository) Create(UserId string) error {
 	result := r.DB.Create(DBUser)
 	if err := result.Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
@@ -29,10 +34,12 @@ func (r UserRepository) Get(UserId string) (user User, err error) {
 	user = *new(User)
 	if err := r.DB.Table("users").Where("id = ?", UserId).First(&DBUser).Error; err != nil {
 		log.Print("DB error: ", err)
-		if err.Error() == string(utils.InternalErrorNotFound) {
-			return user, err
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
 		}
-		return user, &utils.InternalError{Message: utils.InternalErrorDB}
+		return user, err
 	}
 	user.UserId = DBUser.Id
 	user.UserProfile = UserProfile{
@@ -59,7 +66,12 @@ func (r UserRepository) Get(UserId string) (user User, err error) {
 func (r UserRepository) Delete(UserId string) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Delete(utils.User{}).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
@@ -67,7 +79,12 @@ func (r UserRepository) Delete(UserId string) error {
 func (r UserRepository) UpdateProfile(UserId string, payload map[string]interface{}) error {
 	if err := r.DB.Table("users").Where("id = ?", UserId).Updates(payload).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }

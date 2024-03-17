@@ -11,12 +11,13 @@ import (
 )
 
 func Test_ManufacturerDB(t *testing.T) {
+	After(t)
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
 	}
 	UserDB := users.UserRepository{DB: db}
-	ManufacturerDB := Repository{DB: db}
+	ManufacturerDB := TestRepository{DB: db}
 	ItemRepository := items.ItemRepository{DB: db}
 	Cases := []struct {
 		name          string
@@ -135,7 +136,7 @@ func Test_GetItemList(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserRepository{DB: db}
-	ManufacturerDB := Repository{DB: db}
+	ManufacturerDB := TestRepository{DB: db}
 	ItemRepository := items.ItemRepository{DB: db}
 	Items := []RegisterPayload{
 		{

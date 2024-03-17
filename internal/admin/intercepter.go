@@ -7,6 +7,8 @@ import (
 	"github.com/charisworks/charisworks-backend/validation"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func AuthUnaryServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -20,11 +22,13 @@ func AuthUnaryServerInterceptor(ctx context.Context, req interface{}, info *grpc
 		return nil, err
 	}
 	fApp := validation.FirebaseApp{App: app.App}
-	userId, _, _, err := fApp.Verify(ctx, idToken)
+	_, email, _, err := fApp.Verify(ctx, idToken)
 	if err != nil {
 		return nil, err
 	}
-	if userId != "cowatanabe26@gmail.com" {
+	if email != "cowatanabe26@gmail.com" {
+		log.Printf("request rejected: %v\n", email)
+		err := status.Errorf(codes.Unauthenticated, "Unauthorized")
 		return nil, err
 	}
 	log.Printf("idToken: %v\n", idToken)

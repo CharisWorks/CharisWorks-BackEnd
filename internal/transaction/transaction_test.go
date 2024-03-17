@@ -278,7 +278,7 @@ func Test_Transaction(t *testing.T) {
 					Quantity: 1,
 				},
 			},
-			err: &utils.InternalError{Message: utils.InternalErrorDB},
+			err: &utils.InternalError{Message: utils.InternalErrorNotFound},
 		},
 	}
 	for _, c := range cases {
@@ -548,7 +548,7 @@ func Test_Transaction_Cancelled(t *testing.T) {
 					Status:             string(Cancelled),
 					TransferId:         transactionDetails.Items[0].TransferId,
 					ManufacturerUserId: "test_user_1",
-					ManufacturerName:   "test1",
+					ManufacturerName:   "test_user_1",
 				},
 				{
 					ItemId:             "test2",
@@ -558,7 +558,7 @@ func Test_Transaction_Cancelled(t *testing.T) {
 					Status:             string(Cancelled),
 					TransferId:         transactionDetails.Items[1].TransferId,
 					ManufacturerUserId: "test_user_1",
-					ManufacturerName:   "test1",
+					ManufacturerName:   "test_user_1",
 				},
 			},
 			UserAddress: TransactionAddress{

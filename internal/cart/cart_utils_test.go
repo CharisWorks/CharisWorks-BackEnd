@@ -293,7 +293,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				Stock:  1,
 				Status: items.Available,
 			},
-			want: nil,
+			want: new(CartRequestPayload),
 			err:  utils.InternalErrorStockOver,
 		}, {
 			name: "在庫ない",
@@ -305,7 +305,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				Stock:  0,
 				Status: items.Available,
 			},
-			want: nil,
+			want: new(CartRequestPayload),
 			err:  utils.InternalErrorNoStock,
 		}, {
 			name: "無効な商品",
@@ -317,7 +317,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				Stock:  4,
 				Status: items.Expired,
 			},
-			want: nil,
+			want: new(CartRequestPayload),
 			err:  utils.InternalErrorInvalidItem,
 		}, {
 			name: "在庫切れだけど無効な商品だと無効な商品のエラーを出す",
@@ -329,7 +329,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				Stock:  0,
 				Status: items.Expired,
 			},
-			want: nil,
+			want: new(CartRequestPayload),
 			err:  utils.InternalErrorInvalidItem,
 		}, {
 			name: "無効なペイロード(0)",
@@ -341,7 +341,7 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				Stock:  4,
 				Status: items.Expired,
 			},
-			want: nil,
+			want: new(CartRequestPayload),
 			err:  utils.InternalErrorInvalidPayload,
 		}, {
 			name: "無効なペイロード(負数)",
@@ -353,15 +353,15 @@ func TestCartUtils_InspectPayload(t *testing.T) {
 				Stock:  4,
 				Status: items.Expired,
 			},
-			want: nil,
+			want: new(CartRequestPayload),
 			err:  utils.InternalErrorInvalidPayload,
 		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			InspectedPayload, err := e.InspectPayload(tt.Payload, tt.Status)
-			if !reflect.DeepEqual(InspectedPayload, tt.want) {
-				t.Errorf("want %v, got %v", tt.want, InspectedPayload)
+			if !reflect.DeepEqual(&InspectedPayload, tt.want) {
+				t.Errorf("want %v, got %v", tt.want, &InspectedPayload)
 			}
 			if err != nil {
 				if utils.InternalMessage(err.Error()) != tt.err {

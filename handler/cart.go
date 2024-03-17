@@ -33,6 +33,7 @@ func (h *Handler) SetupRoutesForCart(firebaseApp validation.IFirebaseApp, cartRe
 				log.Print(cartRequestPayload)
 				err = cartRequests.Register(userId, cartRequestPayload)
 				if err != nil {
+					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
 				ctx.JSON(http.StatusOK, "Item was successfully registered")

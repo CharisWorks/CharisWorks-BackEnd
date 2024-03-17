@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"encoding/json"
+	"log"
 
 	"github.com/charisworks/charisworks-backend/internal/transaction"
 	"github.com/charisworks/charisworks-backend/internal/users"
@@ -24,6 +25,7 @@ func (r *UserServiceServer) All(ctx context.Context, req *userpb.VoidRequest) (r
 	userIds := new([]string)
 	userList := new([]users.User)
 	db.Table("users").Where("1=1").Select("id").Find(&userIds)
+	log.Print("userIds:", userIds)
 	for _, userId := range *userIds {
 		userRequests := users.Requests{UserUtils: users.UserUtils{}, UserRepository: users.UserRepository{DB: db}}
 		user, err := userRequests.Get(userId)
@@ -67,6 +69,11 @@ func (r *UserServiceServer) Privilege(ctx context.Context, req *userpb.Privilege
 	userRepository := users.UserRepository{DB: db}
 	err = userRepository.UpdateProfile(userId, map[string]interface{}{"stripe_account_id": "acct_unregistered"})
 	if err != nil {
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
 		return res, err
 	}
 	app, err := validation.NewFirebaseApp()

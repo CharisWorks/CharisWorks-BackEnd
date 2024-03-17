@@ -77,6 +77,11 @@ func (r *TransactionServiceServer) RegisterTrackingId(ctx context.Context, req *
 		return res, err
 	}
 	if err := trdb.Table("transactions").Where("transaction_id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
 		return res, err
 	}
 	db, err := utils.DBInitTest()
@@ -85,7 +90,6 @@ func (r *TransactionServiceServer) RegisterTrackingId(ctx context.Context, req *
 	}
 	transactionDetails, _, _, err := transaction.Repository{DB: trdb, UserRepository: users.UserRepository{DB: db}}.GetDetails(req.GetTransaction())
 	if err != nil {
-
 		return res, err
 	}
 	SendShippedEmail(transactionDetails)
@@ -98,6 +102,11 @@ func (r *TransactionServiceServer) RegisterStatus(ctx context.Context, req *tran
 		return res, err
 	}
 	if err := trdb.Table("transactions").Where("transaction_id = ?", req.GetTransaction()).Updates(map[string]interface{}{"status": req.GetStatus()}).Error; err != nil {
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
 		return res, err
 	}
 	return res, nil

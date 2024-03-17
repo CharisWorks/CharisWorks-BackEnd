@@ -11,13 +11,15 @@ import (
 )
 
 func Test_CartCRUD(t *testing.T) {
+	After(t)
+
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
 	}
 
 	UserDB := users.UserRepository{DB: db}
-	ManufacturerDB := manufacturer.Repository{DB: db}
+	ManufacturerDB := manufacturer.TestRepository{DB: db}
 	cartRepository := Repository{DB: db}
 	Items := []manufacturer.RegisterPayload{
 		{
@@ -67,6 +69,7 @@ func Test_CartCRUD(t *testing.T) {
 		want          []InternalCart
 		updatePayload CartRequestPayload
 		wantUpdated   []InternalCart
+		err           error
 	}{
 		{
 			name: "正常",
@@ -195,18 +198,154 @@ func Test_CartCRUD(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "無効なペイロード",
+			payload: []CartRequestPayload{
+				{
+					ItemId:   "test1",
+					Quantity: -1,
+				},
+				{
+					ItemId:   "test2",
+					Quantity: 2,
+				},
+			},
+			want: []InternalCart{
+				{
+					Index: 0,
+					Cart: Cart{
+						ItemId:   "test1",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test1",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
+						},
+					},
+					Item: InternalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+					},
+					ItemStock: 2,
+					Status:    items.Available,
+				},
+				{
+					Index: 1,
+					Cart: Cart{
+						ItemId:   "test2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test2",
+							Price: 3000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
+						},
+					},
+					Item: InternalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+					},
+					ItemStock: 3,
+					Status:    items.Available,
+				},
+			},
+			updatePayload: CartRequestPayload{
+				ItemId:   "test1",
+				Quantity: 3,
+			},
+			wantUpdated: []InternalCart{
+				{
+					Index: 0,
+					Cart: Cart{
+						ItemId:   "test1",
+						Quantity: 3,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test1",
+							Price: 2000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
+						},
+					},
+					Item: InternalItem{
+						Price:                   2000,
+						Name:                    "test1",
+						Description:             "test",
+						Tags:                    []string{"aaa", "bbb"},
+						Size:                    3,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+						ManufacturerStripeId:    "test",
+					},
+					ItemStock: 2,
+					Status:    items.Available,
+				},
+				{
+					Index: 1,
+					Cart: Cart{
+						ItemId:   "test2",
+						Quantity: 2,
+						ItemProperties: CartItemPreviewProperties{
+							Name:  "test2",
+							Price: 3000,
+							Details: CartItemPreviewDetails{
+								Status: Available,
+							},
+						},
+					},
+					Item: InternalItem{
+						Price:                   3000,
+						Name:                    "test2",
+						Description:             "test",
+						Tags:                    []string{"aaa", "ccc"},
+						Size:                    4,
+						ManufacturerUserId:      "aaa",
+						ManufacturerName:        "test",
+						ManufacturerDescription: "test",
+						ManufacturerStripeId:    "test",
+					},
+					ItemStock: 3,
+					Status:    items.Available,
+				},
+			},
+			err: &utils.InternalError{Message: utils.InternalErrorInvalidPayload},
+		},
 	}
 	for _, tt := range Cases {
 		t.Run(tt.name, func(t *testing.T) {
 			for _, p := range tt.payload {
 				err := cartRepository.Register("aaa", p)
 				if err != nil {
-					t.Errorf(err.Error())
+					if err.Error() != tt.err.Error() {
+						t.Errorf("got %v, want %v", err, tt.err)
+						After(t)
+					}
+					return
 				}
 			}
 			Cart, err := cartRepository.Get("aaa")
 			if err != nil {
-				t.Errorf(err.Error())
+				if err.Error() != tt.err.Error() {
+					t.Errorf("got %v, want %v", err, tt.err)
+					After(t)
+				}
+				return
 			}
 			if &Cart == &tt.want {
 				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.want)
@@ -214,11 +353,19 @@ func Test_CartCRUD(t *testing.T) {
 
 			err = cartRepository.Update("aaa", tt.updatePayload)
 			if err != nil {
-				t.Errorf(err.Error())
+				if err.Error() != tt.err.Error() {
+					t.Errorf("got %v, want %v", err, tt.err)
+					After(t)
+				}
+				return
 			}
 			Cart, err = cartRepository.Get("aaa")
 			if err != nil {
-				t.Errorf(err.Error())
+				if err.Error() != tt.err.Error() {
+					t.Errorf("got %v, want %v", err, tt.err)
+					After(t)
+				}
+				return
 			}
 			if !reflect.DeepEqual(Cart, tt.wantUpdated) {
 				t.Errorf("%v,got,%v,want%v", tt.name, Cart, tt.wantUpdated)
@@ -232,16 +379,7 @@ func Test_CartCRUD(t *testing.T) {
 
 		})
 	}
-	for _, item := range Items {
-		err = ManufacturerDB.Delete(item.Name)
-		if err != nil {
-			t.Errorf("error")
-		}
-	}
-	err = UserDB.Delete("aaa")
-	if err != nil {
-		t.Errorf("error")
-	}
+	After(t)
 }
 
 func Test_GetItem(t *testing.T) {
@@ -250,7 +388,7 @@ func Test_GetItem(t *testing.T) {
 		t.Errorf("error")
 	}
 	UserDB := users.UserRepository{DB: db}
-	ManufacturerDB := manufacturer.Repository{DB: db}
+	ManufacturerDB := manufacturer.TestRepository{DB: db}
 	GetStatus := items.GetStatus{DB: db}
 	Cases := []struct {
 		name    string
