@@ -36,6 +36,7 @@ func Code(i InternalMessage) int {
 		InternalErrorCartIsEmpty:                 http.StatusBadRequest,
 		InternalErrorR2:                          http.StatusInternalServerError,
 		InternalErrorNotLogined:                  http.StatusUnauthorized,
+		InternalErrorAddressIsNotRegistered:      http.StatusBadRequest,
 	}
 	return statusCode[i]
 }

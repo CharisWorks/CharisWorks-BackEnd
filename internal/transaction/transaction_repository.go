@@ -24,7 +24,12 @@ func (r Repository) GetList(userId string) (transactionPreviewList map[string]Tr
 		Where("transactions.purchaser_user_id = ?", userId).
 		Find(&internalTransaction).Error; err != nil {
 		log.Print("DB error: ", err)
-		return nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return nil, err
 	}
 	transactionPreviewList = map[string]TransactionPreview{}
 	for _, t := range *internalTransaction {
@@ -66,7 +71,12 @@ func (r Repository) GetDetails(TransactionId string) (transactionDetails Transac
 		Where("transactions.transaction_id = ?", TransactionId).
 		Find(&internalTransaction).Error; err != nil {
 		log.Print("DB error: ", err)
-		return transactionDetails, "", nil, &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return transactionDetails, "", nil, err
 	}
 	transferList = make([]transfer, 0)
 	itemList := []TransactionItem{}
@@ -176,7 +186,12 @@ func (r Repository) Register(userId string, email string, transactionId string, 
 func (r Repository) StatusUpdate(transactionId string, conditions map[string]interface{}) error {
 	if err := r.DB.Table("transactions").Where("transaction_id = ?", transactionId).Updates(conditions).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 
 	return nil
@@ -184,7 +199,12 @@ func (r Repository) StatusUpdate(transactionId string, conditions map[string]int
 func (r Repository) StatusUpdateItems(transactionId string, itemId string, conditions map[string]interface{}) error {
 	if err := r.DB.Table("transaction_items").Where("transaction_id = ?", transactionId).Where("item_id", itemId).Updates(conditions).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 
 	return nil

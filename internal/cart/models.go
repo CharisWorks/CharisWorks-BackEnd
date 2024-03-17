@@ -65,5 +65,5 @@ type IUtils interface {
 	Inspect([]InternalCart) (map[string]InternalCart, error)
 	Convert(map[string]InternalCart) []Cart
 	GetTotalAmount(map[string]InternalCart) int
-	InspectPayload(c CartRequestPayload, itemStatus items.ItemStatus) (*CartRequestPayload, error)
+	InspectPayload(c CartRequestPayload, itemStatus items.ItemStatus) (CartRequestPayload, error)
 }

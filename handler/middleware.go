@@ -44,7 +44,7 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 		userId := ctx.GetString(string(userId))
 		User, err := UserRequests.Get(userId)
 		if err != nil {
-			if err.Error() == string(utils.InternalErrorNotFound) {
+			if err.Error() == string(utils.InternalErrorNotFound) && User.UserId == "" {
 				log.Print("creating user for DB")
 				err := UserRequests.Create(userId)
 				if err != nil {
@@ -55,8 +55,6 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 				utils.AbortContextWithError(ctx, err)
 				return
 			}
-			utils.AbortContextWithError(ctx, err)
-			return
 		}
 
 		ctx.Set(string(user), User)
@@ -123,7 +121,6 @@ func webhookMiddleware() gin.HandlerFunc {
 		// Pass the request body and Stripe-Signature header to ConstructEvent, along with the webhook signing key
 		// You can find your endpoint's secret in your webhook settings
 		endpointSecret := os.Getenv("STRIPE_KEY")
-		log.Print(string(body), "ctx:", ctx.Request.Header)
 		event, err := webhook.ConstructEvent(body, ctx.Request.Header.Get("Stripe-Signature"), endpointSecret)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error verifying webhook signature: %v\n", err)

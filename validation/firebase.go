@@ -62,7 +62,7 @@ func (app *FirebaseApp) Verify(ctx context.Context, idToken string) (userId stri
 	email = token.Claims["email"].(string)
 	emailVerified = token.Claims["email_verified"].(bool)
 
-	log.Printf("Verified ID token: %v\n", token)
+	//log.Printf("Verified ID token: %v\n", token)
 	return userId, email, emailVerified, nil
 }
 func (app *FirebaseApp) GetEmail(userId string) (string, error) {

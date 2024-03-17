@@ -12,6 +12,7 @@ type Utils struct {
 
 func (r Utils) Inspect(internalCarts []InternalCart) (result map[string]InternalCart, err error) {
 	cartMap := map[string]InternalCart{}
+	err = nil
 	for _, internalCart := range internalCarts {
 		if internalCart.ItemStock < internalCart.Cart.Quantity {
 			internalCart.Cart.ItemProperties.Details.Status = StockOver
@@ -57,19 +58,20 @@ func (r Utils) GetTotalAmount(internalCarts map[string]InternalCart) int {
 	}
 	return totalAmount
 }
-func (r Utils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus items.ItemStatus) (result *CartRequestPayload, err error) {
+func (r Utils) InspectPayload(CartRequestPayload CartRequestPayload, itemStatus items.ItemStatus) (result CartRequestPayload, err error) {
+
 	if CartRequestPayload.Quantity <= 0 {
-		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
+		return result, &utils.InternalError{Message: utils.InternalErrorInvalidPayload}
 	}
 	if itemStatus.Status != items.Available {
-		return nil, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
+		return result, &utils.InternalError{Message: utils.InternalErrorInvalidItem}
 	}
 	if itemStatus.Stock == 0 {
-		return nil, &utils.InternalError{Message: utils.InternalErrorNoStock}
+		return result, &utils.InternalError{Message: utils.InternalErrorNoStock}
 	}
 	if CartRequestPayload.Quantity > itemStatus.Stock {
-		return nil, &utils.InternalError{Message: utils.InternalErrorStockOver}
+		return result, &utils.InternalError{Message: utils.InternalErrorStockOver}
 	}
 
-	return &CartRequestPayload, nil
+	return CartRequestPayload, nil
 }

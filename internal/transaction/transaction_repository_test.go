@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/charisworks/charisworks-backend/internal/cart"
+	"github.com/charisworks/charisworks-backend/internal/images"
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
 	"github.com/charisworks/charisworks-backend/internal/users"
@@ -21,9 +22,10 @@ func Test_Transaction_Repository(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
+	R2Conns := images.R2Conns{Crud: nil}
 	UserRepository := users.UserRepository{DB: db}
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
-	manufacturerRepository := manufacturer.Repository{DB: db}
+	manufacturerRepository := manufacturer.Repository{DB: db, Crud: R2Conns}
 	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
 	transactionRepository := Repository{DB: trdb, UserRepository: UserRepository}
 	cartRepository := cart.Repository{DB: db}
@@ -78,7 +80,7 @@ func Test_Transaction_Repository(t *testing.T) {
 			t.Errorf(err.Error())
 		}
 		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
-			Status: string(items.Available),
+			Status: items.Available,
 		}, "aaa", item.Name)
 		if err != nil {
 			t.Errorf(err.Error())
@@ -203,17 +205,5 @@ func Test_Transaction_Repository(t *testing.T) {
 	if !reflect.DeepEqual(transactionDetails, details) {
 		t.Errorf("got %v, want %v", transactionDetails, details)
 	}
-	trdb.Table("transactions").Where("purchaser_user_id = ?", "aaa").Delete(utils.Transaction{})
-	trdb.Table("transaction_items").Where("transaction_id = ?", "test").Delete(utils.TransactionItem{})
-
-	for _, item := range Items {
-		err = manufacturerRequests.Delete(item.Name, "aaa")
-		if err != nil {
-			t.Errorf(err.Error())
-		}
-	}
-	err = UserRepository.Delete("aaa")
-	if err != nil {
-		t.Errorf("error")
-	}
+	After(t)
 }

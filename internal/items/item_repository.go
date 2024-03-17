@@ -16,7 +16,12 @@ func (r ItemRepository) GetItemOverview(itemId string) (overview Overview, err e
 	DBItem := new(utils.InternalItem)
 	if err := r.DB.Table("items").Select("items.*, users.*").Joins("JOIN users ON items.manufacturer_user_id = users.id").Where("items.id = ?", itemId).First(DBItem).Error; err != nil {
 		log.Print("DB error: ", err)
-		return overview, &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return overview, err
 	}
 
 	tags := new([]string)
@@ -59,6 +64,11 @@ func getItemPreview(db *gorm.DB, page int, pageSize int, conditions map[string]i
 	err := query.Offset(offset).Limit(pageSize).Find(&items).Error
 	if err != nil {
 		log.Print("DB error: ", err)
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
 		return nil, 0, &utils.InternalError{Message: utils.InternalErrorDB}
 	}
 	for _, item := range *items {
@@ -87,7 +97,12 @@ func (r GetStatus) GetItem(itemId string) (status ItemStatus, err error) {
 	ItemRepository := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
 		log.Print("DB error: ", err)
-		return status, &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return status, err
 	}
 	status = *new(ItemStatus)
 	status.Stock = ItemRepository.Stock
@@ -103,12 +118,22 @@ func (r Updater) ReduceStock(itemId string, Quantity int) error {
 	ItemRepository := new(utils.Item)
 	if err := r.DB.Table("items").Where("id = ?", itemId).First(ItemRepository).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	condition := map[string]interface{}{"stock": ItemRepository.Stock - Quantity}
 	if err := r.DB.Table("items").Where("id = ?", itemId).Updates(condition).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }

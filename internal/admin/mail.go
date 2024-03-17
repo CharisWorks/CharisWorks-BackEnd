@@ -13,7 +13,7 @@ import (
 )
 
 func SendPurchasedEmail(transactionDetails transaction.TransactionDetails, firebaseApp validation.IFirebaseApp) {
-	data, err := os.ReadFile("../auth_address.json")
+	data, err := os.ReadFile("./auth_address.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
 		return
@@ -78,7 +78,7 @@ func SendPurchasedEmail(transactionDetails transaction.TransactionDetails, fireb
 送料： %v円
 合計金額： %v 円
 購入日時： %v 
-		`, 350, transactionDetails.TotalPrice+350, utils.ConvertToJST(transactionDetails.TransactionAt))
+		`, 400, transactionDetails.TotalPrice+400, utils.ConvertToJST(transactionDetails.TransactionAt))
 		body += fmt.Sprintf(`
 --------------------------
 
@@ -158,7 +158,7 @@ CharisWorks
 }
 
 func SendShippedEmail(transactionDetails transaction.TransactionDetails) {
-	data, err := os.ReadFile("../auth_address.json")
+	data, err := os.ReadFile("./auth_address.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
 		return
@@ -253,7 +253,7 @@ CharisWorks
 }
 
 func SendPrivilegedEmail(userId string, firebaseApp validation.IFirebaseApp) {
-	data, err := os.ReadFile("../auth_address.json")
+	data, err := os.ReadFile("./auth_address.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
 		return
@@ -292,7 +292,7 @@ func SendPrivilegedEmail(userId string, firebaseApp validation.IFirebaseApp) {
 }
 
 func SendEmail(to string, subject string, body string) error {
-	data, err := os.ReadFile("../email_credentials.json")
+	data, err := os.ReadFile("./email_credentials.json")
 	if err != nil {
 		log.Fatalf("JSONファイルの読み込みに失敗しました：%v", err)
 		return err

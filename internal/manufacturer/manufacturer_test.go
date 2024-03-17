@@ -10,13 +10,14 @@ import (
 )
 
 func TestRegisterItem(t *testing.T) {
+	After(t)
 	db, err := utils.DBInitTest()
 	if err != nil {
 		t.Errorf("error")
 	}
 	UserRepository := users.UserRepository{DB: db}
 	userRequests := users.Requests{UserRepository: UserRepository, UserUtils: users.UserUtils{}}
-	manufacturerRequests := Requests{ManufacturerItemRepository: Repository{DB: db}, ManufacturerInspectPayloadUtils: ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
+	manufacturerRequests := Requests{ManufacturerItemRepository: TestRepository{DB: db}, ManufacturerInspectPayloadUtils: ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
 	itemRequests := items.Requests{ItemRepository: items.ItemRepository{DB: db}, ItemUtils: items.ItemUtils{}}
 
 	user_data := []struct {
@@ -163,9 +164,12 @@ func After(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-
-	db.Table("transactions").Where("1=1").Delete(utils.Transaction{})
-	db.Table("transaction_items").Where("1=1").Delete(utils.TransactionItem{})
+	trdb, err := utils.HistoryDBInitTest()
+	if err != nil {
+		t.Errorf("error")
+	}
+	trdb.Table("transactions").Where("1=1").Delete(utils.Transaction{})
+	trdb.Table("transaction_items").Where("1=1").Delete(utils.TransactionItem{})
 	db.Table("users").Where("1=1").Delete(utils.User{})
 	db.Table("shippings").Where("1=1").Delete(utils.Shipping{})
 	db.Table("items").Where("1=1").Delete(utils.Item{})

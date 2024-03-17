@@ -40,7 +40,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.ProfileUpdate(userId, *profile)
+			err = UserRequests.ProfileUpdate(userId, profile)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -53,7 +53,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.AddressRegister(userId, *payload)
+			err = UserRequests.AddressRegister(userId, payload)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return
@@ -66,7 +66,7 @@ func (h *Handler) SetupRoutesForUser(firebaseApp validation.IFirebaseApp, UserRe
 				return
 			}
 			userId := ctx.GetString("userId")
-			err = UserRequests.AddressUpdate(userId, *payload)
+			err = UserRequests.AddressUpdate(userId, payload)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
 				return

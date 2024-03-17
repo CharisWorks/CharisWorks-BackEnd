@@ -33,7 +33,12 @@ func (r Repository) Register(itemId string, i RegisterPayload, userId string) er
 	}
 	if err := r.DB.Create(&item).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
@@ -41,14 +46,24 @@ func (r Repository) Register(itemId string, i RegisterPayload, userId string) er
 func (r Repository) Update(i map[string]interface{}, itemId string) error {
 	if err := r.DB.Table("items").Where("id = ?", itemId).Updates(i).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 	return nil
 }
 func (r Repository) Delete(itemId string) error {
 	if err := r.DB.Table("items").Where("id = ?", itemId).Delete(&utils.Item{}).Error; err != nil {
 		log.Print("DB error: ", err)
-		return &utils.InternalError{Message: utils.InternalErrorDB}
+		if err.Error() == "record not found" {
+			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
+		} else {
+			err = &utils.InternalError{Message: utils.InternalErrorDB}
+		}
+		return err
 	}
 
 	images, err := r.Crud.GetImages(itemId + "/")

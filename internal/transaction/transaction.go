@@ -47,7 +47,7 @@ func (r TransactionRequests) Purchase(userId string, email string) (clientSecret
 	if err != nil {
 		return clientSecret, transactionId, err
 	}
-	totalAmount := r.CartUtils.GetTotalAmount(mappedInspectedCart)
+	totalAmount := r.CartUtils.GetTotalAmount(mappedInspectedCart) + 400
 	clientSecret, transactionId, err = r.StripeRequests.CreatePaymentintent(userId, totalAmount)
 	if err != nil {
 		return clientSecret, transactionId, err
