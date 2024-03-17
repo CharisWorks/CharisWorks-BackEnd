@@ -26,11 +26,10 @@ func TestE2E(t *testing.T) {
 	if err != nil {
 		t.Errorf("error")
 	}
-
 	UserRepository := users.UserRepository{DB: db}
 	userRequests := users.Requests{UserRepository: UserRepository, UserUtils: users.UserUtils{}}
 	manufacturerRequests := manufacturer.Requests{ManufacturerItemRepository: manufacturer.Repository{DB: db}, ManufacturerInspectPayloadUtils: manufacturer.ManufacturerUtils{}, ItemRepository: items.ItemRepository{DB: db}}
-
+	cartRequests := cart.Requests{CartRepository: cart.Repository{DB: db}, CartUtils: cart.Utils{}, ItemGetStatus: items.GetStatus{DB: db}}
 	user_data := []struct {
 		userId  string
 		profile users.UserProfile
@@ -108,8 +107,35 @@ func TestE2E(t *testing.T) {
 			return
 		}
 		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
-			Status: string(items.Available),
+			Status: items.Available,
 		}, "WQElviFCW3TEV77prNZB7Q2TwGt2", item.Name)
+		if err != nil {
+			t.Errorf(err.Error())
+			After(t)
+			return
+		}
+	}
+	carts := []struct {
+		userId string
+		cart   cart.CartRequestPayload
+	}{
+		{
+			userId: "WQElviFCW3TEV77prNZB7Q2TwGt2",
+			cart: cart.CartRequestPayload{
+				ItemId:   "test1",
+				Quantity: 1,
+			},
+		},
+		{
+			userId: "WQElviFCW3TEV77prNZB7Q2TwGt2",
+			cart: cart.CartRequestPayload{
+				ItemId:   "test2",
+				Quantity: 1,
+			},
+		},
+	}
+	for _, c := range carts {
+		err = cartRequests.Register(c.userId, c.cart)
 		if err != nil {
 			t.Errorf(err.Error())
 			After(t)
@@ -213,7 +239,7 @@ func TestE2EforAfterPurchase(t *testing.T) {
 			return
 		}
 		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
-			Status: string(items.Available),
+			Status: items.Available,
 		}, "WQElviFCW3TEV77prNZB7Q2TwGt2", item.Name)
 		if err != nil {
 			t.Errorf(err.Error())

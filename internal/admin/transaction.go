@@ -76,7 +76,7 @@ func (r *TransactionServiceServer) RegisterTrackingId(ctx context.Context, req *
 		log.Print(err)
 		return res, err
 	}
-	if err := trdb.Table("transactions").Where("transaction_id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId()}).Error; err != nil {
+	if err := trdb.Table("transactions").Where("transaction_id = ?", req.GetTransaction()).Updates(map[string]interface{}{"tracking_id": req.GetTrackingId(), "status": transaction.Shipped}).Error; err != nil {
 		if err.Error() == "record not found" {
 			err = &utils.InternalError{Message: utils.InternalErrorNotFound}
 		} else {

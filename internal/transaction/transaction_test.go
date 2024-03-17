@@ -133,7 +133,7 @@ func Test_Transaction(t *testing.T) {
 			return
 		}
 		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
-			Status: string(items.Available),
+			Status: items.Available,
 		}, "test_user_1", item.Name)
 		if err != nil {
 			t.Errorf(err.Error())
@@ -489,7 +489,7 @@ func Test_Transaction_Cancelled(t *testing.T) {
 			return
 		}
 		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
-			Status: string(items.Available),
+			Status: items.Available,
 		}, "test_user_1", item.Name)
 		if err != nil {
 			t.Errorf(err.Error())

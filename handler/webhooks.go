@@ -39,21 +39,6 @@ func (h *Handler) SetupRoutesForWebhook(webhookRequests transaction.IWebhook, ap
 				admin.SendPurchasedEmail(transactionDetails, app)
 
 			}
-			if event.Type == "checkout.session.cancelled" {
-				var sessions stripe.CheckoutSession
-				json.Unmarshal(event.Data.Raw, &sessions)
-				log.Print(sessions.ID)
-
-				webhookRequests.PurchaseCanceled(sessions.ID)
-
-			}
-			if event.Type == "checkout.session.failed" {
-				var sessions stripe.CheckoutSession
-				json.Unmarshal(event.Data.Raw, &sessions)
-				log.Print(sessions.ID)
-				webhookRequests.PurchaseFail(sessions.ID)
-
-			}
 		})
 	}
 }

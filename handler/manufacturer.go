@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/charisworks/charisworks-backend/internal/manufacturer"
@@ -15,67 +16,70 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
 		UserRouter.Use(userMiddleware(userRequests))
-		UserRouter.Use(manufacturerMiddleware())
 		{
-			UserRouter.POST("", func(ctx *gin.Context) {
-				payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.RegisterPayload{})
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				userId := ctx.GetString("userId")
-				user, exist := ctx.Get(string(user))
-				if !exist {
-					err := &utils.InternalError{Message: utils.InternalErrorIncident}
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				if user.(users.User).UserProfile.DisplayName == "" || user.(users.User).UserProfile.Description == "" {
-					err := &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				err = manufacturerRequests.Register(payload, userId, utils.GenerateRandomString())
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				ctx.JSON(http.StatusOK, "Item was successfuly registered")
-			})
-			UserRouter.PATCH("/:item_id", func(ctx *gin.Context) {
-				payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.UpdatePayload{})
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				userId := ctx.GetString("userId")
-				itemId, err := utils.GetParams("item_id", ctx)
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				err = manufacturerRequests.Update(payload, userId, *itemId)
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				ctx.JSON(http.StatusOK, "Item was successfuly updated")
-			})
-			UserRouter.DELETE("/:item_id", func(ctx *gin.Context) {
-				itemId, err := utils.GetParams("item_id", ctx)
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				userId := ctx.GetString(string(userId))
-				err = manufacturerRequests.Delete(*itemId, userId)
-				if err != nil {
-					utils.ReturnErrorResponse(ctx, err)
-					return
-				}
-				ctx.JSON(http.StatusOK, "Item was successfuly deleted")
-			})
-		}
+			UserRouter.Use(manufacturerMiddleware())
+			{
+				UserRouter.POST("/", func(ctx *gin.Context) {
+					payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.RegisterPayload{})
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					userId := ctx.GetString("userId")
+					user, exist := ctx.Get(string(user))
+					if !exist {
+						err := &utils.InternalError{Message: utils.InternalErrorIncident}
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					if user.(users.User).UserProfile.DisplayName == "" || user.(users.User).UserProfile.Description == "" {
+						err := &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					log.Print(payload)
+					err = manufacturerRequests.Register(payload, userId, utils.GenerateRandomString())
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					ctx.JSON(http.StatusOK, "Item was successfuly registered")
+				})
+				UserRouter.PATCH("/:item_id", func(ctx *gin.Context) {
+					payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.UpdatePayload{})
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					userId := ctx.GetString("userId")
+					itemId, err := utils.GetParams("item_id", ctx)
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					err = manufacturerRequests.Update(payload, userId, *itemId)
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					ctx.JSON(http.StatusOK, "Item was successfuly updated")
+				})
+				UserRouter.DELETE("/:item_id", func(ctx *gin.Context) {
+					itemId, err := utils.GetParams("item_id", ctx)
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					userId := ctx.GetString(string(userId))
+					err = manufacturerRequests.Delete(*itemId, userId)
+					if err != nil {
+						utils.ReturnErrorResponse(ctx, err)
+						return
+					}
+					ctx.JSON(http.StatusOK, "Item was successfuly deleted")
+				})
+			}
 
+		}
 	}
 }

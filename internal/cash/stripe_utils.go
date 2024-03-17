@@ -39,12 +39,10 @@ func (r Utils) Refund(amount int, transferId string, accountId string) (err erro
 }
 func (r Utils) Transfer(amount int, stripeAccountId string, transactionId string) *string {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
-	m, err := strconv.Atoi(os.Getenv("MARGIN"))
+	margin, err := strconv.ParseFloat(os.Getenv("MARGIN"), 64)
 	if err != nil {
 		log.Fatal(err)
-		return nil
 	}
-	margin := float64(m)
 	log.Print("Transfering... \n amount: ", float64(amount)*(1-margin), "\n stripeID: ", stripeAccountId, "\n transactionId: ", transactionId)
 
 	params := &stripe.TransferParams{

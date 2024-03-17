@@ -1,5 +1,7 @@
 package manufacturer
 
+import "github.com/charisworks/charisworks-backend/internal/items"
+
 type RegisterPayload struct {
 	Name    string                     `json:"name" binding:"required"`
 	Price   int                        `json:"price" binding:"required"`
@@ -13,13 +15,13 @@ type ItemRegisterDetailsPayload struct {
 }
 
 type UpdatePayload struct {
-	Name        string   `json:"name"`
-	Price       int      `json:"price"`
-	Status      string   `json:"status"`
-	Stock       int      `json:"stock"`
-	Size        int      `json:"size"`
-	Description string   `json:"description" `
-	Tags        []string `json:"tags"`
+	Name        string       `json:"name"`
+	Price       int          `json:"price"`
+	Status      items.Status `json:"status"`
+	Stock       int          `json:"stock"`
+	Size        int          `json:"size"`
+	Description string       `json:"description" `
+	Tags        []string     `json:"tags"`
 }
 
 type IItemRequests interface {

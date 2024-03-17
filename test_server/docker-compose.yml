@@ -23,8 +23,7 @@ services:
       # この行がないと起動しない
       MYSQL_DATABASE: CharisWorks
       TZ: "Asia/Tokyo"
-    volumes:
-      - ./sql_init:/docker-entrypoint-initdb.d
+    
   backup_db1:
     image: mariadb:latest
     container_name: backup_mock_db

@@ -120,7 +120,6 @@ CREATE TABLE `users` (
   `display_name` longtext DEFAULT NULL,
   `description` longtext DEFAULT NULL,
   `stripe_account_id` longtext DEFAULT NULL,
-  `history_user_id` bigint(20) DEFAULT NULL,
   `created_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

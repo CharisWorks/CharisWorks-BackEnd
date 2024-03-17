@@ -80,7 +80,7 @@ func Test_Transaction_Repository(t *testing.T) {
 			t.Errorf(err.Error())
 		}
 		err = manufacturerRequests.Update(manufacturer.UpdatePayload{
-			Status: string(items.Available),
+			Status: items.Available,
 		}, "aaa", item.Name)
 		if err != nil {
 			t.Errorf(err.Error())

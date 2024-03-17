@@ -24,8 +24,7 @@ func (h *Handler) SetupRoutesForItem(itemRequests items.IRequests) {
 			ctx.JSON(200, Overview)
 		})
 
-		itemGroup.GET("/", func(ctx *gin.Context) {
-
+		itemGroup.GET("", func(ctx *gin.Context) {
 			PreviewList, totalElements, err := itemRequests.GetSearchPreviewList(ctx)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)

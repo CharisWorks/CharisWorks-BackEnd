@@ -78,7 +78,7 @@ func SendPurchasedEmail(transactionDetails transaction.TransactionDetails, fireb
 送料： %v円
 合計金額： %v 円
 購入日時： %v 
-		`, 350, transactionDetails.TotalPrice+350, utils.ConvertToJST(transactionDetails.TransactionAt))
+		`, 400, transactionDetails.TotalPrice+400, utils.ConvertToJST(transactionDetails.TransactionAt))
 		body += fmt.Sprintf(`
 --------------------------
 

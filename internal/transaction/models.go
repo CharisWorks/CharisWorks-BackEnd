@@ -39,6 +39,8 @@ const (
 	Cancelled TransactionStatus = "Cancel"
 	Fail      TransactionStatus = "Fail"
 	Refund    TransactionStatus = "Refund"
+	Paid      TransactionStatus = "Paid"
+	Shipped   TransactionStatus = "Shipped"
 )
 
 type TransactionAddress struct {

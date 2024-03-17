@@ -1,6 +1,8 @@
 package cart
 
 import (
+	"log"
+
 	"github.com/charisworks/charisworks-backend/internal/items"
 	"github.com/charisworks/charisworks-backend/internal/utils"
 )
@@ -25,6 +27,7 @@ func (r Requests) Get(userId string) (cart []Cart, err error) {
 }
 
 func (r Requests) Register(userId string, cartRequestPayload CartRequestPayload) error {
+	log.Print("cartRequestPayload: ", cartRequestPayload)
 	internalCart, err := r.CartRepository.Get(userId)
 	if err != nil {
 		return err
