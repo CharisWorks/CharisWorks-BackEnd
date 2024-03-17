@@ -20,9 +20,6 @@ func (r Webhook) PurchaseComplete(stripeTransactionId string) (transactionDetail
 	}
 	for _, t := range transferList {
 		transferId := r.StripeUtils.Transfer(t.amount, t.stripeAccountId, stripeTransactionId)
-		if err != nil {
-			return transactionDetails, err
-		}
 		err = r.TransactionRepository.StatusUpdateItems(stripeTransactionId, t.itemId, map[string]interface{}{"stripe_transfer_id": transferId, "status": Complete})
 		if err != nil {
 			return transactionDetails, err

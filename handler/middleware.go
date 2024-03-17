@@ -44,7 +44,7 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 		userId := ctx.GetString(string(userId))
 		User, err := UserRequests.Get(userId)
 		if err != nil {
-			if err.Error() == string(utils.InternalErrorNotFound) {
+			if err.Error() == string(utils.InternalErrorNotFound) && User.UserId == "" {
 				log.Print("creating user for DB")
 				err := UserRequests.Create(userId)
 				if err != nil {
@@ -55,8 +55,6 @@ func userMiddleware(UserRequests users.IRequests) gin.HandlerFunc {
 				utils.AbortContextWithError(ctx, err)
 				return
 			}
-			utils.AbortContextWithError(ctx, err)
-			return
 		}
 
 		ctx.Set(string(user), User)

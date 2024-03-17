@@ -2,6 +2,8 @@ package cash
 
 import (
 	"log"
+	"os"
+	"strconv"
 
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/refund"
@@ -37,7 +39,12 @@ func (r Utils) Refund(amount int, transferId string, accountId string) (err erro
 }
 func (r Utils) Transfer(amount int, stripeAccountId string, transactionId string) *string {
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
-	const margin = 0.05
+	m, err := strconv.Atoi(os.Getenv("MARGIN"))
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	margin := float64(m)
 	log.Print("Transfering... \n amount: ", float64(amount)*(1-margin), "\n stripeID: ", stripeAccountId, "\n transactionId: ", transactionId)
 
 	params := &stripe.TransferParams{

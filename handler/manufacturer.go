@@ -14,16 +14,27 @@ func (h *Handler) SetupRoutesForManufacturer(firebaseApp validation.IFirebaseApp
 	UserRouter := h.Router.Group("/api/products")
 	UserRouter.Use(firebaseMiddleware(firebaseApp))
 	{
-		UserRouter.Use((userMiddleware(userRequests)))
+		UserRouter.Use(userMiddleware(userRequests))
 		UserRouter.Use(manufacturerMiddleware())
 		{
-			UserRouter.POST("/", func(ctx *gin.Context) {
+			UserRouter.POST("", func(ctx *gin.Context) {
 				payload, err := utils.GetPayloadFromBody(ctx, &manufacturer.RegisterPayload{})
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)
 					return
 				}
 				userId := ctx.GetString("userId")
+				user, exist := ctx.Get(string(user))
+				if !exist {
+					err := &utils.InternalError{Message: utils.InternalErrorIncident}
+					utils.ReturnErrorResponse(ctx, err)
+					return
+				}
+				if user.(users.User).UserProfile.DisplayName == "" || user.(users.User).UserProfile.Description == "" {
+					err := &utils.InternalError{Message: utils.InternalErrorAccountIsNotSatisfied}
+					utils.ReturnErrorResponse(ctx, err)
+					return
+				}
 				err = manufacturerRequests.Register(payload, userId, utils.GenerateRandomString())
 				if err != nil {
 					utils.ReturnErrorResponse(ctx, err)

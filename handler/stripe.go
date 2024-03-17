@@ -18,11 +18,24 @@ func (h *Handler) SetupRoutesForStripe(firebaseApp validation.IFirebaseApp, User
 	stripe.Key = "sk_test_51Nj1urA3bJzqElthGP4F3QjdR0SKk77E4pGHrsBAQEHia6lasXyujFOKXDyrodAxaE6PH6u2kNCVSdC5dBIRh82u00XqHQIZjM"
 	StripeRouter := h.Router.Group("/api")
 	StripeRouter.Use(firebaseMiddleware(firebaseApp))
+	StripeRouter.Use(userMiddleware(UserRequests))
 	{
 		StripeRouter.GET("/buy", func(ctx *gin.Context) {
 			// レスポンスの処理
 			userId := ctx.GetString("userId")
 			email := ctx.GetString("UserEmail")
+			user, exist := ctx.Get(string(user))
+			if !exist {
+				err := &utils.InternalError{Message: utils.InternalErrorIncident}
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+			if user.(users.User).UserAddress.Address1 == "" {
+				err := &utils.InternalError{Message: utils.InternalErrorAddressIsNotRegistered}
+				utils.ReturnErrorResponse(ctx, err)
+				return
+			}
+
 			ClientSecret, _, err := transactionRequests.Purchase(userId, email)
 			if err != nil {
 				utils.ReturnErrorResponse(ctx, err)
